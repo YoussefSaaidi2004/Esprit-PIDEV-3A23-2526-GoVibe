@@ -1,0 +1,25 @@
+package org.example.utils;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class MyDataBase {
+
+    private final String URL="jdbc:mysql://localhost:3306/govibe";
+    private final String USER="root";
+    private final String PSW="";
+    private Connection myConnection;
+    public MyDataBase(){
+        try {
+            myConnection= DriverManager.getConnection(URL,USER,PSW);
+            System.out.println("connexion établie");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public Connection getMyConnection() {
+        return myConnection;
+    }
+}

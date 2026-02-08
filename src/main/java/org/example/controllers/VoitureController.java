@@ -1,16 +1,20 @@
 package org.example.controllers;
 
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import org.example.entities.Voiture;
 import org.example.services.IService;
 import org.example.services.ServiceVoiture;
@@ -45,42 +49,24 @@ public class VoitureController {
     private TextArea descriptionArea;
 
     @FXML
-    private TableView<Voiture> voitureTable;
+    private Button addButton;
     @FXML
-    private TableColumn<Voiture, Number> idColumn;
+    private Button updateButton;
+
     @FXML
-    private TableColumn<Voiture, String> matriculeColumn;
-    @FXML
-    private TableColumn<Voiture, String> marqueColumn;
-    @FXML
-    private TableColumn<Voiture, String> modeleColumn;
-    @FXML
-    private TableColumn<Voiture, Number> anneeColumn;
-    @FXML
-    private TableColumn<Voiture, String> typeCarburantColumn;
-    @FXML
-    private TableColumn<Voiture, Number> prixJourColumn;
-    @FXML
-    private TableColumn<Voiture, String> statutColumn;
+    private ListView<Voiture> voitureList;
 
     private final ObservableList<Voiture> voitureItems = FXCollections.observableArrayList();
     private final IService<Voiture> voitureService = new ServiceVoiture();
 
     @FXML
     public void initialize() {
-        idColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getIdVoiture()));
-        matriculeColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getMatricule()));
-        marqueColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getMarque()));
-        modeleColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getModele()));
-        anneeColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getAnnee()));
-        typeCarburantColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getTypeCarburant()));
-        prixJourColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue().getPrixJour()));
-        statutColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStatut()));
-
-        voitureTable.setItems(voitureItems);
+        voitureList.setItems(voitureItems);
+        voitureList.setCellFactory(list -> new VoitureCell());
         refreshTable();
+        setAddMode();
 
-        voitureTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+        voitureList.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
             if (newSel != null) {
                 fillForm(newSel);
             }
@@ -93,14 +79,19 @@ public class VoitureController {
             return;
         }
         Voiture voiture = buildVoitureFromFields();
-        voitureService.add(voiture);
-        refreshTable();
-        clearFields();
+        try {
+            voitureService.add(voiture);
+            refreshTable();
+            clearFields();
+            setAddMode();
+        } catch (RuntimeException ex) {
+            showAlert("Erreur", ex.getMessage());
+        }
     }
 
     @FXML
     private void handleModifier(ActionEvent event) {
-        Voiture selected = voitureTable.getSelectionModel().getSelectedItem();
+        Voiture selected = voitureList.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert("Sélection requise", "Veuillez sélectionner une voiture à modifier.");
             return;
@@ -110,14 +101,19 @@ public class VoitureController {
         }
         Voiture updated = buildVoitureFromFields();
         updated.setIdVoiture(selected.getIdVoiture());
-        voitureService.update(updated);
-        refreshTable();
-        clearFields();
+        try {
+            voitureService.update(updated);
+            refreshTable();
+            clearFields();
+            setAddMode();
+        } catch (RuntimeException ex) {
+            showAlert("Erreur", ex.getMessage());
+        }
     }
 
     @FXML
     private void handleSupprimer(ActionEvent event) {
-        Voiture selected = voitureTable.getSelectionModel().getSelectedItem();
+        Voiture selected = voitureList.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert("Sélection requise", "Veuillez sélectionner une voiture à supprimer.");
             return;
@@ -125,6 +121,7 @@ public class VoitureController {
         voitureService.delete(selected.getIdVoiture());
         refreshTable();
         clearFields();
+        setAddMode();
     }
 
     public void refreshTable() {
@@ -210,7 +207,17 @@ public class VoitureController {
         longitudeField.clear();
         imageUrlField.clear();
         descriptionArea.clear();
-        voitureTable.getSelectionModel().clearSelection();
+        voitureList.getSelectionModel().clearSelection();
+    }
+
+    private void setAddMode() {
+        addButton.setDisable(false);
+        updateButton.setDisable(true);
+    }
+
+    private void setEditMode() {
+        addButton.setDisable(true);
+        updateButton.setDisable(false);
     }
 
     private void showAlert(String title, String message) {
@@ -219,5 +226,79 @@ public class VoitureController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private class VoitureCell extends ListCell<Voiture> {
+        private final HBox root = new HBox();
+        private final VBox left = new VBox();
+        private final VBox right = new VBox();
+        private final Label title = new Label();
+        private final Label subtitle = new Label();
+        private final Label meta = new Label();
+        private final Label price = new Label();
+        private final Label status = new Label();
+        private final HBox rowActions = new HBox();
+        private final Button editButton = new Button("Modifier");
+        private final Button deleteButton = new Button("Supprimer");
+        private final Region spacer = new Region();
+
+        VoitureCell() {
+            root.getStyleClass().add("voiture-cell");
+            left.getStyleClass().add("voiture-cell-left");
+            right.getStyleClass().add("voiture-cell-right");
+            title.getStyleClass().add("voiture-title");
+            subtitle.getStyleClass().add("voiture-subtitle");
+            meta.getStyleClass().add("voiture-meta");
+            price.getStyleClass().add("voiture-price");
+            status.getStyleClass().add("voiture-status");
+            rowActions.getStyleClass().add("row-actions");
+            editButton.getStyleClass().addAll("row-btn", "row-btn-edit");
+            deleteButton.getStyleClass().addAll("row-btn", "row-btn-delete");
+
+            left.getChildren().addAll(title, subtitle, meta);
+            rowActions.getChildren().addAll(editButton, deleteButton);
+            right.getChildren().addAll(price, status, rowActions);
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            root.getChildren().addAll(left, spacer, right);
+            setText(null);
+        }
+
+        @Override
+        protected void updateItem(Voiture item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setGraphic(null);
+                return;
+            }
+
+            title.setText(item.getMarque() + " " + item.getModele() + " · " + item.getMatricule());
+            subtitle.setText("Annee " + item.getAnnee() + " · " + item.getTypeCarburant());
+            meta.setText(item.getAdresseAgence());
+            price.setText(String.format("%.2f TND / jour", item.getPrixJour()));
+            status.setText(item.getStatut());
+
+            editButton.setOnAction(event -> {
+                if (getListView() != null) {
+                    getListView().getSelectionModel().select(item);
+                }
+                fillForm(item);
+                setEditMode();
+            });
+
+            deleteButton.setOnAction(event -> deleteFromRow(item));
+
+            setGraphic(root);
+        }
+    }
+
+    private void deleteFromRow(Voiture item) {
+        try {
+            voitureService.delete(item.getIdVoiture());
+            refreshTable();
+            clearFields();
+            setAddMode();
+        } catch (RuntimeException ex) {
+            showAlert("Erreur", ex.getMessage());
+        }
     }
 }

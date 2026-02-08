@@ -8,9 +8,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ServiceVoiture implements IService<Voiture> {
 
@@ -25,13 +27,15 @@ public class ServiceVoiture implements IService<Voiture> {
         String sql = "INSERT INTO voiture (matricule, marque, modele, annee, type_carburant, prix_jour, statut, adresse_agence, latitude, longitude, description, image_url) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            String typeCarburant = normalizeTypeCarburant(voiture.getTypeCarburant());
+            String statut = normalizeStatut(voiture.getStatut());
             ps.setString(1, voiture.getMatricule());
             ps.setString(2, voiture.getMarque());
             ps.setString(3, voiture.getModele());
             ps.setInt(4, voiture.getAnnee());
-            ps.setString(5, voiture.getTypeCarburant());
+            ps.setString(5, typeCarburant);
             ps.setDouble(6, voiture.getPrixJour());
-            ps.setString(7, voiture.getStatut());
+            ps.setString(7, statut);
             ps.setString(8, voiture.getAdresseAgence());
             ps.setDouble(9, voiture.getLatitude());
             ps.setDouble(10, voiture.getLongitude());
@@ -48,13 +52,15 @@ public class ServiceVoiture implements IService<Voiture> {
         String sql = "UPDATE voiture SET matricule=?, marque=?, modele=?, annee=?, type_carburant=?, prix_jour=?, statut=?, adresse_agence=?, latitude=?, longitude=?, description=?, image_url=? " +
                 "WHERE id_voiture=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            String typeCarburant = normalizeTypeCarburant(voiture.getTypeCarburant());
+            String statut = normalizeStatut(voiture.getStatut());
             ps.setString(1, voiture.getMatricule());
             ps.setString(2, voiture.getMarque());
             ps.setString(3, voiture.getModele());
             ps.setInt(4, voiture.getAnnee());
-            ps.setString(5, voiture.getTypeCarburant());
+            ps.setString(5, typeCarburant);
             ps.setDouble(6, voiture.getPrixJour());
-            ps.setString(7, voiture.getStatut());
+            ps.setString(7, statut);
             ps.setString(8, voiture.getAdresseAgence());
             ps.setDouble(9, voiture.getLatitude());
             ps.setDouble(10, voiture.getLongitude());
@@ -110,5 +116,46 @@ public class ServiceVoiture implements IService<Voiture> {
             throw new RuntimeException("Erreur lors de la récupération des voitures", e);
         }
         return voitures;
+    }
+
+    private static String normalizeTypeCarburant(String input) {
+        String normalized = normalizeKey(input);
+        switch (normalized) {
+            case "essence":
+                return "Essence";
+            case "diesel":
+                return "Diesel";
+            case "hybride":
+                return "Hybride";
+            case "electrique":
+                return "Electrique";
+            default:
+                throw new RuntimeException("Type carburant invalide. Valeurs possibles: Essence, Diesel, Hybride, Electrique.");
+        }
+    }
+
+    private static String normalizeStatut(String input) {
+        String normalized = normalizeKey(input);
+        switch (normalized) {
+            case "disponible":
+                return "DISPONIBLE";
+            case "loue":
+            case "louee":
+                return "LOUEE";
+            case "maintenance":
+                return "MAINTENANCE";
+            default:
+                throw new RuntimeException("Statut invalide. Valeurs possibles: DISPONIBLE, LOUEE, MAINTENANCE.");
+        }
+    }
+
+    private static String normalizeKey(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            throw new RuntimeException("Champ requis manquant.");
+        }
+        String trimmed = input.trim();
+        String noAccents = Normalizer.normalize(trimmed, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return noAccents.toLowerCase(Locale.ROOT);
     }
 }

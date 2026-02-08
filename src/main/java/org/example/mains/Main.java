@@ -13,11 +13,17 @@ public class Main {
         ServicePersonne sp=new ServicePersonne();
         try {
             /*sp.ajouter(new personne("yassine", "marzouki", 10));  //ajouter personne
+            System.out.println("personne ajouter");
+            sp.ajouter(new personne("ttt", "marzouffki", 10));  //ajouter personne
             System.out.println("personne ajouter");*/
-            
+
             //modifier personne
-            sp.modifier(new personne(1,"flen", "fouleni", 25));
-            System.out.println("personne Modifier");
+            /*sp.modifier(new personne(1,"flen", "fouleni", 25));
+            System.out.println("personne Modifier");*/
+
+            /*sp.supprimer(9);
+            System.out.println("personne supprimer");*/
+            System.out.println(sp.afficher());
         }catch (SQLException e){
             System.out.println(e.getMessage());
         }

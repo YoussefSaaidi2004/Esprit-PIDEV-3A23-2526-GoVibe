@@ -3,10 +3,8 @@ package org.example.services;
 import org.example.entities.personne;
 import org.example.utils.MyDataBase;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ServicePersonne implements IService<personne>{
@@ -34,11 +32,26 @@ public class ServicePersonne implements IService<personne>{
 
     @Override
     public void supprimer(int id) throws SQLException {
-
+        String sql="DELETE FROM `personne` WHERE `id`=?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1,id);
+        ps.executeUpdate();
     }
 
     @Override
     public List<personne> afficher() throws SQLException {
-        return List.of();
+        List<personne> personnes = new ArrayList<>();
+        String sql = "SELECT * FROM personne";
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+        while (rs.next()) {
+            personne p = new personne();
+            p.setId(rs.getInt("id"));
+            p.setNom(rs.getString("nom"));
+            p.setPrenom(rs.getString("prenom"));
+            p.setAge(rs.getInt("age"));
+            personnes.add(p);
+        }
+        return personnes;
     }
 }

@@ -11,20 +11,20 @@ public class DBConnection {
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
-    private static Connection connection;
-
     private DBConnection() {}
 
+    /**
+     * Return a new JDBC Connection. DAOs should close the Connection when done.
+     */
     public static Connection getConnection() {
-        if (connection == null) {
-            try {
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("✅ Connected to MySQL");
-            } catch (SQLException e) {
-                System.err.println("❌ DB Connection failed");
-                e.printStackTrace();
-            }
+        try {
+            Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("✅ Connected to MySQL");
+            return conn;
+        } catch (SQLException e) {
+            System.err.println("❌ DB Connection failed");
+            e.printStackTrace();
+            return null;
         }
-        return connection;
     }
 }

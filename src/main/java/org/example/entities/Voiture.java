@@ -9,9 +9,9 @@ public class Voiture {
     private String marque;
     private String modele;
     private int annee;
-    private String typeCarburant;
+    private TypeCarburant typeCarburant;
     private double prixJour;
-    private String statut;
+    private Statut statut;
 
     private String adresseAgence;
     private double latitude;
@@ -27,7 +27,7 @@ public class Voiture {
 
     // ✅ Constructeur pour INSERT
     public Voiture(String matricule, String marque, String modele, int annee,
-                   String typeCarburant, double prixJour, String statut,
+                   TypeCarburant typeCarburant, double prixJour, Statut statut,
                    String adresseAgence, double latitude, double longitude,
                    String description, String imageUrl) {
 
@@ -47,7 +47,7 @@ public class Voiture {
 
     // ✅ Constructeur pour SELECT
     public Voiture(int idVoiture, String matricule, String marque, String modele,
-                   int annee, String typeCarburant, double prixJour, String statut,
+                   int annee, TypeCarburant typeCarburant, double prixJour, Statut statut,
                    String adresseAgence, double latitude, double longitude,
                    String description, String imageUrl, LocalDateTime dateCreation) {
 
@@ -109,11 +109,11 @@ public class Voiture {
         this.annee = annee;
     }
 
-    public String getTypeCarburant() {
+    public TypeCarburant getTypeCarburant() {
         return typeCarburant;
     }
 
-    public void setTypeCarburant(String typeCarburant) {
+    public void setTypeCarburant(TypeCarburant typeCarburant) {
         this.typeCarburant = typeCarburant;
     }
 
@@ -125,11 +125,11 @@ public class Voiture {
         this.prixJour = prixJour;
     }
 
-    public String getStatut() {
+    public Statut getStatut() {
         return statut;
     }
 
-    public void setStatut(String statut) {
+    public void setStatut(Statut statut) {
         this.statut = statut;
     }
 

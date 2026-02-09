@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
@@ -65,20 +66,20 @@
                                                 promptText="2024" styleClass="input-field"/>
 
                                            <Label text="Carburant" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
-                                        <TextField fx:id="typeCarburantField" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                                                promptText="Essence" styleClass="input-field"/>
+                                        <ComboBox fx:id="typeCarburantField" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                            promptText="Choisir" styleClass="input-field"/>
 
                                            <Label text="Prix/Jour" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="form-label"/>
                                         <TextField fx:id="prixJourField" GridPane.rowIndex="2" GridPane.columnIndex="3"
                                                 promptText="120" styleClass="input-field"/>
 
-                                           <Label text="Statut" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
-                                        <TextField fx:id="statutField" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                                               promptText="Disponible" styleClass="input-field"/>
+                                                         <Label text="Statut" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+                                                     <ComboBox fx:id="statutField" GridPane.rowIndex="3" GridPane.columnIndex="1"
+                                                              promptText="Choisir" styleClass="input-field"/>
 
-                                           <Label text="Adresse" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="form-label"/>
-                                        <TextField fx:id="adresseAgenceField" GridPane.rowIndex="3" GridPane.columnIndex="3"
-                                                promptText="Rue des Oliviers" styleClass="input-field"/>
+                                           <Label text="Agence" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="form-label"/>
+                                        <ComboBox fx:id="agenceBox" GridPane.rowIndex="3" GridPane.columnIndex="3"
+                                            promptText="Choisir" styleClass="input-field"/>
                                     </children>
                                 </GridPane>
 
@@ -90,20 +91,12 @@
                                         <ColumnConstraints percentWidth="25"/>
                                     </columnConstraints>
                                     <children>
-                                          <Label text="Latitude" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
-                                        <TextField fx:id="latitudeField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                                              promptText="36.8065" styleClass="input-field"/>
-
-                                          <Label text="Longitude" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="form-label"/>
-                                        <TextField fx:id="longitudeField" GridPane.rowIndex="0" GridPane.columnIndex="3"
-                                              promptText="10.1815" styleClass="input-field"/>
-
-                                          <Label text="Image URL" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
-                                        <TextField fx:id="imageUrlField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                                                                    <Label text="Image URL" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+                                                                                <TextField fx:id="imageUrlField" GridPane.rowIndex="0" GridPane.columnIndex="1"
                                               promptText="https://..." styleClass="input-field"/>
 
-                                                  <Label text="Description" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
-                                           <TextArea fx:id="descriptionArea" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.columnSpan="3"
+                                                 <Label text="Description" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+                                             <TextArea fx:id="descriptionArea" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.columnSpan="3"
                                                   prefRowCount="4" wrapText="true"
                                                   promptText="Décrivez la voiture, ses options, son état et ses particularités"
                                                       styleClass="description-area"/>

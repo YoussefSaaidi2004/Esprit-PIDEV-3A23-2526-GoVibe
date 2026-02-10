@@ -11,29 +11,27 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
             fx:id="root"
-            fx:controller="org.example.controllers.VoitureListController"
+            fx:controller="org.example.controllers.LocationListController"
             stylesheets="@voiture.css"
             styleClass="app-root">
     <children>
         <VBox spacing="18.0" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0"
               AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
             <children>
-                <Label text="Gestion des Voitures" styleClass="page-title"/>
+                <Label text="Gestion des Locations" styleClass="page-title"/>
                 <HBox spacing="12.0" styleClass="toolbar">
                     <children>
                         <TextField fx:id="searchField" promptText="Rechercher..."
                                    styleClass="input-field search-field"/>
-                        <ComboBox fx:id="agenceFilter" promptText="Agence"
+                        <ComboBox fx:id="voitureFilter" promptText="Voiture"
                                   styleClass="input-field filter-combo"/>
                         <ComboBox fx:id="sortChoice" promptText="Tri"
                                   styleClass="input-field filter-combo"/>
                         <ComboBox fx:id="pageSizeBox" promptText="Page"
                                   styleClass="input-field page-size"/>
-                        <Button fx:id="addPageButton" text="Ajouter une voiture" onAction="#handleOpenAdd"
+                        <Button fx:id="addLocationButton" text="Ajouter une location" onAction="#handleOpenAdd"
                                 styleClass="btn btn-primary"/>
-                        <Button fx:id="locationListButton" text="Gestion locations" onAction="#handleOpenLocations"
-                            styleClass="btn btn-primary"/>
-                        <Button fx:id="adminLocationButton" text="Admin locations" onAction="#handleOpenAdminLocations"
+                        <Button fx:id="backToCarsButton" text="Retour voitures" onAction="#handleBackToCars"
                             styleClass="btn btn-primary"/>
                         <Button fx:id="exportPdfButton" text="Exporter PDF" onAction="#handleExportPdf"
                                 styleClass="btn btn-primary"/>
@@ -53,28 +51,28 @@
                         </VBox>
                         <VBox styleClass="stat-card">
                             <children>
-                                <Label text="Disponibles" styleClass="stat-label"/>
-                                <Label fx:id="availableCountLabel" text="0" styleClass="stat-value"/>
+                                <Label text="Confirmees" styleClass="stat-label"/>
+                                <Label fx:id="confirmedCountLabel" text="0" styleClass="stat-value"/>
                             </children>
                         </VBox>
                         <VBox styleClass="stat-card">
                             <children>
-                                <Label text="Prix moyen" styleClass="stat-label"/>
-                                <Label fx:id="avgPriceLabel" text="0" styleClass="stat-value"/>
+                                <Label text="Montant total" styleClass="stat-label"/>
+                                <Label fx:id="totalRevenueLabel" text="0" styleClass="stat-value"/>
                             </children>
                         </VBox>
                         <VBox styleClass="stat-card">
                             <children>
-                                <Label text="Top agence" styleClass="stat-label"/>
-                                <Label fx:id="topAgenceLabel" text="-" styleClass="stat-value"/>
+                                <Label text="Top voiture" styleClass="stat-label"/>
+                                <Label fx:id="topVoitureLabel" text="-" styleClass="stat-value"/>
                             </children>
                         </VBox>
                     </children>
                 </HBox>
                 <VBox spacing="12.0">
                     <children>
-                        <Label text="Liste des voitures" styleClass="section-title"/>
-                        <ListView fx:id="voitureList" prefHeight="560.0" styleClass="voiture-list"/>
+                        <Label text="Liste des locations" styleClass="section-title"/>
+                        <ListView fx:id="locationList" prefHeight="560.0" styleClass="voiture-list"/>
                         <HBox spacing="10.0" styleClass="pagination-bar">
                             <children>
                                 <Button fx:id="prevPageButton" text="Precedent" onAction="#handlePrevPage"

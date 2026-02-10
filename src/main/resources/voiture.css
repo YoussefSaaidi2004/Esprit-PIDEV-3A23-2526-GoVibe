@@ -68,10 +68,66 @@
     -fx-padding: 0 0 4 0;
 }
 
+.toolbar {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10;
+    -fx-padding: 0 0 4 0;
+    -fx-wrap-text: false;
+}
+
+.search-field {
+    -fx-min-width: 200;
+}
+
+.filter-combo {
+    -fx-min-width: 150;
+}
+
+.page-size {
+    -fx-min-width: 90;
+}
+
+.stats-row {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 12;
+}
+
+.stat-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: rgba(1,50,32,0.12);
+    -fx-padding: 10 14;
+    -fx-effect: dropshadow(gaussian, rgba(1,50,32,0.08), 10, 0.2, 0, 2);
+}
+
+.stat-label {
+    -fx-text-fill: #013220;
+    -fx-font-size: 11px;
+    -fx-opacity: 0.75;
+}
+
+.stat-value {
+    -fx-text-fill: #013220;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
 .input-field:focused {
     -fx-border-color: #50C878;
     -fx-border-width: 2;
     -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.35), 8, 0.2, 0, 1);
+}
+
+.input-field.field-error,
+.text-area.field-error,
+.description-area.field-error,
+.combo-box.field-error,
+.combo-box-base.field-error {
+    -fx-border-color: #E74C3C;
+    -fx-border-width: 2;
+    -fx-background-color: #FDEDEC;
+    -fx-effect: dropshadow(gaussian, rgba(231,76,60,0.35), 8, 0.2, 0, 1);
 }
 
 .text-area,
@@ -233,6 +289,17 @@
     -fx-background-color: #F5F3E7;
 }
 
+.pagination-bar {
+    -fx-alignment: CENTER_RIGHT;
+    -fx-spacing: 8;
+    -fx-padding: 6 0 0 0;
+}
+
+.page-info {
+    -fx-text-fill: #013220;
+    -fx-font-weight: bold;
+}
+
 .voiture-cell {
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 14;
@@ -315,4 +382,58 @@
 
 .row-btn-delete {
     -fx-background-color: #013220;
+}
+
+.theme-dark {
+    -fx-background-color: #101412;
+}
+
+.theme-dark .page-title,
+.theme-dark .section-title,
+.theme-dark .form-label,
+.theme-dark .voiture-title,
+.theme-dark .voiture-subtitle,
+.theme-dark .voiture-meta,
+.theme-dark .voiture-price,
+.theme-dark .page-info,
+.theme-dark .stat-label,
+.theme-dark .stat-value {
+    -fx-text-fill: #E9F3EE;
+}
+
+.theme-dark .card,
+.theme-dark .stat-card,
+.theme-dark .voiture-list,
+.theme-dark .voiture-cell,
+.theme-dark .table-view,
+.theme-dark .data-table {
+    -fx-background-color: #17201B;
+    -fx-border-color: rgba(233,243,238,0.12);
+}
+
+.theme-dark .voiture-list .list-cell:filled:hover {
+    -fx-background-color: #1E2A24;
+}
+
+.theme-dark .voiture-list .list-cell:filled:selected {
+    -fx-background-color: #213127;
+}
+
+.theme-dark .input-field,
+.theme-dark .combo-box.input-field,
+.theme-dark .combo-box-base.input-field,
+.theme-dark .text-area,
+.theme-dark .description-area {
+    -fx-background-color: #1B241F;
+    -fx-text-fill: #E9F3EE;
+    -fx-border-color: rgba(233,243,238,0.12);
+}
+
+.theme-dark .button {
+    -fx-background-color: #3AAE6A;
+    -fx-text-fill: #F2FBF6;
+}
+
+.theme-dark .button:hover {
+    -fx-background-color: #2F8E57;
 }

@@ -1,9 +1,11 @@
 package org.example.controllers;
 
+import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -16,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import org.example.entities.AgenceLocation;
 import org.example.entities.Statut;
 import org.example.entities.TypeCarburant;
@@ -154,24 +157,67 @@ public class VoitureController {
     }
 
     private boolean validateFields() {
-        if (isBlank(matriculeField) || isBlank(marqueField) || isBlank(modeleField)
-                || isBlank(anneeField) || isBlank(prixJourField)
-                || isBlank(imageUrlField) || isBlank(descriptionArea)) {
-            showAlert("Validation", "Veuillez remplir tous les champs.");
-            return false;
+        clearValidationStyles();
+        boolean valid = true;
+
+        if (isBlank(matriculeField)) {
+            markInvalid(matriculeField);
+            valid = false;
         }
-        if (typeCarburantField.getValue() == null || statutField.getValue() == null || agenceBox.getValue() == null) {
-            showAlert("Validation", "Veuillez remplir tous les champs.");
-            return false;
+        if (isBlank(marqueField)) {
+            markInvalid(marqueField);
+            valid = false;
         }
-        try {
-            Integer.parseInt(anneeField.getText().trim());
-            Double.parseDouble(prixJourField.getText().trim());
-        } catch (NumberFormatException ex) {
-            showAlert("Validation", "Les champs numériques sont invalides.");
-            return false;
+        if (isBlank(modeleField)) {
+            markInvalid(modeleField);
+            valid = false;
         }
-        return true;
+        if (isBlank(anneeField)) {
+            markInvalid(anneeField);
+            valid = false;
+        }
+        if (isBlank(prixJourField)) {
+            markInvalid(prixJourField);
+            valid = false;
+        }
+        if (isBlank(imageUrlField)) {
+            markInvalid(imageUrlField);
+            valid = false;
+        }
+        if (isBlank(descriptionArea)) {
+            markInvalid(descriptionArea);
+            valid = false;
+        }
+        if (typeCarburantField.getValue() == null) {
+            markInvalid(typeCarburantField);
+            valid = false;
+        }
+        if (statutField.getValue() == null) {
+            markInvalid(statutField);
+            valid = false;
+        }
+        if (agenceBox.getValue() == null) {
+            markInvalid(agenceBox);
+            valid = false;
+        }
+
+        if (!isBlank(anneeField)) {
+            try {
+                Integer.parseInt(anneeField.getText().trim());
+            } catch (NumberFormatException ex) {
+                markInvalid(anneeField);
+                valid = false;
+            }
+        }
+        if (!isBlank(prixJourField)) {
+            try {
+                Double.parseDouble(prixJourField.getText().trim());
+            } catch (NumberFormatException ex) {
+                markInvalid(prixJourField);
+                valid = false;
+            }
+        }
+        return valid;
     }
 
     private boolean isBlank(TextField field) {
@@ -207,6 +253,7 @@ public class VoitureController {
         imageUrlField.clear();
         descriptionArea.clear();
         voitureList.getSelectionModel().clearSelection();
+        clearValidationStyles();
     }
 
     private void setAddMode() {
@@ -225,6 +272,39 @@ public class VoitureController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void clearValidationStyles() {
+        removeErrorStyle(matriculeField);
+        removeErrorStyle(marqueField);
+        removeErrorStyle(modeleField);
+        removeErrorStyle(anneeField);
+        removeErrorStyle(prixJourField);
+        removeErrorStyle(imageUrlField);
+        removeErrorStyle(descriptionArea);
+        removeErrorStyle(typeCarburantField);
+        removeErrorStyle(statutField);
+        removeErrorStyle(agenceBox);
+    }
+
+    private void markInvalid(Node node) {
+        if (!node.getStyleClass().contains("field-error")) {
+            node.getStyleClass().add("field-error");
+        }
+        playShake(node);
+    }
+
+    private void removeErrorStyle(Node node) {
+        node.getStyleClass().remove("field-error");
+    }
+
+    private void playShake(Node node) {
+        TranslateTransition transition = new TranslateTransition(Duration.millis(220), node);
+        transition.setFromX(0);
+        transition.setByX(8);
+        transition.setCycleCount(4);
+        transition.setAutoReverse(true);
+        transition.playFromStart();
     }
 
     private class VoitureCell extends ListCell<Voiture> {

@@ -27,16 +27,20 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.example.entities.Statut;
+import org.example.entities.Location;
+import org.example.entities.StatutLocation;
 import org.example.entities.Voiture;
 import org.example.services.IService;
-import org.example.services.ServiceVoiture;
+import org.example.services.ServiceLocation;
+import org.example.utils.LocationSelection;
 import org.example.utils.SceneNavigator;
-import org.example.utils.VoitureSelection;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,29 +52,27 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class VoitureListController {
+public class LocationListController {
 
-    private static final String ALL_AGENCIES = "Toutes";
+    private static final String ALL_VOITURES = "Toutes";
     private static final String SORT_DEFAULT = "Par defaut";
 
     @FXML
     private AnchorPane root;
     @FXML
-    private ListView<Voiture> voitureList;
-    @FXML
-    private Button addPageButton;
-    @FXML
-    private Button locationListButton;
-    @FXML
-    private Button adminLocationButton;
+    private ListView<Location> locationList;
     @FXML
     private TextField searchField;
     @FXML
-    private ComboBox<String> agenceFilter;
+    private ComboBox<String> voitureFilter;
     @FXML
     private ComboBox<String> sortChoice;
     @FXML
     private ComboBox<Integer> pageSizeBox;
+    @FXML
+    private Button addLocationButton;
+    @FXML
+    private Button backToCarsButton;
     @FXML
     private Button exportPdfButton;
     @FXML
@@ -86,46 +88,41 @@ public class VoitureListController {
     @FXML
     private Label totalCountLabel;
     @FXML
-    private Label availableCountLabel;
+    private Label confirmedCountLabel;
     @FXML
-    private Label avgPriceLabel;
+    private Label totalRevenueLabel;
     @FXML
-    private Label topAgenceLabel;
+    private Label topVoitureLabel;
 
-    private final ObservableList<Voiture> masterItems = FXCollections.observableArrayList();
-    private final ObservableList<Voiture> pageItems = FXCollections.observableArrayList();
-    private final IService<Voiture> voitureService = new ServiceVoiture();
-    private List<Voiture> currentFiltered = new ArrayList<>();
+    private final ObservableList<Location> masterItems = FXCollections.observableArrayList();
+    private final ObservableList<Location> pageItems = FXCollections.observableArrayList();
+    private final IService<Location> locationService = new ServiceLocation();
+    private List<Location> currentFiltered = new ArrayList<>();
     private int currentPageIndex = 0;
     private int pageSize = 6;
 
     @FXML
     public void initialize() {
-        voitureList.setItems(pageItems);
-        voitureList.setCellFactory(list -> new VoitureCell());
+        locationList.setItems(pageItems);
+        locationList.setCellFactory(list -> new LocationCell());
         setupFilters();
         refreshList();
     }
 
     @FXML
     private void handleOpenAdd() {
-        SceneNavigator.switchTo("/VoitureAddView.fxml", addPageButton);
+        SceneNavigator.switchTo("/LocationAddView.fxml", addLocationButton);
     }
 
     @FXML
-    private void handleOpenLocations() {
-        SceneNavigator.switchTo("/LocationListView.fxml", locationListButton);
-    }
-
-    @FXML
-    private void handleOpenAdminLocations() {
-        SceneNavigator.switchTo("/AdminLocationListView.fxml", adminLocationButton);
+    private void handleBackToCars() {
+        SceneNavigator.switchTo("/VoitureListView.fxml", backToCarsButton);
     }
 
     @FXML
     private void handleExportPdf() {
         if (currentFiltered.isEmpty()) {
-            showAlert("Export", "Aucune voiture a exporter.");
+            showAlert("Export", "Aucune location a exporter.");
             return;
         }
         FileChooser chooser = new FileChooser();
@@ -146,7 +143,7 @@ public class VoitureListController {
     @FXML
     private void handleExportExcel() {
         if (currentFiltered.isEmpty()) {
-            showAlert("Export", "Aucune voiture a exporter.");
+            showAlert("Export", "Aucune location a exporter.");
             return;
         }
         FileChooser chooser = new FileChooser();
@@ -195,27 +192,27 @@ public class VoitureListController {
     }
 
     private void refreshList() {
-        List<Voiture> voitures = voitureService.getAll();
-        masterItems.setAll(voitures);
-        updateAgenceOptions();
+        List<Location> locations = locationService.getAll();
+        masterItems.setAll(locations);
+        updateVoitureOptions();
         applyFiltersAndSort();
     }
 
     private void setupFilters() {
         sortChoice.setItems(FXCollections.observableArrayList(
                 SORT_DEFAULT,
-                "Prix (asc)",
-                "Prix (desc)",
-                "Annee (desc)",
-                "Marque (A-Z)",
-                "Date ajout (desc)"
+                "Montant (desc)",
+                "Montant (asc)",
+                "Date debut (desc)",
+                "Date fin (desc)",
+                "Reference (A-Z)"
         ));
         sortChoice.setValue(SORT_DEFAULT);
         pageSizeBox.setItems(FXCollections.observableArrayList(6, 10, 15, 20));
         pageSizeBox.setValue(pageSize);
 
         searchField.textProperty().addListener((obs, oldValue, newValue) -> applyFiltersAndSort());
-        agenceFilter.setOnAction(event -> applyFiltersAndSort());
+        voitureFilter.setOnAction(event -> applyFiltersAndSort());
         sortChoice.setOnAction(event -> applyFiltersAndSort());
         pageSizeBox.setOnAction(event -> {
             Integer value = pageSizeBox.getValue();
@@ -227,34 +224,34 @@ public class VoitureListController {
         });
     }
 
-    private void updateAgenceOptions() {
-        String currentSelection = agenceFilter.getValue();
-        Set<String> agencies = masterItems.stream()
-                .map(Voiture::getAdresseAgence)
+    private void updateVoitureOptions() {
+        String currentSelection = voitureFilter.getValue();
+        Set<String> voitures = masterItems.stream()
+                .map(this::getVoitureLabel)
                 .filter(Objects::nonNull)
                 .map(String::trim)
                 .filter(value -> !value.isEmpty())
                 .collect(Collectors.toCollection(TreeSet::new));
         List<String> options = new ArrayList<>();
-        options.add(ALL_AGENCIES);
-        options.addAll(agencies);
-        agenceFilter.setItems(FXCollections.observableArrayList(options));
+        options.add(ALL_VOITURES);
+        options.addAll(voitures);
+        voitureFilter.setItems(FXCollections.observableArrayList(options));
         if (currentSelection != null && options.contains(currentSelection)) {
-            agenceFilter.setValue(currentSelection);
+            voitureFilter.setValue(currentSelection);
         } else {
-            agenceFilter.setValue(ALL_AGENCIES);
+            voitureFilter.setValue(ALL_VOITURES);
         }
     }
 
     private void applyFiltersAndSort() {
         String query = normalizeText(searchField.getText());
-        String selectedAgency = agenceFilter.getValue();
-        List<Voiture> filtered = masterItems.stream()
+        String selectedVoiture = voitureFilter.getValue();
+        List<Location> filtered = masterItems.stream()
                 .filter(item -> matchesSearch(item, query))
-                .filter(item -> matchesAgency(item, selectedAgency))
+                .filter(item -> matchesVoiture(item, selectedVoiture))
                 .collect(Collectors.toList());
 
-        Comparator<Voiture> comparator = buildComparator(sortChoice.getValue());
+        Comparator<Location> comparator = buildComparator(sortChoice.getValue());
         if (comparator != null) {
             filtered.sort(comparator);
         }
@@ -265,21 +262,20 @@ public class VoitureListController {
         updatePaginationControls();
     }
 
-    private boolean matchesSearch(Voiture item, String query) {
+    private boolean matchesSearch(Location item, String query) {
         if (query == null || query.isEmpty()) {
             return true;
         }
-        return containsIgnoreCase(item.getMarque(), query)
-                || containsIgnoreCase(item.getModele(), query)
-                || containsIgnoreCase(item.getMatricule(), query)
-                || containsIgnoreCase(item.getAdresseAgence(), query);
+        return containsIgnoreCase(item.getReference(), query)
+                || containsIgnoreCase(getVoitureLabel(item), query)
+                || containsIgnoreCase(item.getStatut() != null ? item.getStatut().toString() : null, query);
     }
 
-    private boolean matchesAgency(Voiture item, String selectedAgency) {
-        if (selectedAgency == null || selectedAgency.equals(ALL_AGENCIES)) {
+    private boolean matchesVoiture(Location item, String selectedVoiture) {
+        if (selectedVoiture == null || selectedVoiture.equals(ALL_VOITURES)) {
             return true;
         }
-        return selectedAgency.equalsIgnoreCase(safeTrim(item.getAdresseAgence()));
+        return selectedVoiture.equalsIgnoreCase(safeTrim(getVoitureLabel(item)));
     }
 
     private void updatePaginationControls() {
@@ -313,19 +309,14 @@ public class VoitureListController {
 
     private void updateStats() {
         int total = currentFiltered.size();
-        long available = currentFiltered.stream()
-                .filter(item -> item.getStatut() == Statut.DISPONIBLE)
+        long confirmed = currentFiltered.stream()
+                .filter(item -> item.getStatut() == StatutLocation.CONFIRMEE)
                 .count();
-        double avgPrice = currentFiltered.stream()
-                .mapToDouble(Voiture::getPrixJour)
-                .average()
-                .orElse(0);
-        String topAgency = currentFiltered.stream()
-                .map(Voiture::getAdresseAgence)
-                .filter(Objects::nonNull)
-                .map(String::trim)
-                .filter(value -> !value.isEmpty())
-                .collect(Collectors.groupingBy(value -> value, Collectors.counting()))
+        double totalRevenue = currentFiltered.stream()
+                .mapToDouble(Location::getMontantTotal)
+                .sum();
+        String topVoiture = currentFiltered.stream()
+                .collect(Collectors.groupingBy(this::getVoitureLabel, Collectors.counting()))
                 .entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())
@@ -333,38 +324,37 @@ public class VoitureListController {
                 .orElse("-");
 
         totalCountLabel.setText(String.valueOf(total));
-        availableCountLabel.setText(String.valueOf(available));
-        avgPriceLabel.setText(String.format(Locale.ROOT, "%.2f", avgPrice));
-        topAgenceLabel.setText(topAgency);
+        confirmedCountLabel.setText(String.valueOf(confirmed));
+        totalRevenueLabel.setText(String.format(Locale.ROOT, "%.2f", totalRevenue));
+        topVoitureLabel.setText(topVoiture);
     }
 
-    private Comparator<Voiture> buildComparator(String sortValue) {
+    private Comparator<Location> buildComparator(String sortValue) {
         if (sortValue == null || SORT_DEFAULT.equals(sortValue)) {
-            return Comparator.comparingInt(Voiture::getIdVoiture).reversed();
+            return Comparator.comparingInt(Location::getIdLocation).reversed();
         }
         switch (sortValue) {
-            case "Prix (asc)":
-                return Comparator.comparingDouble(Voiture::getPrixJour);
-            case "Prix (desc)":
-                return Comparator.comparingDouble(Voiture::getPrixJour).reversed();
-            case "Annee (desc)":
-                return Comparator.comparingInt(Voiture::getAnnee).reversed();
-            case "Marque (A-Z)":
-                return Comparator.comparing(Voiture::getMarque, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
-            case "Date ajout (desc)":
-                return Comparator.comparing(Voiture::getDateCreation, Comparator.nullsLast(LocalDateTime::compareTo)).reversed();
+            case "Montant (desc)":
+                return Comparator.comparingDouble(Location::getMontantTotal).reversed();
+            case "Montant (asc)":
+                return Comparator.comparingDouble(Location::getMontantTotal);
+            case "Date debut (desc)":
+                return Comparator.comparing(Location::getDateDebut, Comparator.nullsLast(LocalDate::compareTo)).reversed();
+            case "Date fin (desc)":
+                return Comparator.comparing(Location::getDateFin, Comparator.nullsLast(LocalDate::compareTo)).reversed();
+            case "Reference (A-Z)":
+                return Comparator.comparing(Location::getReference, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
             default:
                 return null;
         }
     }
 
-    private void exportExcel(File file, List<Voiture> items) throws IOException {
+    private void exportExcel(File file, List<Location> items) throws IOException {
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              FileOutputStream outputStream = new FileOutputStream(file)) {
-            XSSFSheet sheet = workbook.createSheet("Voitures");
+            XSSFSheet sheet = workbook.createSheet("Locations");
             String[] headers = new String[]{
-                    "ID", "Matricule", "Marque", "Modele", "Annee", "Type carburant",
-                    "Prix/jour", "Statut", "Agence", "Description", "Image"
+                    "ID", "Reference", "Voiture", "Date debut", "Date fin", "Nb jours", "Montant", "Statut"
             };
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < headers.length; i++) {
@@ -372,19 +362,16 @@ public class VoitureListController {
                 cell.setCellValue(headers[i]);
             }
             int rowIndex = 1;
-            for (Voiture item : items) {
+            for (Location item : items) {
                 Row row = sheet.createRow(rowIndex++);
-                row.createCell(0).setCellValue(item.getIdVoiture());
-                row.createCell(1).setCellValue(safeTrim(item.getMatricule()));
-                row.createCell(2).setCellValue(safeTrim(item.getMarque()));
-                row.createCell(3).setCellValue(safeTrim(item.getModele()));
-                row.createCell(4).setCellValue(item.getAnnee());
-                row.createCell(5).setCellValue(item.getTypeCarburant() != null ? item.getTypeCarburant().toString() : "");
-                row.createCell(6).setCellValue(item.getPrixJour());
+                row.createCell(0).setCellValue(item.getIdLocation());
+                row.createCell(1).setCellValue(safeTrim(item.getReference()));
+                row.createCell(2).setCellValue(safeTrim(getVoitureLabel(item)));
+                row.createCell(3).setCellValue(item.getDateDebut() != null ? item.getDateDebut().toString() : "");
+                row.createCell(4).setCellValue(item.getDateFin() != null ? item.getDateFin().toString() : "");
+                row.createCell(5).setCellValue(item.getNbJours());
+                row.createCell(6).setCellValue(item.getMontantTotal());
                 row.createCell(7).setCellValue(item.getStatut() != null ? item.getStatut().toString() : "");
-                row.createCell(8).setCellValue(safeTrim(item.getAdresseAgence()));
-                row.createCell(9).setCellValue(safeTrim(item.getDescription()));
-                row.createCell(10).setCellValue(safeTrim(item.getImageUrl()));
             }
             for (int i = 0; i < headers.length; i++) {
                 sheet.autoSizeColumn(i);
@@ -393,7 +380,7 @@ public class VoitureListController {
         }
     }
 
-    private void exportPdf(File file, List<Voiture> items) throws IOException {
+    private void exportPdf(File file, List<Location> items) throws IOException {
         PDDocument document = new PDDocument();
         try {
             PDPage page = new PDPage(PDRectangle.A4);
@@ -404,23 +391,22 @@ public class VoitureListController {
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 14);
             contentStream.beginText();
             contentStream.newLineAtOffset(margin, y);
-            contentStream.showText("Liste des voitures");
+            contentStream.showText("Liste des locations");
             contentStream.endText();
             y -= 24;
 
             contentStream.setFont(PDType1Font.HELVETICA, 9);
-            String header = "Matricule | Marque | Modele | Annee | Agence | Prix | Statut";
+            String header = "Reference | Voiture | Date debut | Date fin | Montant | Statut";
             y = writePdfLine(contentStream, header, margin, y);
             y -= 4;
 
-            for (Voiture item : items) {
+            for (Location item : items) {
                 String line = String.join(" | ",
-                        shorten(item.getMatricule(), 12),
-                        shorten(item.getMarque(), 12),
-                        shorten(item.getModele(), 12),
-                        String.valueOf(item.getAnnee()),
-                        shorten(item.getAdresseAgence(), 14),
-                        String.format(Locale.ROOT, "%.2f", item.getPrixJour()),
+                        shorten(item.getReference(), 14),
+                        shorten(getVoitureLabel(item), 16),
+                        item.getDateDebut() != null ? item.getDateDebut().toString() : "",
+                        item.getDateFin() != null ? item.getDateFin().toString() : "",
+                        String.format(Locale.ROOT, "%.2f", item.getMontantTotal()),
                         item.getStatut() != null ? item.getStatut().toString() : ""
                 );
                 if (y < margin + 20) {
@@ -448,17 +434,63 @@ public class VoitureListController {
         return y - 14;
     }
 
-    private void openEdit(Voiture voiture, Button source) {
-        VoitureSelection.set(voiture);
-        SceneNavigator.switchTo("/VoitureEditView.fxml", source);
+    private void openEdit(Location location, Button source) {
+        LocationSelection.set(location);
+        SceneNavigator.switchTo("/LocationEditView.fxml", source);
     }
 
-    private void deleteFromRow(Voiture item) {
+    private void deleteFromRow(Location item) {
         try {
-            voitureService.delete(item.getIdVoiture());
+            locationService.delete(item.getIdLocation());
             refreshList();
         } catch (RuntimeException ex) {
             showAlert("Erreur", ex.getMessage());
+        }
+    }
+
+    private void openFile(String path) {
+        if (path == null || path.trim().isEmpty()) {
+            showAlert("Info", "Aucun fichier disponible.");
+            return;
+        }
+        File file = new File(path);
+        if (!file.exists()) {
+            showAlert("Info", "Fichier introuvable.");
+            return;
+        }
+        try {
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(file);
+            } else {
+                showAlert("Info", "Ouverture de fichier non supportee.");
+            }
+        } catch (IOException ex) {
+            showAlert("Erreur", "Erreur lors de l'ouverture du fichier.");
+        }
+    }
+
+    private void saveCopy(String path, String title, String description, String... extensions) {
+        if (path == null || path.trim().isEmpty()) {
+            showAlert("Info", "Aucun fichier disponible.");
+            return;
+        }
+        File source = new File(path);
+        if (!source.exists()) {
+            showAlert("Info", "Fichier introuvable.");
+            return;
+        }
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(title);
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(description, extensions));
+        File destination = chooser.showSaveDialog(locationList.getScene().getWindow());
+        if (destination == null) {
+            return;
+        }
+        try {
+            Files.copy(source.toPath(), destination.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            showAlert("Info", "Fichier enregistre.");
+        } catch (IOException ex) {
+            showAlert("Erreur", "Erreur lors de l'enregistrement.");
         }
     }
 
@@ -468,6 +500,17 @@ public class VoitureListController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private String getVoitureLabel(Location item) {
+        if (item == null) {
+            return "";
+        }
+        Voiture voiture = item.getVoiture();
+        if (voiture != null) {
+            return safeTrim(voiture.getMarque()) + " " + safeTrim(voiture.getModele()) + " · " + safeTrim(voiture.getMatricule());
+        }
+        return String.valueOf(item.getIdVoiture());
     }
 
     private static String safeTrim(String value) {
@@ -496,7 +539,7 @@ public class VoitureListController {
         return trimmed.substring(0, Math.max(0, max - 3)) + "...";
     }
 
-    private class VoitureCell extends ListCell<Voiture> {
+    private class LocationCell extends ListCell<Location> {
         private final HBox root = new HBox();
         private final ImageView thumbnail = new ImageView();
         private final VBox left = new VBox();
@@ -505,14 +548,18 @@ public class VoitureListController {
         private final Label title = new Label();
         private final Label subtitle = new Label();
         private final Label meta = new Label();
-        private final Label price = new Label();
+        private final Label amount = new Label();
         private final Label status = new Label();
         private final Button editButton = new Button("Modifier");
         private final Button deleteButton = new Button("Supprimer");
+        private final Button viewContractButton = new Button("Contrat");
+        private final Button viewQrButton = new Button("QR");
+        private final Button saveContractButton = new Button("Sauver PDF");
+        private final Button saveQrButton = new Button("Sauver QR");
         private final Region leftSpacer = new Region();
         private final Region rightSpacer = new Region();
 
-        VoitureCell() {
+        LocationCell() {
             root.getStyleClass().add("voiture-cell");
             thumbnail.getStyleClass().add("voiture-thumb");
             thumbnail.setPreserveRatio(true);
@@ -524,14 +571,18 @@ public class VoitureListController {
             title.getStyleClass().add("voiture-title");
             subtitle.getStyleClass().add("voiture-subtitle");
             meta.getStyleClass().add("voiture-meta");
-            price.getStyleClass().add("voiture-price");
+            amount.getStyleClass().add("voiture-price");
             status.getStyleClass().add("voiture-status");
             editButton.getStyleClass().addAll("row-btn", "row-btn-edit");
             deleteButton.getStyleClass().addAll("row-btn", "row-btn-delete");
+            viewContractButton.getStyleClass().addAll("row-btn", "row-btn-edit");
+            viewQrButton.getStyleClass().addAll("row-btn", "row-btn-edit");
+            saveContractButton.getStyleClass().addAll("row-btn", "row-btn-edit");
+            saveQrButton.getStyleClass().addAll("row-btn", "row-btn-edit");
 
             left.getChildren().addAll(title, subtitle, meta);
-            center.getChildren().addAll(editButton, deleteButton);
-            right.getChildren().addAll(price, status);
+                center.getChildren().addAll(editButton, deleteButton, viewContractButton, viewQrButton, saveContractButton, saveQrButton);
+            right.getChildren().addAll(amount, status);
 
             HBox.setHgrow(leftSpacer, Priority.ALWAYS);
             HBox.setHgrow(rightSpacer, Priority.ALWAYS);
@@ -540,20 +591,21 @@ public class VoitureListController {
         }
 
         @Override
-        protected void updateItem(Voiture item, boolean empty) {
+        protected void updateItem(Location item, boolean empty) {
             super.updateItem(item, empty);
             if (empty || item == null) {
                 setGraphic(null);
                 return;
             }
 
-            title.setText(item.getMarque() + " " + item.getModele() + " · " + item.getMatricule());
-            subtitle.setText("Annee " + item.getAnnee() + " · " + item.getTypeCarburant());
-            meta.setText(item.getAdresseAgence());
-            price.setText(String.format("%.2f TND / jour", item.getPrixJour()));
-            status.setText(item.getStatut().toString());
+            title.setText(safeTrim(item.getReference()));
+            subtitle.setText(getVoitureLabel(item));
+            meta.setText(item.getDateDebut() + " -> " + item.getDateFin() + " · " + item.getNbJours() + " jours");
+            amount.setText(String.format(Locale.ROOT, "%.2f TND", item.getMontantTotal()));
+            status.setText(item.getStatut() != null ? item.getStatut().toString() : "");
 
-            String imageUrl = item.getImageUrl();
+            Voiture voiture = item.getVoiture();
+            String imageUrl = voiture != null ? voiture.getImageUrl() : null;
             if (imageUrl == null) {
                 thumbnail.setImage(null);
             } else {
@@ -571,13 +623,17 @@ public class VoitureListController {
 
             editButton.setOnAction(event -> openEdit(item, editButton));
             deleteButton.setOnAction(event -> deleteFromRow(item));
+            viewContractButton.setOnAction(event -> openFile(item.getContratPdf()));
+            viewQrButton.setOnAction(event -> openFile(item.getQrCode()));
+            saveContractButton.setOnAction(event -> saveCopy(item.getContratPdf(), "Enregistrer le contrat", "PDF", "*.pdf"));
+            saveQrButton.setOnAction(event -> saveCopy(item.getQrCode(), "Enregistrer le QR", "Image", "*.png", "*.jpg", "*.jpeg"));
 
             setGraphic(root);
         }
     }
 
     private static boolean isHttpUrl(String value) {
-        String lower = value.toLowerCase();
+        String lower = value.toLowerCase(Locale.ROOT);
         return lower.startsWith("http://") || lower.startsWith("https://");
     }
 }

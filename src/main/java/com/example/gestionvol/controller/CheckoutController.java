@@ -76,11 +76,7 @@ public class CheckoutController {
                 .otherwise(320));
         }
 
-        Label lblUser = new Label("User ID: " + c.getIdUser());
-        lblUser.getStyleClass().add("card-field");
-        
-        Label lblFlight = new Label("Flight: " + (c.getFlightId() != null ? c.getFlightId() : "N/A"));
-        lblFlight.getStyleClass().add("card-field");
+
 
         Label lblDate = new Label("Reservation: " + c.getReservationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         lblDate.getStyleClass().add("card-field");
@@ -96,7 +92,7 @@ public class CheckoutController {
 
         HBox actions = new HBox(8);
         actions.setAlignment(Pos.CENTER_RIGHT);
-        Button edit = new Button("✏️ Edit");
+        Button edit = new Button("✏️");
         edit.getStyleClass().addAll("button","btn-edit");
         edit.setOnAction(e -> handleEditCheckout(c));
 
@@ -130,7 +126,7 @@ public class CheckoutController {
             card.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 12, 0, 0, 5); -fx-background-color: white; -fx-background-radius: 15; -fx-border-radius: 15; -fx-padding: 25; -fx-border-width: 0 0 0 6px; -fx-border-color: #50C878;");
         });
 
-        card.getChildren().addAll(lblUser, lblFlight, lblDate, lblPassengers, lblStatus, lblTotal, actions);
+        card.getChildren().addAll(lblDate, lblPassengers, lblStatus, lblTotal, actions);
         return card;
     }
 

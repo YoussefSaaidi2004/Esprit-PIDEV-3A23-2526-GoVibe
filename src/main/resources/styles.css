@@ -23,8 +23,8 @@
 
 /* ============ HERO HEADER ============ */
 .header {
-    /* Soft Gradient: Dark Forest to Emerald */
     -fx-background-color: linear-gradient(to right, #013220, #0B4F35);
+    /* Soft Gradient: Dark Forest to Emerald */
     -fx-padding: 50px 20px;
     -fx-alignment: CENTER;
     /* Ensure content is centered */
@@ -35,8 +35,9 @@
     -fx-font-family: "Montserrat", "Open Sans", sans-serif;
     -fx-font-size: 38px;
     -fx-font-weight: 900;
-    -fx-text-fill: #F5F3E7;
-    /* Beige Text */
+    -fx-text-fill: #FFFFFF;
+    -fx-fill: #FFFFFF;
+    /* White Text (Text nodes use -fx-fill) */
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 3, 0, 0, 2);
     -fx-alignment: CENTER;
     -fx-text-alignment: CENTER;
@@ -45,8 +46,9 @@
 .label-subtitle {
     -fx-font-family: "Open Sans", sans-serif;
     -fx-font-size: 16px;
-    -fx-text-fill: #A0E0C9;
-    /* Soft Green Text */
+    -fx-text-fill: #FFFFFF;
+    -fx-fill: #FFFFFF;
+    /* White Text */
     -fx-alignment: CENTER;
     -fx-text-alignment: CENTER;
 }
@@ -211,6 +213,46 @@
     -fx-alignment: CENTER;
 }
 
+/* ============ THEME SWITCH (TOGGLE) ============ */
+.theme-switch {
+    -fx-background-color: #E0E0E0;
+    -fx-background-radius: 30px;
+    -fx-border-radius: 30px;
+    -fx-padding: 3px;
+    -fx-content-display: GRAPHIC_ONLY;
+    -fx-alignment: CENTER_LEFT;
+    -fx-min-width: 60px;
+    -fx-max-width: 60px;
+    -fx-min-height: 32px;
+    -fx-max-height: 32px;
+    -fx-cursor: hand;
+    -fx-border-color: #B0BEC5;
+    -fx-border-width: 1px;
+}
+
+.theme-switch:selected {
+    -fx-background-color: #333333;
+    -fx-alignment: CENTER_RIGHT;
+    -fx-border-color: #555;
+}
+
+.theme-switch .switch-thumb {
+    -fx-min-width: 24px;
+    -fx-min-height: 24px;
+    -fx-max-width: 24px;
+    -fx-max-height: 24px;
+    -fx-background-color: #FFC107;
+    /* Sun Yellow */
+    -fx-background-radius: 50%;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 2, 0, 0, 1);
+}
+
+.theme-switch:selected .switch-thumb {
+    -fx-background-color: #F5F3E7;
+    /* Moon/White */
+    -fx-background-insets: 0;
+}
+
 /* ============ TABLE VIEW ============ */
 .table-view .column-header {
     -fx-background-color: #013220;
@@ -220,4 +262,111 @@
 .table-view .column-header .label {
     -fx-text-fill: white;
     -fx-font-weight: bold;
+}
+
+/* ============ DARK MODE OVERRIDES ============ */
+
+.root.dark-mode {
+    -fx-background-color: #121212;
+}
+
+.root.dark-mode * {
+    -fx-text-fill: #E0E0E0;
+}
+
+.root.dark-mode .header {
+    -fx-background-color: linear-gradient(to right, #000000, #1A1A1A);
+}
+
+.root.dark-mode .label-header {
+    -fx-text-fill: #BB86FC;
+    /* Light Purple for contrast/modern look */
+}
+
+.root.dark-mode .label-subtitle {
+    -fx-text-fill: #B0BEC5;
+}
+
+/* Dark Mode Cards */
+.root.dark-mode .flight-card,
+.root.dark-mode .checkout-card {
+    -fx-background-color: #1E1E1E;
+    -fx-border-color: #333333;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 3);
+}
+
+.root.dark-mode .flight-card:hover,
+.root.dark-mode .checkout-card:hover {
+    -fx-border-color: #BB86FC;
+}
+
+
+.root.dark-mode .card-field {
+    -fx-text-fill: #B0BEC5;
+}
+
+.root.dark-mode .card-header-em {
+    -fx-text-fill: #BB86FC;
+}
+
+.root.dark-mode .card-price-badge {
+    -fx-background-color: #333333;
+    -fx-text-fill: #03DAC6;
+    /* Teal accent */
+}
+
+/* Dark Mode Inputs */
+.root.dark-mode .text-field,
+.root.dark-mode .combo-box,
+.root.dark-mode .date-picker {
+    -fx-background-color: #2C2C2C;
+    -fx-border-color: #444444;
+    -fx-text-fill: white;
+}
+
+.root.dark-mode .text-field:focused,
+.root.dark-mode .combo-box:focused,
+.root.dark-mode .date-picker:focused {
+    -fx-border-color: #BB86FC;
+}
+
+/* Dark Mode Filter Bar */
+.root.dark-mode .filter-bar {
+    -fx-background-color: #1E1E1E;
+}
+
+/* Dark Mode ScrollPane */
+.root.dark-mode .cards-scroll {
+    -fx-background: #121212;
+    -fx-background-color: #121212;
+    -fx-control-inner-background: #121212;
+}
+
+.root.dark-mode .scroll-bar:horizontal,
+.root.dark-mode .scroll-bar:vertical {
+    -fx-background-color: #121212;
+}
+
+.root.dark-mode .scroll-bar:horizontal .thumb,
+.root.dark-mode .scroll-bar:vertical .thumb {
+    -fx-background-color: #444444;
+}
+
+/* Dark Mode Navigation Buttons */
+.root.dark-mode .main-nav-btn {
+    -fx-background-color: #2C2C2C;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #BB86FC;
+}
+
+.root.dark-mode .main-nav-btn:hover {
+    -fx-background-color: #BB86FC;
+    -fx-text-fill: #121212;
+    /* Dark text on purple button */
+}
+
+/* Dark Mode Footer */
+.root.dark-mode .bottom {
+    -fx-background-color: #1E1E1E !important;
+    -fx-border-color: #333333;
 }

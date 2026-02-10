@@ -109,13 +109,9 @@ public class FlightListController {
         // Header: Flight ID & Airline
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
-        Label lblId = new Label(f.getFlightId());
-        lblId.getStyleClass().add("card-header-em");
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
         Label lblAirline = new Label(f.getAirline());
         lblAirline.getStyleClass().add("card-field");
-        header.getChildren().addAll(lblId, spacer, lblAirline);
+        header.getChildren().addAll(lblAirline);
 
         // Route: Dep -> Dest
         HBox route = new HBox(5);
@@ -153,7 +149,7 @@ public class FlightListController {
         HBox actions = new HBox(8);
         actions.setAlignment(Pos.CENTER_RIGHT);
         
-        Button btnEdit = new Button("✏️ Edit");
+        Button btnEdit = new Button("✏️");
         btnEdit.getStyleClass().addAll("button", "btn-edit");
         btnEdit.setOnAction(e -> handleEditFlight(f));
         

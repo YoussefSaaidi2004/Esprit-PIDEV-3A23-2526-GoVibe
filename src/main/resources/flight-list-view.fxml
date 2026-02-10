@@ -18,8 +18,8 @@
             </HBox>
 
              <HBox spacing="10" alignment="CENTER">
-                 <Button fx:id="btnAddFlight" text="➕ Add Flight" styleClass="button, btn-add" onAction="#handleAddFlight"/>
-                 <Button fx:id="btnRefreshFlight" text="🔄 Refresh" styleClass="button, btn-refresh" onAction="#handleRefresh"/>
+                 <Button fx:id="btnAddFlight" text="➕" styleClass="button, btn-add" onAction="#handleAddFlight"/>
+                 <Button fx:id="btnRefreshFlight" text="🔄" styleClass="button, btn-refresh" onAction="#handleRefresh"/>
             </HBox>
             
             <!-- Advanced Filter Bar -->
@@ -27,7 +27,7 @@
                 <TextField fx:id="searchDest" promptText="📍 Destination" prefWidth="200" styleClass="text-field"/>
                 <DatePicker fx:id="searchDate" promptText="📅 Date" prefWidth="150" styleClass="date-picker"/>
                 <ComboBox fx:id="searchClass" promptText="💺 Class" prefWidth="150" styleClass="combo-box"/>
-                <Button text="❌ Clear" onAction="#handleClearFilters" styleClass="button, btn-cancel"/>
+                <Button text="❌" onAction="#handleClearFilters" styleClass="button, btn-cancel"/>
             </HBox>
         </VBox>
     </top>

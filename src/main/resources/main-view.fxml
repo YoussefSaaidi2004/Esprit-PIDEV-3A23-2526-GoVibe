@@ -13,19 +13,33 @@
 
     <!-- Header -->
     <top>
-        <VBox styleClass="header" alignment="CENTER" spacing="10">
-            <!-- Brand / Logo Area -->
-            <HBox alignment="CENTER" spacing="15">
-                <Text text="✈️" style="-fx-font-size: 48px; -fx-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);"/>
-                <Text text="GoVibe" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-weight: bold; -fx-font-size: 48px; -fx-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0, 0, 1);"/>
-            </HBox>
-            
-            <!-- Title & Subtitle -->
-            <VBox alignment="CENTER" spacing="5">
-                <Text text="FLIGHT MANAGEMENT" styleClass="label-header" style="-fx-font-size: 24px; -fx-font-weight: normal; -fx-letter-spacing: 5px;"/>
-                <Text text="We make your flights easier" styleClass="label-subtitle"/>
+        <StackPane>
+             <VBox styleClass="header" alignment="CENTER" spacing="10">
+                <!-- Brand / Logo Area -->
+                <HBox alignment="CENTER" spacing="15">
+                    <Text text="✈️" style="-fx-font-size: 48px; -fx-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);"/>
+                    <Text text="GoVibe" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-weight: bold; -fx-font-size: 48px; -fx-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0, 0, 1);"/>
+                </HBox>
+                
+                <!-- Title & Subtitle -->
+                <VBox alignment="CENTER" spacing="5">
+                    <Text text="FLIGHT MANAGEMENT" styleClass="label-header" style="-fx-font-size: 24px; -fx-font-weight: normal; -fx-letter-spacing: 5px;"/>
+                    <Text text="We make your flights easier" styleClass="label-subtitle"/>
+                </VBox>
             </VBox>
-        </VBox>
+            
+            <!-- Theme Toggle Button (Top Right) -->
+            <ToggleButton fx:id="btnTheme" onAction="#handleThemeToggle" 
+                    styleClass="theme-switch"
+                    StackPane.alignment="TOP_RIGHT">
+                <graphic>
+                    <Region styleClass="switch-thumb"/>
+                </graphic>
+                <StackPane.margin>
+                    <Insets top="25" right="25"/>
+                </StackPane.margin>
+            </ToggleButton>
+        </StackPane>
     </top>
 
     <!-- Main Content with Pages -->

@@ -17,10 +17,24 @@ public class MainController {
 
     @FXML
     private StackPane pageContainer;
-
+    
+    @FXML 
+    private javafx.scene.control.ToggleButton btnTheme;
+    
     @FXML
     public void initialize() {
         System.out.println("✅ Main Controller initialized");
+    }
+
+    @FXML
+    private void handleThemeToggle() {
+        boolean isDark = btnTheme.isSelected();
+        if (isDark) {
+            pageContainer.getScene().getRoot().getStyleClass().add("dark-mode");
+            // Text/Icon handled by CSS
+        } else {
+            pageContainer.getScene().getRoot().getStyleClass().remove("dark-mode");
+        }
     }
 
     @FXML

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.UserHomeController"
+      spacing="0" stylesheets="@styles.css">
+
+    <!-- ==================== TOP NAV BAR ==================== -->
+    <HBox alignment="CENTER" spacing="0"
+          style="-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-border-width: 0 0 1 0;">
+        <padding><Insets top="10" right="40" bottom="10" left="40"/></padding>
+
+        <!-- Logo -->
+        <HBox alignment="CENTER_LEFT" spacing="8" HBox.hgrow="NEVER">
+            <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                <image><Image url="@images/logo.png"/></image>
+            </ImageView>
+            <Label text="GoVibe" style="-fx-text-fill: #013220; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Nav Links -->
+        <HBox alignment="CENTER" spacing="30">
+            <Hyperlink text="Accueil" style="-fx-text-fill: #013220; -fx-font-size: 14px; -fx-font-weight: bold; -fx-underline: false;"/>
+            <Hyperlink text="Villes" style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-underline: false;"/>
+            <Hyperlink text="Événements" style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-underline: false;"/>
+            <Hyperlink text="À propos" style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-underline: false;"/>
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- User Info -->
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+            <Label fx:id="welcomeLabel" text="Bonjour !"
+                   style="-fx-text-fill: #013220; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <Button text="Déconnexion" onAction="#handleLogout"
+                    style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand;"/>
+        </HBox>
+    </HBox>
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <StackPane VBox.vgrow="ALWAYS" style="-fx-min-height: 420;">
+
+        <!-- Hero Background (Gradient simulating landscape) -->
+        <VBox style="-fx-background-color: linear-gradient(to bottom, #084E36, #013220 40%, #50C878 90%, #A0E0C9);" alignment="CENTER">
+        </VBox>
+
+        <!-- Hero Content -->
+        <VBox alignment="CENTER" spacing="15">
+            <padding><Insets top="40" right="60" bottom="40" left="60"/></padding>
+
+            <Label text="🌍 Découvrez des expériences uniques"
+                   style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+
+            <VBox alignment="CENTER" spacing="5">
+                <Text text="Vivez l'aventure,"
+                      style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-fill: white;"/>
+                <Text text="explorez le monde"
+                      style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-fill: #50C878;"/>
+            </VBox>
+
+            <Label text="Réservez des expériences authentiques avec des guides locaux,&#10;artisans et experts passionnés"
+                   style="-fx-text-fill: #D1F2EB; -fx-font-size: 15px;" textAlignment="CENTER" wrapText="true" maxWidth="500"/>
+
+            <!-- Search Bar -->
+            <HBox alignment="CENTER" spacing="0" maxWidth="620"
+                  style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 5);">
+                <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
+
+                <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS"
+                      style="-fx-padding: 8 15;">
+                    <Label text="📍" style="-fx-font-size: 16px;"/>
+                    <TextField promptText="Où allez-vous ?" prefWidth="180"
+                               style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: #013220;"/>
+                </HBox>
+
+                <Separator orientation="VERTICAL" style="-fx-border-color: #A0E0C9;"/>
+
+                <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS"
+                      style="-fx-padding: 8 15;">
+                    <Label text="📅" style="-fx-font-size: 16px;"/>
+                    <TextField promptText="jj/mm/aaaa" prefWidth="130"
+                               style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: #013220;"/>
+                </HBox>
+
+                <Button text="🔍  Rechercher"
+                        style="-fx-background-color: #013220; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+
+    <!-- ==================== STATS SECTION ==================== -->
+    <HBox alignment="CENTER" spacing="0"
+          style="-fx-background-color: #F5F3E7;">
+        <padding><Insets top="30" right="80" bottom="30" left="80"/></padding>
+
+        <VBox alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="150+" style="-fx-text-fill: #013220; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+            <Label text="Villes" style="-fx-text-fill: #084E36; -fx-font-size: 14px;"/>
+        </VBox>
+        <Separator orientation="VERTICAL" style="-fx-border-color: #A0E0C9; -fx-padding: 0 20;"/>
+        <VBox alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="2K+" style="-fx-text-fill: #013220; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+            <Label text="Événements" style="-fx-text-fill: #084E36; -fx-font-size: 14px;"/>
+        </VBox>
+        <Separator orientation="VERTICAL" style="-fx-border-color: #A0E0C9; -fx-padding: 0 20;"/>
+        <VBox alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="50K+" style="-fx-text-fill: #013220; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+            <Label text="Voyageurs" style="-fx-text-fill: #084E36; -fx-font-size: 14px;"/>
+        </VBox>
+        <Separator orientation="VERTICAL" style="-fx-border-color: #A0E0C9; -fx-padding: 0 20;"/>
+        <VBox alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="4.9" style="-fx-text-fill: #013220; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+            <Label text="Note moyenne" style="-fx-text-fill: #084E36; -fx-font-size: 14px;"/>
+        </VBox>
+    </HBox>
+
+</VBox>

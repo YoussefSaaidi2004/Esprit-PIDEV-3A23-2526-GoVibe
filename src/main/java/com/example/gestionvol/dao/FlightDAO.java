@@ -23,8 +23,8 @@ public class FlightDAO {
         String sql = """
             INSERT INTO vol 
             (flight_id, departure_airport, destination, departure_time, arrival_time, 
-             classe_chaise, airline, prix, available_seats, description)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             classe_chaise, airline, prix, available_seats, total_seats, description)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
         try (Connection conn = DBConnection.getConnection();
@@ -39,7 +39,8 @@ public class FlightDAO {
             ps.setString(7, flight.getAirline());
             ps.setInt(8, flight.getPrix());
             ps.setInt(9, flight.getAvailableSeats());
-            ps.setString(10, flight.getDescription());
+            ps.setInt(10, flight.getTotalSeats());
+            ps.setString(11, flight.getDescription());
 
             return ps.executeUpdate() > 0;
 
@@ -109,7 +110,7 @@ public class FlightDAO {
         String sql = """
             UPDATE vol SET
             departure_airport = ?, destination = ?, departure_time = ?, arrival_time = ?,
-            classe_chaise = ?, airline = ?, prix = ?, available_seats = ?, description = ?
+            classe_chaise = ?, airline = ?, prix = ?, available_seats = ?, total_seats = ?, description = ?
             WHERE flight_id = ?
         """;
 
@@ -124,8 +125,9 @@ public class FlightDAO {
             ps.setString(6, flight.getAirline());
             ps.setInt(7, flight.getPrix());
             ps.setInt(8, flight.getAvailableSeats());
-            ps.setString(9, flight.getDescription());
-            ps.setString(10, flight.getFlightId());
+            ps.setInt(9, flight.getTotalSeats());
+            ps.setString(10, flight.getDescription());
+            ps.setString(11, flight.getFlightId());
 
             return ps.executeUpdate() > 0;
 
@@ -178,6 +180,7 @@ public class FlightDAO {
         flight.setAirline(rs.getString("airline"));
         flight.setPrix(rs.getInt("prix"));
         flight.setAvailableSeats(rs.getInt("available_seats"));
+        flight.setTotalSeats(rs.getInt("total_seats"));
         flight.setDescription(rs.getString("description"));
 
         return flight;

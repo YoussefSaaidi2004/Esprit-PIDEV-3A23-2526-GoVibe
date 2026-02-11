@@ -150,7 +150,7 @@ public class CheckoutFormController {
 
     private void navigateBack() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/checkout-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-view.fxml"));
             Node view = loader.load();
             
             StackPane pageContainer = (StackPane) btnSave.getScene().lookup("#pageContainer");

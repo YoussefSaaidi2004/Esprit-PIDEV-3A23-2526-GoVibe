@@ -112,4 +112,14 @@ public class FlightService {
             }
         }
     }
+
+    /**
+     * Get all available flights (flights with available seats > 0)
+     * @return List of available flights
+     */
+    public List<Flight> getAvailableFlights() {
+        return flightDAO.findAll().stream()
+                .filter(flight -> flight.getAvailableSeats() > 0)
+                .toList();
+    }
 }

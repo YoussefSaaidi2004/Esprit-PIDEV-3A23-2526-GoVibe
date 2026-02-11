@@ -180,4 +180,28 @@ public class CheckoutDAO {
 
         return checkout;
     }
+
+    /**
+     * Find all pending checkouts
+     * @return List of pending checkouts
+     */
+    public List<Checkout> findPendingCheckouts() {
+        List<Checkout> checkouts = new ArrayList<>();
+        String sql = "SELECT * FROM checkout WHERE status_reservation = 'Pending'";
+
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                checkouts.add(extractCheckoutFromResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error retrieving pending checkouts: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return checkouts;
+    }
 }

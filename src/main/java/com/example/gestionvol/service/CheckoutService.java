@@ -98,4 +98,58 @@ public class CheckoutService {
             throw new IllegalArgumentException("Total price must be positive");
         }
     }
+
+    /**
+     * Get all pending checkouts
+     * @return List of pending checkouts
+     */
+    public List<Checkout> getPendingCheckouts() {
+        return checkoutDAO.findPendingCheckouts();
+    }
+
+    /**
+     * Approve a checkout
+     * @param checkoutId The checkout ID
+     * @param userId The user ID making the approval
+     * @return true if successful
+     */
+    public boolean approveCheckout(int checkoutId, int userId) {
+        Checkout checkout = checkoutDAO.findById(checkoutId);
+        if (checkout == null) {
+            throw new IllegalArgumentException("Checkout not found");
+        }
+        checkout.setStatusReservation("Confirmed");
+        return checkoutDAO.update(checkout);
+    }
+
+    /**
+     * Reject a checkout
+     * @param checkoutId The checkout ID
+     * @param userId The user ID making the rejection
+     * @param reason The rejection reason
+     * @return true if successful
+     */
+    public boolean rejectCheckout(int checkoutId, int userId, String reason) {
+        Checkout checkout = checkoutDAO.findById(checkoutId);
+        if (checkout == null) {
+            throw new IllegalArgumentException("Checkout not found");
+        }
+        checkout.setStatusReservation("Rejected");
+        return checkoutDAO.update(checkout);
+    }
+
+    /**
+     * Cancel a checkout
+     * @param checkoutId The checkout ID
+     * @param userId The user ID making the cancellation
+     * @return true if successful
+     */
+    public boolean cancelCheckout(int checkoutId, int userId) {
+        Checkout checkout = checkoutDAO.findById(checkoutId);
+        if (checkout == null) {
+            throw new IllegalArgumentException("Checkout not found");
+        }
+        checkout.setStatusReservation("Cancelled");
+        return checkoutDAO.update(checkout);
+    }
 }

@@ -39,22 +39,22 @@ public class MainController {
 
     @FXML
     private void showFlightsPage() {
-        loadPage("flight-list-view.fxml");
+        loadPage("views/flight-list-view.fxml");
     }
 
     @FXML
     private void showCheckoutsPage() {
-        loadPage("checkout-view.fxml");
+        loadPage("views/checkout-view.fxml");
     }
 
     @FXML
     private void showAddCheckoutPage() {
-        loadPage("add-checkout-page.fxml");
+        loadPage("views/add-checkout-page.fxml");
     }
 
     @FXML
     private void showDisplayCheckoutsPage() {
-        loadPage("display-checkouts-page.fxml");
+        loadPage("views/display-checkouts-page.fxml");
     }
 
     private void loadPage(String fxml) {

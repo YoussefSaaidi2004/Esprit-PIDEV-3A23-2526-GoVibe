@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.gestionvol.controller.AdminDashboardController" stylesheets="@styles.css">
+    <top>
+        <VBox spacing="10" alignment="CENTER" styleClass="header">
+            <Text text="GoVibe Admin" styleClass="label-header"/>
+            <FontAwesomeIconView glyphName="CLOCK" size="14" fill="#8D99AE"/>
+            <Text text="Flight Control Center" styleClass="label-subtitle"/>
+        </VBox>
+    </top>
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <Tab text="📊 Dashboard Overview">
+                <ScrollPane fitToWidth="true" styleClass="cards-scroll">
+                    <VBox spacing="30" style="-fx-padding: 30;">
+                        <!-- Metric Cards Row -->
+                        <HBox spacing="20" alignment="CENTER">
+                            <VBox styleClass="metric-card">
+                                <Text text="⏳" style="-fx-font-size: 24px;"/>
+                                <Label text="Pending" styleClass="metric-label"/>
+                                <Label fx:id="lblPendingApprovals" styleClass="metric-value"/>
+                            </VBox>
+                            <VBox styleClass="metric-card">
+                                <Text text="✈️" style="-fx-font-size: 24px;"/>
+                                <Label text="Flights" styleClass="metric-label"/>
+                                <Label fx:id="lblTotalFlights" styleClass="metric-value"/>
+                            </VBox>
+                            <VBox styleClass="metric-card">
+                                <Text text="💰" style="-fx-font-size: 24px;"/>
+                                <Label text="Revenue" styleClass="metric-label"/>
+                                <Label fx:id="lblTotalRevenue" styleClass="metric-value"/>
+                            </VBox>
+                            <VBox styleClass="metric-card">
+                                <Text text="📊" style="-fx-font-size: 24px;"/>
+                                <Label text="Occupancy" styleClass="metric-label"/>
+                                <Label fx:id="lblOccupancyRate" styleClass="metric-value"/>
+                            </VBox>
+                        </HBox>
+
+                        <Separator/>
+
+                        <!-- Pending Approvals Grid -->
+                        <VBox spacing="15">
+                            <Text text="Pending Approvals" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #013220;"/>
+                            <FlowPane fx:id="pendingCardsFlow" hgap="20" vgap="20" alignment="TOP_CENTER"/>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </Tab>
+            <Tab text="✈️ Manage Flights"><fx:include source="flight-list-view.fxml"/></Tab>
+            <Tab text="🎫 All Reservations"><fx:include source="display-checkouts-page.fxml"/></Tab>
+        </TabPane>
+    </center>
+</BorderPane>

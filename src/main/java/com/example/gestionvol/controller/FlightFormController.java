@@ -37,13 +37,21 @@ public class FlightFormController {
 
     @FXML
     public void initialize() {
-        // Initialize logic if needed
+        // Initialize travel class options
+        if (cmbClass != null) {
+            cmbClass.getItems().addAll("Economy", "Premium Economy", "Business", "First Class");
+        }
+        
+        // Set form title for new flight
+        if (formTitle != null && !isEditMode) {
+            formTitle.setText("Add New Flight");
+        }
     }
 
     public void setFlightForEdit(Flight flight) {
         this.currentFlight = flight;
         this.isEditMode = true;
-        this.formTitle.setText("Edit Flight");
+        if (this.formTitle != null) this.formTitle.setText("Edit Flight");
         this.txtFlightId.setEditable(false);
         populateForm(flight);
     }
@@ -57,7 +65,7 @@ public class FlightFormController {
         cmbClass.setValue(flight.getClasseChaise());
         txtAirline.setText(flight.getAirline());
         txtPrice.setText(String.valueOf(flight.getPrix()));
-        txtSeats.setText(String.valueOf(flight.getAvailableSeats()));
+        txtSeats.setText(String.valueOf(flight.getTotalSeats())); // Use totalSeats
         txtDescription.setText(flight.getDescription());
     }
 
@@ -89,7 +97,9 @@ public class FlightFormController {
             }
 
             try {
-                flight.setAvailableSeats(Integer.parseInt(txtSeats.getText().trim()));
+                int seats = Integer.parseInt(txtSeats.getText().trim());
+                flight.setTotalSeats(seats);
+                flight.setAvailableSeats(seats); // Initially all seats are available
             } catch (NumberFormatException e) {
                 showAlert("Invalid Input", "Seats must be a valid integer.", Alert.AlertType.WARNING);
                 return;
@@ -124,14 +134,11 @@ public class FlightFormController {
 
     private void navigateBack() {
         try {
-            Node listView = FXMLLoader.load(getClass().getResource("/flight-list-view.fxml"));
-            StackPane pageContainer = (StackPane) txtFlightId.getScene().lookup("#pageContainer");
-            if (pageContainer != null) {
-                pageContainer.getChildren().setAll(listView);
-            }
-        } catch (IOException e) {
+            // Since this is a modal window, we just need to close it
+            javafx.stage.Stage stage = (javafx.stage.Stage) txtFlightId.getScene().getWindow();
+            stage.close();
+        } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Error", "Could not load flight list: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 

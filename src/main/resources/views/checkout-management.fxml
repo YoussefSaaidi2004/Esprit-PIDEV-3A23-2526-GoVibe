@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.SVGPath?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.gestionvol.controller.CheckoutManagementController"
+            styleClass="main-bg">
+    
+    <left>
+        <VBox styleClass="sidebar" spacing="30">
+            <VBox spacing="5" alignment="CENTER" style="-fx-padding: 0 0 30 0;">
+                <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" style="-fx-fill: #50C878;" scaleX="1.5" scaleY="1.5"/>
+                <Text text="GV" style="-fx-fill: white; -fx-font-size: 10; -fx-font-weight: bold;"/>
+            </VBox>
+            
+            <Button onAction="#navDashboard" styleClass="nav-button">
+                <graphic><Text text="📊" style="-fx-font-size: 24; -fx-fill: #6c7d75;"/></graphic>
+            </Button>
+            
+            <Button onAction="#navFlights" styleClass="nav-button">
+                <graphic><Text text="✈️" style="-fx-font-size: 24; -fx-fill: #6c7d75;"/></graphic>
+            </Button>
+            
+            <Button styleClass="nav-button, nav-button-active">
+                <graphic><Text text="🎫" style="-fx-font-size: 24; -fx-fill: white;"/></graphic>
+            </Button>
+
+            <Button onAction="#handleThemeToggle" styleClass="nav-button">
+                <graphic><Text text="🌗" style="-fx-font-size: 24; -fx-fill: #50C878;"/></graphic>
+            </Button>
+            
+            <Button onAction="#navUser" styleClass="nav-button">
+                <graphic><Text text="🔄" style="-fx-font-size: 24; -fx-fill: #50C878;"/></graphic>
+            </Button>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="30" style="-fx-padding: 40;">
+            <HBox alignment="CENTER_LEFT">
+                <VBox spacing="5">
+                    <Text text="Reservations Tracking" styleClass="title"/>
+                    <Text text="Monitor and moderate all passenger bookings" styleClass="subtitle"/>
+                </VBox>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <FlowPane fx:id="checkoutGrid" hgap="25" vgap="25" alignment="CENTER" style="-fx-padding: 20;"/>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>

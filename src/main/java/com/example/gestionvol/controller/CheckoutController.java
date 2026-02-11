@@ -165,7 +165,7 @@ public class CheckoutController {
 
     private void navigateToForm(Checkout checkout) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/checkout-form-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-form-view.fxml"));
             Node formView = loader.load();
             
             CheckoutFormController controller = loader.getController();
@@ -187,5 +187,26 @@ public class CheckoutController {
             alert.setContentText("Could not load checkout form: " + e.getMessage());
             alert.showAndWait();
         }
+    }
+
+    /**
+     * Static field to hold selected flight for checkout
+     */
+    private static com.example.gestionvol.entities.Flight selectedFlight;
+
+    /**
+     * Set the selected flight for checkout
+     * @param flight The flight to select
+     */
+    public static void setSelectedFlight(com.example.gestionvol.entities.Flight flight) {
+        selectedFlight = flight;
+    }
+
+    /**
+     * Get the selected flight for checkout
+     * @return The selected flight
+     */
+    public static com.example.gestionvol.entities.Flight getSelectedFlight() {
+        return selectedFlight;
     }
 }

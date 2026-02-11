@@ -219,7 +219,7 @@ public class FlightListController {
 
     private void navigateToForm(Flight flight) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/flight-form-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-form.fxml"));
             Node formView = loader.load();
             
             FlightFormController controller = loader.getController();

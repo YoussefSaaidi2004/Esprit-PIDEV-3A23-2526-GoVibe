@@ -12,6 +12,14 @@ public class Checkout {
     private int passengerNbr;
     private String statusReservation;
     private int totalPrix;
+    
+    // New fields for passenger details and preferences
+    private String passengerName;
+    private String passengerEmail;
+    private String passengerPhone;
+    private String travelClass;
+    private String seatPreference;
+    private String paymentMethod;
 
     public Checkout() {}
 
@@ -82,5 +90,61 @@ public class Checkout {
 
     public void setTotalPrix(int totalPrix) {
         this.totalPrix = totalPrix;
+    }
+
+    public String getPassengerName() {
+        return passengerName;
+    }
+
+    public void setPassengerName(String passengerName) {
+        this.passengerName = passengerName;
+    }
+
+    public String getPassengerEmail() {
+        return passengerEmail;
+    }
+
+    public void setPassengerEmail(String passengerEmail) {
+        this.passengerEmail = passengerEmail;
+    }
+
+    public String getPassengerPhone() {
+        return passengerPhone;
+    }
+
+    public void setPassengerPhone(String passengerPhone) {
+        this.passengerPhone = passengerPhone;
+    }
+
+    public String getTravelClass() {
+        return travelClass;
+    }
+
+    public void setTravelClass(String travelClass) {
+        this.travelClass = travelClass;
+    }
+
+    public String getSeatPreference() {
+        return seatPreference;
+    }
+
+    public void setSeatPreference(String seatPreference) {
+        this.seatPreference = seatPreference;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public boolean isPending() {
+        return "PENDING".equalsIgnoreCase(this.statusReservation);
+    }
+
+    public boolean isConfirmed() {
+        return "CONFIRMED".equalsIgnoreCase(this.statusReservation);
     }
 }

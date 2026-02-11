@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.SVGPath?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.gestionvol.controller.FlightManagementController"
+            styleClass="main-bg">
+    
+    <left>
+        <VBox styleClass="sidebar" spacing="30">
+            <VBox spacing="5" alignment="CENTER" style="-fx-padding: 0 0 30 0;">
+                <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" style="-fx-fill: #50C878;" scaleX="1.5" scaleY="1.5"/>
+                <Text text="GV" style="-fx-fill: white; -fx-font-size: 10; -fx-font-weight: bold;"/>
+            </VBox>
+            
+            <Button onAction="#navDashboard" styleClass="nav-button">
+                <graphic><Text text="📊" style="-fx-font-size: 24px; -fx-fill: #6c7d75;"/></graphic>
+            </Button>
+            
+            <Button styleClass="nav-button, nav-button-active">
+                <graphic><Text text="✈️" style="-fx-font-size: 24px; -fx-fill: white;"/></graphic>
+            </Button>
+            
+            <Button onAction="#navBookings" styleClass="nav-button">
+                <graphic><Text text="🎫" style="-fx-font-size: 24px; -fx-fill: #6c7d75;"/></graphic>
+            </Button>
+            
+            <Button onAction="#handleThemeToggle" styleClass="nav-button">
+                <graphic><Text text="🌗" style="-fx-font-size: 24px; -fx-fill: #50C878;"/></graphic>
+            </Button>
+            
+            <Button onAction="#navUser" styleClass="nav-button">
+                <graphic><Text text="🔄" style="-fx-font-size: 24px; -fx-fill: #50C878;"/></graphic>
+            </Button>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="25" style="-fx-padding: 40;">
+            <!-- Header Section -->
+            <HBox alignment="CENTER_LEFT">
+                <VBox spacing="5">
+                    <Text text="Flight Management" styleClass="title"/>
+                    <Text text="Create, update, or remove flights from the system" styleClass="subtitle"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button onAction="#handleAdd" styleClass="btn-success" prefHeight="45" prefWidth="50" style="-fx-background-radius: 25;">
+                     <tooltip><Tooltip text="Add New Flight"/></tooltip>
+                    <graphic>
+                        <HBox spacing="0" alignment="CENTER">
+                            <Text text="➕" style="-fx-font-size: 20px; -fx-fill: white;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </HBox>
+
+            <!-- Quick Stats -->
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <VBox spacing="4" styleClass="glass-card" style="-fx-padding: 15 25; -fx-background-radius: 15;">
+                    <HBox spacing="8" alignment="CENTER">
+                        <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" style="-fx-fill: #013220;" scaleX="1.2" scaleY="1.2"/>
+                        <Text fx:id="totalFlightsText" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-fill: #013220;"/>
+                    </HBox>
+                    <Text text="Total Flights" style="-fx-font-size: 10; -fx-fill: #8D99AE; -fx-font-weight: bold;"/>
+                </VBox>
+                
+                <VBox spacing="4" styleClass="glass-card" style="-fx-padding: 15 25; -fx-background-radius: 15;">
+                    <HBox spacing="8" alignment="CENTER">
+                        <SVGPath content="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" style="-fx-fill: #50C878;" scaleX="1.2" scaleY="1.2"/>
+                        <Text fx:id="totalSeatsText" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-fill: #50C878;"/>
+                    </HBox>
+                    <Text text="Available Seats" style="-fx-font-size: 10; -fx-fill: #8D99AE; -fx-font-weight: bold;"/>
+                </VBox>
+                
+                <VBox spacing="4" styleClass="glass-card" style="-fx-padding: 15 25; -fx-background-radius: 15;">
+                    <HBox spacing="8" alignment="CENTER">
+                        <SVGPath content="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12.29,18.09V20h-2.67v-1.93c-1.71-0.36-3.15-1.46-3.27-3.4h1.96c0.1,1.05,1.18,1.91,2.53,1.91c1.29,0,2.13-0.72,2.13-1.55c0-0.8-0.68-1.38-2.6-1.92c-2-0.57-4.14-1.23-4.14-3.79c0-2.02,1.38-3.32,3.39-3.79V3.5h2.67v1.93c1.45,0.32,2.77,1.21,3.11,2.97h-1.96c-0.19-0.96-0.99-1.57-2.18-1.57c-1.28,0-2.06,0.73-2.06,1.48c0,0.85,0.7,1.42,2.71,1.95c2.19,0.58,4.03,1.35,4.03,3.74C15.6,15.93,14.35,17.73,12.29,18.09z" style="-fx-fill: #013220;" scaleX="1.2" scaleY="1.2"/>
+                        <Text fx:id="avgPriceText" text="0 DT" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-fill: #013220;"/>
+                    </HBox>
+                    <Text text="Avg. Price" style="-fx-font-size: 10; -fx-fill: #8D99AE; -fx-font-weight: bold;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Filter Bar -->
+            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="filter-bar">
+                <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" style="-fx-max-width: 350;">
+                    <Text text="🔍" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                    <TextField fx:id="searchField" promptText="Search by destination, airline, or ID..." 
+                               style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                </HBox>
+                
+                <Separator orientation="VERTICAL" style="-fx-padding: 0 5;"/>
+                
+                <HBox spacing="8" alignment="CENTER">
+                    <Text text="Sort:" style="-fx-font-size: 12; -fx-fill: #8D99AE; -fx-font-weight: bold;"/>
+                    <ComboBox fx:id="sortCombo" promptText="Choose..." prefWidth="150" 
+                              styleClass="combo-box" style="-fx-background-radius: 20; -fx-border-radius: 20;"/>
+                </HBox>
+                
+                <Button onAction="#handleRefresh" styleClass="icon-btn" style="-fx-background-color: #F5F3E7; -fx-background-radius: 20;">
+                    <graphic><Text text="🔄" style="-fx-font-size: 16px;"/></graphic>
+                </Button>
+            </HBox>
+
+            <!-- Flights Grid -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <FlowPane fx:id="flightGrid" hgap="25" vgap="25" alignment="TOP_LEFT" style="-fx-padding: 20;"/>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>

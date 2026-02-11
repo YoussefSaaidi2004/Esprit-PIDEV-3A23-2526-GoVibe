@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ActiviteSuppressionController">
+
+    <!-- LEFT SIDEBAR -->
+    <left>
+        <VBox alignment="TOP_CENTER" prefWidth="280" spacing="14" style="-fx-background-color:#013220;">
+            <padding>
+                <Insets bottom="25" left="18" right="18" top="25" />
+            </padding>
+
+            <VBox alignment="CENTER" spacing="6" style="-fx-background-color: rgba(255,255,255,0.06); -fx-padding: 18; -fx-background-radius: 14;">
+                <Label style="-fx-text-fill: #D1F2EB; -fx-font-size: 26px; -fx-font-weight: bold;" text="GoVibe" />
+                <Label style="-fx-text-fill: #A0E0C9; -fx-font-size: 12px;" text="Administration" />
+                <Label style="-fx-text-fill: #A0E0C9; -fx-font-size: 12px;" text="Suppression Activité" />
+            </VBox>
+
+            <Region prefHeight="10" />
+
+            <!-- Menu -->
+            <VBox spacing="10">
+                <Button maxWidth="Infinity" onAction="#openDashboard" style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="🧩  Dashboard" />
+
+                <Button maxWidth="Infinity" onAction="#openAjout" style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="➕  Ajouter Activité" />
+
+                <Button maxWidth="Infinity" onAction="#openModifier" style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="✏  Modifier Activité" />
+
+                <!-- Actif -->
+                <Button maxWidth="Infinity" onAction="#openSuppression" style="-fx-background-color: rgba(80,200,120,0.22); -fx-text-fill: #D1F2EB; -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-weight: bold;" text="🗑  Supprimer Activité" />
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Separator style="-fx-border-color: rgba(160,224,201,0.25);" />
+
+            <Label style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #50C878; -fx-padding: 6 16; -fx-background-radius: 20; -fx-font-size: 12px; -fx-font-weight: bold;" text="● En ligne" />
+        </VBox>
+    </left>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <VBox spacing="0" style="-fx-background-color:#D1F2EB;">
+
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT" style="-fx-background-color:#F5F3E7; -fx-border-color:#A0E0C9; -fx-border-width:0 0 1 0;">
+                <padding>
+                    <Insets bottom="16" left="28" right="28" top="16" />
+                </padding>
+
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-text-fill:#013220; -fx-font-size:22px; -fx-font-weight:bold;" text="Supprimer une Activité" />
+                    <Label style="-fx-text-fill:#084E36; -fx-font-size:13px;" text="Remplis le formulaire puis clique sur supprimer" />
+                </VBox>
+            </HBox>
+
+            <!-- Content -->
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #D1F2EB;" VBox.vgrow="ALWAYS">
+                <VBox spacing="22">
+                    <padding>
+                        <Insets bottom="30" left="35" right="35" top="30" />
+                    </padding>
+
+                    <VBox spacing="16" style="-fx-background-color:#F5F3E7; -fx-background-radius:14; -fx-padding:26;                                  -fx-effect:dropshadow(three-pass-box, rgba(1,50,32,0.12), 10, 0, 0, 4);">
+
+                        <Label style="-fx-text-fill:#013220; -fx-font-size:18px; -fx-font-weight:bold;" text="Choisir l'activité à supprimer" />
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="ID :" />
+                            <TextField fx:id="tfId" prefWidth="160" promptText="Ex: 1" style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9; -fx-border-width:1; -fx-padding:10;" />
+                            <Button onAction="#charger" style="-fx-background-color:#084E36; -fx-text-fill:white; -fx-font-weight:bold; -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;" text="Charger" />
+                        </HBox>
+
+                        <Separator />
+
+                        <Label style="-fx-text-fill:#013220; -fx-font-size:18px; -fx-font-weight:bold;" text="Informations (lecture seule)" />
+
+                        <GridPane hgap="12" vgap="12">
+                            <columnConstraints>
+                                <ColumnConstraints prefWidth="120" />
+                                <ColumnConstraints hgrow="ALWAYS" />
+                            </columnConstraints>
+
+                            <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Nom :" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                            <TextField fx:id="tfName" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                            <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Description :" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                            <TextField fx:id="tfDescription" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                            <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Type :" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                            <TextField fx:id="tfType" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                            <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Localisation :" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                            <TextField fx:id="tfLocalisation" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                            <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Prix :" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                            <TextField fx:id="tfPrix" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                     </rowConstraints>
+                        </GridPane>
+
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Button onAction="#supprimer" style="-fx-background-color:#e74c3c; -fx-text-fill:white; -fx-font-weight:bold; -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;" text="Supprimer" />
+
+                            <Button onAction="#vider" style="-fx-background-color: rgba(231,76,60,0.15); -fx-text-fill:#e74c3c; -fx-font-weight:bold; -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;" text="Vider" />
+
+                            <Label fx:id="lblMsg" style="-fx-text-fill: green; -fx-font-weight: bold;" text="" />
+                        </HBox>
+
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+        </VBox>
+    </center>
+
+</BorderPane>

@@ -6,38 +6,38 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
-import java.io.IOException;
-
 import javafx.scene.layout.VBox;
-import tn.esprit.entities.Poste;
-import tn.esprit.services.ServicePoste;
+import javafx.stage.Stage;
+import tn.esprit.entities.Forum;
+import tn.esprit.services.ServiceForum;
+
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ListPostController {
+public class ListForumController {
 
     @FXML
-    private VBox postsContainer;
+    private VBox forumsContainer;
 
-    private final ServicePoste servicePoste = new ServicePoste();
+    private final ServiceForum serviceForum = new ServiceForum();
 
     @FXML
     public void initialize() {
-        loadPosts();
+        loadForums();
     }
 
-    private void loadPosts() {
-        postsContainer.getChildren().clear();
+    private void loadForums() {
+        forumsContainer.getChildren().clear();
         try {
-            List<Poste> list = servicePoste.afficherOrphelins();
-            for (Poste p : list) {
+            List<Forum> list = serviceForum.afficher();
+            for (Forum f : list) {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/PostItem.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/ForumItem.fxml"));
                     Node node = loader.load();
-                    PostItemController controller = loader.getController();
-                    controller.setData(p);
-                    postsContainer.getChildren().add(node);
+                    ForumItemController controller = loader.getController();
+                    controller.setData(f);
+                    forumsContainer.getChildren().add(node);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -48,12 +48,11 @@ public class ListPostController {
     }
 
     @FXML
-    private void handleAjoutPost(ActionEvent event) {
+    private void handleAjoutForum(ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/AjoutPost.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/AjoutForum.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
+            stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -61,14 +60,9 @@ public class ListPostController {
     }
 
     @FXML
-    private void handlePersonnes() {
-        // Personnes logic
-    }
-
-    @FXML
-    private void handleGoToForums(ActionEvent event) {
+    private void handleGoToPosts(ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
@@ -90,11 +84,5 @@ public class ListPostController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @FXML
-    private void handleGoToPosts(ActionEvent event) {
-        // Déjà sur la page des publications, on peut rafraîchir ou ne rien faire
-        loadPosts();
     }
 }

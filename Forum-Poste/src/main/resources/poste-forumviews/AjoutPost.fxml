@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.AjoutPostController">
+
+    <top>
+        <HBox alignment="CENTER" spacing="0" style="-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-border-width: 0 0 1 0;">
+            <padding><Insets bottom="10" left="40" right="40" top="10" /></padding>
+
+            <!-- Logo -->
+            <HBox alignment="CENTER_LEFT" spacing="8" HBox.hgrow="NEVER">
+                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="@images/logo.png" /></image>
+                </ImageView>
+                <Label style="-fx-text-fill: #013220; -fx-font-size: 20px; -fx-font-weight: bold;" text="GoVibe" />
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- Nav Links -->
+            <HBox alignment="CENTER" spacing="30">
+                <Hyperlink onAction="#handleGoToPosts" style="-fx-text-fill: #013220; -fx-font-size: 14px; -fx-font-weight: bold; -fx-underline: false;" text="Publications" />
+                <Hyperlink onAction="#handleGoToForums" style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-underline: false;" text="Forums" />
+                <Hyperlink style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-underline: false;" text="Événements" />
+                <Hyperlink style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-underline: false;" text="À propos" />
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <!-- User Info -->
+            <HBox alignment="CENTER_RIGHT" spacing="12">
+                <Label fx:id="welcomeLabel" style="-fx-text-fill: #013220; -fx-font-size: 14px; -fx-font-weight: bold;" text="Bonjour !" />
+                <Button onAction="#handleLogout" style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand;" text="Déconnexion" />
+            </HBox>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox prefHeight="756.0" prefWidth="1138.0" spacing="0" style="-fx-background-color: -fx-light-green;">
+
+            <ScrollPane fitToWidth="true" prefHeight="668.0" prefWidth="853.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                <content>
+                    <VBox alignment="TOP_CENTER" spacing="35">
+                        <padding><Insets bottom="50" left="60" right="60" top="50" /></padding>
+
+                        <VBox alignment="CENTER" spacing="8">
+                            <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-size: 30px; -fx-font-weight: bold;" text="Nouvelle Inspiration ?" />
+                            <Label style="-fx-text-fill: -fx-accent-green; -fx-font-size: 15px; -fx-opacity: 0.6;" text="Partagez votre message ou un média avec GoVibe" />
+                        </VBox>
+
+                        <VBox maxWidth="750" spacing="30" styleClass="content-card">
+                            <padding><Insets bottom="45" left="45" right="45" top="45" /></padding>
+
+                            <VBox spacing="12">
+                                <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold; -fx-font-size: 14px;" text="FORMAT DE PUBLICATION" />
+                                <HBox spacing="15">
+                                    <ToggleButton fx:id="statusToggle" selected="true" styleClass="toggle-button-modern" text="💬 Statut Texte" />
+                                    <ToggleButton fx:id="mediaToggle" styleClass="toggle-button-modern" text="🖼 Photo / Vidéo" />
+                                </HBox>
+                            </VBox>
+
+                            <VBox spacing="12">
+                                <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold; -fx-font-size: 14px;" text="VOTRE MESSAGE" />
+                                <TextArea fx:id="contenuArea" prefHeight="140" promptText="Exprimez-vous..." styleClass="text-area" wrapText="true" />
+                                <HBox alignment="CENTER_RIGHT">
+                                    <Label style="-fx-text-fill: #A0A0A0; -fx-font-size: 11px;" text="0 / 500" />
+                                </HBox>
+                            </VBox>
+
+                            <VBox fx:id="mediaUrlContainer" managed="false" spacing="12" visible="false">
+                                <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold; -fx-font-size: 14px;" text="SÉLECTION MÉDIA" />
+                                <HBox alignment="CENTER_LEFT" spacing="12">
+                                    <TextField fx:id="urlField" editable="false" prefHeight="45.0" promptText="Choisissez un fichier..." styleClass="text-field" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="uploadButton" onAction="#handleUploadMedia" prefHeight="45.0" style="-fx-padding: 0 25;" styleClass="media-upload-btn" text="Parcourir..." />
+                                </HBox>
+                            </VBox>
+
+                            <VBox fx:id="previewContainer" alignment="CENTER" managed="false" spacing="15" styleClass="media-box" visible="false">
+                                <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+                                <Label style="-fx-text-fill: -fx-accent-green; -fx-font-size: 13px; -fx-opacity: 0.5;" text="Aperçu du média sélectionné" />
+                                <ImageView fx:id="mediaPreview" fitHeight="200" fitWidth="350" preserveRatio="true" />
+                            </VBox>
+
+                            <Separator opacity="0.3" />
+
+                            <HBox alignment="CENTER_RIGHT" spacing="20">
+                                <Button onAction="#handleCancel" styleClass="button-secondary" text="Annuler" />
+                                <Button onAction="#handlePublish" styleClass="button-primary" text="Publier maintenant" />
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </content>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>

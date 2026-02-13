@@ -12,7 +12,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -32,6 +32,7 @@ import org.example.entities.Voiture;
 import org.example.services.IService;
 import org.example.services.ServiceVoiture;
 import org.example.utils.SceneNavigator;
+import org.example.utils.SessionManager;
 import org.example.utils.VoitureSelection;
 
 import java.io.File;
@@ -54,7 +55,7 @@ public class VoitureListController {
     private static final String SORT_DEFAULT = "Par defaut";
 
     @FXML
-    private AnchorPane root;
+    private BorderPane root;
     @FXML
     private ListView<Voiture> voitureList;
     @FXML
@@ -101,10 +102,45 @@ public class VoitureListController {
 
     @FXML
     public void initialize() {
+        if (!SessionManager.isAuthenticated()) {
+            SceneNavigator.switchTo("/org/example/LoginView.fxml", root);
+            return;
+        }
+        if (!SessionManager.isAdmin()) {
+            SceneNavigator.switchTo("/LocationListView.fxml", root);
+            return;
+        }
+        adminLocationButton.setVisible(true);
+        adminLocationButton.setManaged(true);
+        if (locationListButton != null) {
+            locationListButton.setVisible(false);
+            locationListButton.setManaged(false);
+        }
         voitureList.setItems(pageItems);
         voitureList.setCellFactory(list -> new VoitureCell());
         setupFilters();
         refreshList();
+    }
+
+    @FXML
+    private void handleGoDashboard() {
+        SceneNavigator.switchTo("/org/example/AdminDashboardView.fxml", root);
+    }
+
+    @FXML
+    private void handleGoPersonnes() {
+        SceneNavigator.switchTo("/org/example/PersonneView.fxml", root);
+    }
+
+    @FXML
+    private void handleGoAdminLocations() {
+        SceneNavigator.switchTo("/AdminLocationListView.fxml", root);
+    }
+
+    @FXML
+    private void handleLogout() {
+        SessionManager.clear();
+        SceneNavigator.switchTo("/org/example/LoginView.fxml", root);
     }
 
     @FXML

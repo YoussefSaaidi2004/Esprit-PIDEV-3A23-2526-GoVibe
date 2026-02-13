@@ -10,9 +10,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/VoitureListView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/LoginView.fxml"));
         Scene scene = new Scene(root, 1920, 1080);
-        stage.setTitle("GoVibe - Voitures");
+        stage.setTitle("GoVibe - Connexion");
         stage.setScene(scene);
         stage.setMinWidth(1920);
         stage.setMinHeight(1080);

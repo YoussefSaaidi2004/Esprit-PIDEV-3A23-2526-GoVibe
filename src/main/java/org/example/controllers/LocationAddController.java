@@ -26,6 +26,7 @@ import org.example.entities.Voiture;
 import org.example.services.IService;
 import org.example.services.ServiceLocation;
 import org.example.services.ServiceVoiture;
+import org.example.utils.SessionManager;
 import org.example.utils.SceneNavigator;
 
 import java.io.IOException;
@@ -65,6 +66,14 @@ public class LocationAddController {
 
     @FXML
     public void initialize() {
+        if (!SessionManager.isAuthenticated()) {
+            SceneNavigator.switchTo("/org/example/LoginView.fxml", backButton);
+            return;
+        }
+        if (SessionManager.isAdmin()) {
+            SceneNavigator.switchTo("/AdminLocationListView.fxml", backButton);
+            return;
+        }
         statutBox.setItems(FXCollections.observableArrayList(StatutLocation.values()));
         statutBox.setValue(StatutLocation.EN_ATTENTE);
         statutBox.setDisable(true);
@@ -100,6 +109,22 @@ public class LocationAddController {
     @FXML
     private void handleRetour() {
         SceneNavigator.switchTo("/LocationListView.fxml", backButton);
+    }
+
+    @FXML
+    private void handleGoHome() {
+        SceneNavigator.switchTo("/org/example/UserHomeView.fxml", backButton);
+    }
+
+    @FXML
+    private void handleGoLocations() {
+        SceneNavigator.switchTo("/LocationListView.fxml", backButton);
+    }
+
+    @FXML
+    private void handleLogout() {
+        SessionManager.clear();
+        SceneNavigator.switchTo("/org/example/LoginView.fxml", backButton);
     }
 
     private void loadAvailableVoitures() {
@@ -148,6 +173,10 @@ public class LocationAddController {
 
     private Location buildLocationFromFields() {
         Voiture voiture = voitureBox.getValue();
+        int userId = 0;
+        if (SessionManager.getCurrentUser() != null) {
+            userId = SessionManager.getCurrentUser().getId();
+        }
         return new Location(
                 referenceField.getText().trim(),
                 dateDebutPicker.getValue(),
@@ -157,7 +186,8 @@ public class LocationAddController {
                 "",
                 "",
                 StatutLocation.EN_ATTENTE,
-                voiture != null ? voiture.getIdVoiture() : 0
+                voiture != null ? voiture.getIdVoiture() : 0,
+                userId
         );
     }
 

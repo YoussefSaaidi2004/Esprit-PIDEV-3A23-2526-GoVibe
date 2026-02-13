@@ -17,6 +17,8 @@ public class Location {
     private LocalDateTime dateCreation;
     private int idVoiture;
     private Voiture voiture;
+    private int idPersonne;
+    private personne personne;
 
     public Location() {
     }
@@ -35,6 +37,13 @@ public class Location {
         this.idVoiture = idVoiture;
     }
 
+    public Location(String reference, LocalDate dateDebut, LocalDate dateFin,
+                    int nbJours, double montantTotal, String contratPdf, String qrCode,
+                    StatutLocation statut, int idVoiture, int idPersonne) {
+        this(reference, dateDebut, dateFin, nbJours, montantTotal, contratPdf, qrCode, statut, idVoiture);
+        this.idPersonne = idPersonne;
+    }
+
     public Location(int idLocation, String reference, LocalDate dateDebut, LocalDate dateFin,
                     int nbJours, double montantTotal, String contratPdf, String qrCode,
                     StatutLocation statut, LocalDateTime dateCreation, int idVoiture, Voiture voiture) {
@@ -50,6 +59,16 @@ public class Location {
         this.dateCreation = dateCreation;
         this.idVoiture = idVoiture;
         this.voiture = voiture;
+    }
+
+    public Location(int idLocation, String reference, LocalDate dateDebut, LocalDate dateFin,
+                    int nbJours, double montantTotal, String contratPdf, String qrCode,
+                    StatutLocation statut, LocalDateTime dateCreation, int idVoiture, int idPersonne,
+                    Voiture voiture, personne personne) {
+        this(idLocation, reference, dateDebut, dateFin, nbJours, montantTotal, contratPdf, qrCode,
+                statut, dateCreation, idVoiture, voiture);
+        this.idPersonne = idPersonne;
+        this.personne = personne;
     }
 
     public int getIdLocation() {
@@ -146,5 +165,21 @@ public class Location {
 
     public void setVoiture(Voiture voiture) {
         this.voiture = voiture;
+    }
+
+    public int getIdPersonne() {
+        return idPersonne;
+    }
+
+    public void setIdPersonne(int idPersonne) {
+        this.idPersonne = idPersonne;
+    }
+
+    public personne getPersonne() {
+        return personne;
+    }
+
+    public void setPersonne(personne personne) {
+        this.personne = personne;
     }
 }

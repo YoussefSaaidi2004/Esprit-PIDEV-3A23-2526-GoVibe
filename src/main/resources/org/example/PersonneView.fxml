@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.PersonneController"
+            stylesheets="@styles.css">
+
+    <!-- ==================== LEFT SIDEBAR ==================== -->
+    <left>
+        <VBox prefWidth="260" spacing="0" alignment="TOP_CENTER"
+              style="-fx-background-color: #013220;">
+            <padding><Insets top="25" right="15" bottom="25" left="15"/></padding>
+
+            <!-- Logo -->
+            <VBox alignment="CENTER" spacing="5">
+                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="@images/logo.png"/></image>
+                </ImageView>
+                <Label text="GoVibe" style="-fx-text-fill: #D1F2EB; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <Label text="Gestion des Personnes" style="-fx-text-fill: #A0E0C9; -fx-font-size: 11px;"/>
+            </VBox>
+
+            <Region prefHeight="30"/>
+
+            <!-- Navigation -->
+            <VBox spacing="4">
+                <Button text="📋  Dashboard" onAction="#handleBackToDashboard" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="👤  Personnes" maxWidth="Infinity"
+                        style="-fx-background-color: rgba(80,200,120,0.2); -fx-text-fill: #D1F2EB; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="🚗  Voitures" onAction="#handleGoVoitures" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="📅  Locations" onAction="#handleGoLocations" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="📊  Statistiques" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="⚙  Paramètres" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox spacing="4" alignment="CENTER">
+                <Separator style="-fx-border-color: #084E36;"/>
+                <Label text="v1.0.0" style="-fx-text-fill: #084E36; -fx-font-size: 11px;"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <center>
+        <VBox spacing="0" style="-fx-background-color: #D1F2EB;">
+
+            <!-- TOP HEADER BAR -->
+            <HBox alignment="CENTER_LEFT" spacing="15"
+                  style="-fx-background-color: #F5F3E7; -fx-border-color: #A0E0C9; -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="18" right="40" bottom="18" left="40"/></padding>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Gestion des Personnes"
+                           style="-fx-text-fill: #013220; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                    <Label text="Ajouter, modifier et gérer les personnes enregistrées"
+                           style="-fx-text-fill: #084E36; -fx-font-size: 13px;"/>
+                </VBox>
+                <Label fx:id="statusLabel" text=""
+                       style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #50C878; -fx-padding: 6 16; -fx-background-radius: 20; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <!-- SCROLLABLE CONTENT -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent; -fx-background: #D1F2EB;">
+                <VBox spacing="25">
+                    <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+
+                    <!-- ===== ADD PERSON CARD ===== -->
+                    <VBox spacing="20"
+                          style="-fx-background-color: #F5F3E7; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(1,50,32,0.1), 8, 0, 0, 3);">
+
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane style="-fx-background-color: #50C878; -fx-background-radius: 10; -fx-pref-width: 40; -fx-pref-height: 40; -fx-min-width: 40; -fx-min-height: 40; -fx-max-width: 40; -fx-max-height: 40;">
+                                <Text text="+" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: white;"/>
+                            </StackPane>
+                            <VBox spacing="2">
+                                <Label text="Ajouter une Personne" style="-fx-text-fill: #013220; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                                <Label text="Remplissez les informations ci-dessous" style="-fx-text-fill: #084E36; -fx-font-size: 12px;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Form Row 1 -->
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Nom" style="-fx-text-fill: #013220; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <TextField fx:id="tfNom" promptText="Entrez le nom"
+                                           style="-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10; -fx-font-size: 13px;"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Prénom" style="-fx-text-fill: #013220; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <TextField fx:id="tfPrenom" promptText="Entrez le prénom"
+                                           style="-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10; -fx-font-size: 13px;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Form Row 2 -->
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Email" style="-fx-text-fill: #013220; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <TextField fx:id="tfEmail" promptText="exemple@email.com"
+                                           style="-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10; -fx-font-size: 13px;"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Mot de passe" style="-fx-text-fill: #013220; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <PasswordField fx:id="tfPassword" promptText="Min. 6 caractères"
+                                               style="-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10; -fx-font-size: 13px;"/>
+                            </VBox>
+                            <VBox spacing="6" prefWidth="160">
+                                <Label text="Rôle" style="-fx-text-fill: #013220; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                                <ComboBox fx:id="cbRole" maxWidth="Infinity"
+                                          style="-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Buttons -->
+                        <HBox spacing="12" alignment="CENTER_RIGHT">
+                            <Button text="Réinitialiser" onAction="#handleReset"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #013220; -fx-border-color: #013220; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+                            <Button text="✦  Ajouter la Personne" onAction="#handleAjouter"
+                                    style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 24; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.3), 8, 0, 0, 3);"/>
+                        </HBox>
+
+                        <Label fx:id="notificationLabel" managed="false" visible="false"
+                               style="-fx-padding: 10 20; -fx-background-radius: 8; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                    </VBox>
+
+                    <!-- ===== TABLE CARD ===== -->
+                    <VBox spacing="15"
+                          style="-fx-background-color: #F5F3E7; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(1,50,32,0.1), 8, 0, 0, 3);">
+
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane style="-fx-background-color: #0B64EF; -fx-background-radius: 10; -fx-pref-width: 40; -fx-pref-height: 40; -fx-min-width: 40; -fx-min-height: 40; -fx-max-width: 40; -fx-max-height: 40;">
+                                <Text text="≡" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: white;"/>
+                            </StackPane>
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Liste des Personnes" style="-fx-text-fill: #013220; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                                <Label fx:id="countLabel" text="0 personnes enregistrées" style="-fx-text-fill: #084E36; -fx-font-size: 12px;"/>
+                            </VBox>
+                            <Button text="⟳  Rafraîchir" onAction="#handleRefresh"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #50C878; -fx-border-color: #50C878; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        </HBox>
+
+                        <TableView fx:id="tablePersonnes" prefHeight="380"
+                                   style="-fx-background-color: transparent; -fx-border-color: #A0E0C9; -fx-border-radius: 8;">
+                            <columns>
+                                <TableColumn fx:id="colId" text="ID" prefWidth="60" style="-fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="colNom" text="Nom" prefWidth="150"/>
+                                <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="150"/>
+                                <TableColumn fx:id="colEmail" text="Email" prefWidth="220"/>
+                                <TableColumn fx:id="colRole" text="Rôle" prefWidth="100" style="-fx-alignment: CENTER;"/>
+                                <TableColumn fx:id="colActions" text="Actions" prefWidth="180" style="-fx-alignment: CENTER;"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="Aucune personne enregistrée" style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-font-style: italic;"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+        </VBox>
+    </center>
+
+</BorderPane>

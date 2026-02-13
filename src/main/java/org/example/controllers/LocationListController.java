@@ -12,7 +12,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -30,10 +30,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.entities.Location;
 import org.example.entities.StatutLocation;
 import org.example.entities.Voiture;
-import org.example.services.IService;
 import org.example.services.ServiceLocation;
 import org.example.utils.LocationSelection;
 import org.example.utils.SceneNavigator;
+import org.example.utils.SessionManager;
+import org.example.entities.personne;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -58,7 +59,7 @@ public class LocationListController {
     private static final String SORT_DEFAULT = "Par defaut";
 
     @FXML
-    private AnchorPane root;
+    private BorderPane root;
     @FXML
     private ListView<Location> locationList;
     @FXML
@@ -96,17 +97,43 @@ public class LocationListController {
 
     private final ObservableList<Location> masterItems = FXCollections.observableArrayList();
     private final ObservableList<Location> pageItems = FXCollections.observableArrayList();
-    private final IService<Location> locationService = new ServiceLocation();
+    private final ServiceLocation locationService = new ServiceLocation();
     private List<Location> currentFiltered = new ArrayList<>();
     private int currentPageIndex = 0;
     private int pageSize = 6;
+    private personne currentUser;
 
     @FXML
     public void initialize() {
+        if (!SessionManager.isAuthenticated()) {
+            SceneNavigator.switchTo("/org/example/LoginView.fxml", root);
+            return;
+        }
+        if (SessionManager.isAdmin()) {
+            SceneNavigator.switchTo("/AdminLocationListView.fxml", root);
+            return;
+        }
+        currentUser = SessionManager.getCurrentUser();
         locationList.setItems(pageItems);
         locationList.setCellFactory(list -> new LocationCell());
         setupFilters();
         refreshList();
+    }
+
+    @FXML
+    private void handleGoHome() {
+        SceneNavigator.switchTo("/org/example/UserHomeView.fxml", root);
+    }
+
+    @FXML
+    private void handleGoLocations() {
+        SceneNavigator.switchTo("/LocationListView.fxml", root);
+    }
+
+    @FXML
+    private void handleLogout() {
+        SessionManager.clear();
+        SceneNavigator.switchTo("/org/example/LoginView.fxml", root);
     }
 
     @FXML
@@ -192,7 +219,12 @@ public class LocationListController {
     }
 
     private void refreshList() {
-        List<Location> locations = locationService.getAll();
+        if (currentUser == null) {
+            masterItems.clear();
+            applyFiltersAndSort();
+            return;
+        }
+        List<Location> locations = locationService.getAllByPersonneId(currentUser.getId());
         masterItems.setAll(locations);
         updateVoitureOptions();
         applyFiltersAndSort();

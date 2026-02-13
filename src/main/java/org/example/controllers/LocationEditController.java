@@ -19,6 +19,7 @@ import org.example.services.ServiceLocation;
 import org.example.services.ServiceVoiture;
 import org.example.utils.LocationSelection;
 import org.example.utils.SceneNavigator;
+import org.example.utils.SessionManager;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -55,10 +56,24 @@ public class LocationEditController {
 
     @FXML
     public void initialize() {
+        if (!SessionManager.isAuthenticated()) {
+            SceneNavigator.switchTo("/org/example/LoginView.fxml", backButton);
+            return;
+        }
+        if (SessionManager.isAdmin()) {
+            SceneNavigator.switchTo("/AdminLocationListView.fxml", backButton);
+            return;
+        }
         statutBox.setItems(FXCollections.observableArrayList(StatutLocation.values()));
         selected = LocationSelection.get();
         if (selected == null) {
             showAlert("Selection requise", "Veuillez choisir une location a modifier.");
+            SceneNavigator.switchTo("/LocationListView.fxml", backButton);
+            return;
+        }
+        int currentUserId = SessionManager.getCurrentUser().getId();
+        if (selected.getIdPersonne() != 0 && selected.getIdPersonne() != currentUserId) {
+            showAlert("Acces refuse", "Vous ne pouvez modifier que vos propres locations.");
             SceneNavigator.switchTo("/LocationListView.fxml", backButton);
             return;
         }
@@ -92,6 +107,22 @@ public class LocationEditController {
     private void handleRetour() {
         LocationSelection.clear();
         SceneNavigator.switchTo("/LocationListView.fxml", backButton);
+    }
+
+    @FXML
+    private void handleGoHome() {
+        SceneNavigator.switchTo("/org/example/UserHomeView.fxml", backButton);
+    }
+
+    @FXML
+    private void handleGoLocations() {
+        SceneNavigator.switchTo("/LocationListView.fxml", backButton);
+    }
+
+    @FXML
+    private void handleLogout() {
+        SessionManager.clear();
+        SceneNavigator.switchTo("/org/example/LoginView.fxml", backButton);
     }
 
     private void loadAvailableVoitures(int selectedId) {
@@ -140,6 +171,7 @@ public class LocationEditController {
 
     private Location buildLocationFromFields() {
         Voiture voiture = voitureBox.getValue();
+        int personneId = selected != null ? selected.getIdPersonne() : 0;
         return new Location(
                 referenceField.getText().trim(),
                 dateDebutPicker.getValue(),
@@ -149,7 +181,8 @@ public class LocationEditController {
                 selected != null ? safeTrim(selected.getContratPdf()) : "",
                 selected != null ? safeTrim(selected.getQrCode()) : "",
                 selected != null ? selected.getStatut() : StatutLocation.EN_ATTENTE,
-                voiture != null ? voiture.getIdVoiture() : 0
+            voiture != null ? voiture.getIdVoiture() : 0,
+            personneId
         );
     }
 

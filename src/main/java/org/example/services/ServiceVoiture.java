@@ -19,7 +19,7 @@ public class ServiceVoiture implements IService<Voiture> {
     private final Connection connection;
 
     public ServiceVoiture() {
-        this.connection = new MyDataBase().getConnection();
+        this.connection = MyDataBase.getInstance().getConnection();
     }
 
     @Override

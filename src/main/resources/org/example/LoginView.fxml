@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.example.controllers.LoginController"
+           stylesheets="@styles.css"
+           styleClass="root">
+
+    <VBox alignment="CENTER" spacing="20.0" maxWidth="400.0" maxHeight="600.0"
+          styleClass="auth-container">
+
+        <VBox alignment="CENTER" spacing="10">
+            <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@images/logo.png"/>
+                </image>
+            </ImageView>
+            <Text text="GoVibe" styleClass="title-text"/>
+            <Label text="Bienvenue de nouveau" styleClass="subtitle-text"/>
+        </VBox>
+
+        <VBox spacing="15" maxWidth="300">
+            <VBox spacing="5">
+                <Label text="Email" styleClass="label-text"/>
+                <TextField fx:id="tfEmail" promptText="votre@email.com" styleClass="text-field"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Mot de passe" styleClass="label-text"/>
+                <PasswordField fx:id="tfPassword" promptText="••••••••" styleClass="password-field"/>
+            </VBox>
+
+            <Hyperlink text="Mot de passe oublié ?" onAction="#handleForgotPassword" styleClass="link-text" alignment="CENTER_RIGHT"/>
+            
+            <Label fx:id="errorLabel" text="" visible="false" styleClass="error-label" wrapText="true"/>
+
+            <Button text="Se connecter" onAction="#handleLogin" maxWidth="Infinity" styleClass="btn-primary"/>
+            
+            <Hyperlink text="Créer un compte" onAction="#handleSignup" styleClass="link-text" alignment="CENTER"/>
+        </VBox>
+
+    </VBox>
+</StackPane>

@@ -12,7 +12,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -33,6 +33,7 @@ import org.example.entities.Voiture;
 import org.example.services.ServiceLocation;
 import org.example.utils.LocationSelection;
 import org.example.utils.SceneNavigator;
+import org.example.utils.SessionManager;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -56,7 +57,7 @@ public class AdminLocationListController {
     private static final String SORT_DEFAULT = "Par defaut";
 
     @FXML
-    private AnchorPane root;
+    private BorderPane root;
     @FXML
     private ListView<Location> locationList;
     @FXML
@@ -99,6 +100,14 @@ public class AdminLocationListController {
 
     @FXML
     public void initialize() {
+        if (!SessionManager.isAuthenticated()) {
+            SceneNavigator.switchTo("/org/example/LoginView.fxml", root);
+            return;
+        }
+        if (!SessionManager.isAdmin()) {
+            SceneNavigator.switchTo("/LocationListView.fxml", root);
+            return;
+        }
         locationList.setItems(pageItems);
         locationList.setCellFactory(list -> new LocationCell());
         setupFilters();
@@ -106,9 +115,26 @@ public class AdminLocationListController {
     }
 
     @FXML
-    private void handleBackToCars() {
-        SceneNavigator.switchTo("/VoitureListView.fxml", backToCarsButton);
+    private void handleGoDashboard() {
+        SceneNavigator.switchTo("/org/example/AdminDashboardView.fxml", root);
     }
+
+    @FXML
+    private void handleGoPersonnes() {
+        SceneNavigator.switchTo("/org/example/PersonneView.fxml", root);
+    }
+
+    @FXML
+    private void handleGoVoitures() {
+        SceneNavigator.switchTo("/VoitureListView.fxml", root);
+    }
+
+    @FXML
+    private void handleLogout() {
+        SessionManager.clear();
+        SceneNavigator.switchTo("/org/example/LoginView.fxml", root);
+    }
+
 
     @FXML
     private void handleExportPdf() {

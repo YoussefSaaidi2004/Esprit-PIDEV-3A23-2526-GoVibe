@@ -915,3 +915,46 @@
     -fx-background-color: linear-gradient(to right, transparent, #D1F2EB 50%, transparent);
     -fx-pref-height: 1;
 }
+
+/* ============ SEARCH BAR VISIBILITY ============ */
+.search-input {
+    -fx-text-fill: #2d3436;
+    -fx-prompt-text-fill: #95a5a6;
+    -fx-font-size: 14px;
+}
+
+/* Force dark text for search input even in Dark Mode because container is white */
+.root.dark-mode .search-input {
+    -fx-text-fill: #2d3436;
+    -fx-prompt-text-fill: #95a5a6;
+    -fx-background-color: transparent;
+}
+
+/* ============ MODERN SEARCH BAR ============ */
+.modern-search-bar {
+    -fx-background-color: white;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 2);
+    -fx-padding: 5 15;
+    -fx-min-width: 350px;
+    -fx-transition: all 0.3s;
+}
+
+.modern-search-bar:hover {
+    -fx-border-color: #50C878;
+    -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.2), 15, 0, 0, 4);
+}
+
+.modern-search-bar:focused-within {
+    -fx-border-color: #50C878;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.3), 20, 0, 0, 5);
+}
+
+.search-icon {
+    -fx-fill: #50C878;
+    -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.4), 5, 0, 0, 0);
+}

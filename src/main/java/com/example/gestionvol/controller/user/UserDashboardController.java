@@ -60,8 +60,11 @@ public class UserDashboardController {
         String rawFilter = (searchField.getText() != null) ? searchField.getText().toLowerCase().trim() : "";
         double maxPrice = (priceSlider != null) ? priceSlider.getValue() : Double.MAX_VALUE;
         
-        // Debug
-        // System.out.println("Filtering: '" + rawFilter + "', Max Price: " + maxPrice + ", Total Flights: " + cachedFlights.size());
+        // Check if cached data is available, reload if necessary
+        if (cachedFlights == null) {
+            cachedFlights = flightService.getAvailableFlights();
+            if (cachedFlights == null) return;
+        }
 
         for (Flight f : cachedFlights) {
             boolean matches = false;

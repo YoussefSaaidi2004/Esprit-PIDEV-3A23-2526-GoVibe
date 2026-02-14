@@ -185,7 +185,8 @@ public class ChambreViewController implements Initializable {
 
         // Style the dialog
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setStyle("-fx-background-color: #F5F3E7;");
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
+        dialogPane.getStyleClass().add("form-dialog");
 
         ButtonType saveButtonType = new ButtonType("💾 Enregistrer", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -193,8 +194,9 @@ public class ChambreViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.setStyle("-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; " +
-                           "-fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;");
+        saveButton.getStyleClass().add("form-button-primary");
+        Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
+        cancelButton.getStyleClass().add("form-button-secondary");
 
         ScrollPane form = createChambreForm(null);
         dialog.getDialogPane().setContent(form);
@@ -233,7 +235,8 @@ public class ChambreViewController implements Initializable {
 
         // Style the dialog
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setStyle("-fx-background-color: #F5F3E7;");
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
+        dialogPane.getStyleClass().add("form-dialog");
 
         ButtonType saveButtonType = new ButtonType("💾 Enregistrer", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -241,8 +244,9 @@ public class ChambreViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.setStyle("-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; " +
-                           "-fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;");
+        saveButton.getStyleClass().add("form-button-primary");
+        Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
+        cancelButton.getStyleClass().add("form-button-secondary");
 
         ScrollPane form = createChambreForm(chambre);
         dialog.getDialogPane().setContent(form);
@@ -295,17 +299,20 @@ public class ChambreViewController implements Initializable {
     private ScrollPane createChambreForm(Chambre chambre) {
         VBox container = new VBox(15);
         container.setPadding(new Insets(25));
-        container.setStyle("-fx-background-color: #F5F3E7; -fx-background-radius: 10;");
         container.setPrefWidth(480);
+        container.getStyleClass().add("form-card");
+
+        Label titleLabel = new Label("Informations de la chambre");
+        titleLabel.getStyleClass().add("form-title");
 
         // Type
         VBox typeBox = new VBox(5);
         Label typeLabel = new Label("Type de chambre *");
-        typeLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        typeLabel.getStyleClass().add("form-label");
         TextField typeField = new TextField(chambre != null ? chambre.getType() : "");
         typeField.setPromptText("Ex: Suite, Standard, Deluxe...");
         typeField.setId("typeField");
-        typeField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        typeField.getStyleClass().add("form-field");
         Label typeError = org.example.utils.FormValidator.createErrorLabel();
         typeError.setId("typeError");
         typeBox.getChildren().addAll(typeLabel, typeField, typeError);
@@ -313,21 +320,21 @@ public class ChambreViewController implements Initializable {
         // Capacité
         VBox capaciteBox = new VBox(5);
         Label capaciteLabel = new Label("Capacité (personnes) *");
-        capaciteLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        capaciteLabel.getStyleClass().add("form-label");
         Spinner<Integer> capaciteSpinner = new Spinner<>(1, 10, chambre != null ? chambre.getCapacite() : 2);
         capaciteSpinner.setId("capaciteSpinner");
         capaciteSpinner.setEditable(true);
-        capaciteSpinner.setStyle("-fx-padding: 5;");
+        capaciteSpinner.getStyleClass().add("form-field");
         capaciteBox.getChildren().addAll(capaciteLabel, capaciteSpinner);
 
         // Équipements
         VBox equipBox = new VBox(5);
         Label equipLabel = new Label("Équipements *");
-        equipLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        equipLabel.getStyleClass().add("form-label");
         TextField equipField = new TextField(chambre != null ? chambre.getEquipements() : "");
         equipField.setPromptText("Ex: WiFi, TV, Climatisation, Balcon");
         equipField.setId("equipField");
-        equipField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        equipField.getStyleClass().add("form-field");
         Label equipError = org.example.utils.FormValidator.createErrorLabel();
         equipError.setId("equipError");
         equipBox.getChildren().addAll(equipLabel, equipField, equipError);
@@ -335,7 +342,7 @@ public class ChambreViewController implements Initializable {
         // Hôtel
         VBox hotelBox = new VBox(5);
         Label hotelLabel = new Label("Hôtel *");
-        hotelLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        hotelLabel.getStyleClass().add("form-label");
         ComboBox<String> hotelCombo = new ComboBox<>();
         hotelCombo.setPromptText("Sélectionnez un hôtel");
         for (Hotel h : hotelList) {
@@ -345,7 +352,7 @@ public class ChambreViewController implements Initializable {
             hotelCombo.setValue(chambre.getHotelId() + " - " + getHotelName(chambre.getHotelId()));
         }
         hotelCombo.setId("hotelCombo");
-        hotelCombo.setStyle("-fx-padding: 5;");
+        hotelCombo.getStyleClass().add("form-field");
         hotelCombo.setPrefWidth(430);
         Label hotelError = org.example.utils.FormValidator.createErrorLabel();
         hotelError.setId("hotelError");
@@ -354,11 +361,11 @@ public class ChambreViewController implements Initializable {
         // Prix Standard
         VBox prixStdBox = new VBox(5);
         Label prixStdLabel = new Label("Prix Standard (DT) *");
-        prixStdLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        prixStdLabel.getStyleClass().add("form-label");
         TextField prixStdField = new TextField(chambre != null ? String.valueOf(chambre.getPrixStandard()) : "");
         prixStdField.setPromptText("Ex: 150.00");
         prixStdField.setId("prixStdField");
-        prixStdField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        prixStdField.getStyleClass().add("form-field");
         Label prixStdError = org.example.utils.FormValidator.createErrorLabel();
         prixStdError.setId("prixStdError");
         prixStdBox.getChildren().addAll(prixStdLabel, prixStdField, prixStdError);
@@ -366,11 +373,11 @@ public class ChambreViewController implements Initializable {
         // Prix Haute Saison
         VBox prixHauteBox = new VBox(5);
         Label prixHauteLabel = new Label("Prix Haute Saison (DT) *");
-        prixHauteLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        prixHauteLabel.getStyleClass().add("form-label");
         TextField prixHauteField = new TextField(chambre != null ? String.valueOf(chambre.getPrixHauteSaison()) : "");
         prixHauteField.setPromptText("Ex: 200.00");
         prixHauteField.setId("prixHauteField");
-        prixHauteField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        prixHauteField.getStyleClass().add("form-field");
         Label prixHauteError = org.example.utils.FormValidator.createErrorLabel();
         prixHauteError.setId("prixHauteError");
         prixHauteBox.getChildren().addAll(prixHauteLabel, prixHauteField, prixHauteError);
@@ -378,21 +385,42 @@ public class ChambreViewController implements Initializable {
         // Prix Basse Saison
         VBox prixBasseBox = new VBox(5);
         Label prixBasseLabel = new Label("Prix Basse Saison (DT) *");
-        prixBasseLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        prixBasseLabel.getStyleClass().add("form-label");
         TextField prixBasseField = new TextField(chambre != null ? String.valueOf(chambre.getPrixBasseSaison()) : "");
         prixBasseField.setPromptText("Ex: 120.00");
         prixBasseField.setId("prixBasseField");
-        prixBasseField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        prixBasseField.getStyleClass().add("form-field");
         Label prixBasseError = org.example.utils.FormValidator.createErrorLabel();
         prixBasseError.setId("prixBasseError");
         prixBasseBox.getChildren().addAll(prixBasseLabel, prixBasseField, prixBasseError);
 
         // Info text
         Label infoLabel = new Label("* Champs obligatoires");
-        infoLabel.setStyle("-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-style: italic;");
+        infoLabel.getStyleClass().add("form-help");
 
-        container.getChildren().addAll(typeBox, capaciteBox, equipBox, hotelBox,
-                                        prixStdBox, prixHauteBox, prixBasseBox, infoLabel);
+        GridPane formGrid = new GridPane();
+        formGrid.getStyleClass().add("form-grid");
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(50);
+        col1.setHgrow(Priority.ALWAYS);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(50);
+        col2.setHgrow(Priority.ALWAYS);
+        formGrid.getColumnConstraints().addAll(col1, col2);
+
+        formGrid.add(typeBox, 0, 0);
+        formGrid.add(capaciteBox, 1, 0);
+
+        formGrid.add(hotelBox, 0, 1);
+        formGrid.add(equipBox, 1, 1);
+
+        formGrid.add(prixStdBox, 0, 2);
+        formGrid.add(prixHauteBox, 1, 2);
+
+        formGrid.add(prixBasseBox, 0, 3);
+        GridPane.setColumnSpan(prixBasseBox, 2);
+
+        container.getChildren().addAll(titleLabel, formGrid, infoLabel);
 
         // Wrap in ScrollPane
         ScrollPane scrollPane = new ScrollPane(container);

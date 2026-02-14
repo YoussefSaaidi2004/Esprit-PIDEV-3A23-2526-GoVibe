@@ -11,8 +11,10 @@ import javafx.scene.layout.*;
 import org.example.entities.Chambre;
 import org.example.entities.Hotel;
 import org.example.entities.Reservation;
+import org.example.entities.personne;
 import org.example.services.ServiceChambre;
 import org.example.services.ServiceHotel;
+import org.example.services.ServicePersonne;
 import org.example.services.ServiceReservation;
 
 import java.net.URL;
@@ -32,18 +34,22 @@ public class ReservationViewController implements Initializable {
     private ServiceReservation serviceReservation;
     private ServiceHotel serviceHotel;
     private ServiceChambre serviceChambre;
+    private ServicePersonne servicePersonne;
     private ObservableList<Reservation> reservationList;
     private ObservableList<Hotel> hotelList;
     private ObservableList<Chambre> chambreList;
+    private ObservableList<personne> userList;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         serviceReservation = new ServiceReservation();
         serviceHotel = new ServiceHotel();
         serviceChambre = new ServiceChambre();
+        servicePersonne = new ServicePersonne();
         reservationList = FXCollections.observableArrayList();
         hotelList = FXCollections.observableArrayList();
         chambreList = FXCollections.observableArrayList();
+        userList = FXCollections.observableArrayList();
 
         setupFilterStatut();
         loadData();
@@ -63,6 +69,8 @@ public class ReservationViewController implements Initializable {
             hotelList.addAll(serviceHotel.show());
             chambreList.clear();
             chambreList.addAll(serviceChambre.show());
+            userList.clear();
+            userList.addAll(servicePersonne.getAll());
         } catch (SQLException e) {
             showAlert("Erreur", "Erreur lors du chargement des données: " + e.getMessage(), Alert.AlertType.ERROR);
         }
@@ -104,14 +112,12 @@ public class ReservationViewController implements Initializable {
         statusBox.getChildren().add(statusLabel);
 
         // Client info
-        Label clientLabel = new Label("👤 " + reservation.getClientNom());
+        Label clientLabel = new Label("👤 " + reservation.getUserDisplayName());
         clientLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #013220;");
 
-        Label emailLabel = new Label("📧 " + reservation.getClientEmail());
+        String emailValue = reservation.getUserEmail() != null ? reservation.getUserEmail() : "Email inconnu";
+        Label emailLabel = new Label("📧 " + emailValue);
         emailLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
-
-        Label telLabel = new Label("📱 " + reservation.getClientTelephone());
-        telLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
 
         Separator sep1 = new Separator();
         sep1.setStyle("-fx-background-color: #E0E0E0;");
@@ -186,7 +192,7 @@ public class ReservationViewController implements Initializable {
 
         actionButtons.getChildren().addAll(editBtn, cancelBtn, deleteBtn);
 
-        card.getChildren().addAll(statusBox, clientLabel, emailLabel, telLabel, sep1,
+        card.getChildren().addAll(statusBox, clientLabel, emailLabel, sep1,
                                    hotelLabel, chambreLabel, datesBox, priceBox, sep2, actionButtons);
 
         return card;
@@ -229,7 +235,8 @@ public class ReservationViewController implements Initializable {
 
         // Style the dialog
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setStyle("-fx-background-color: #F5F3E7;");
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
+        dialogPane.getStyleClass().add("form-dialog");
 
         ButtonType saveButtonType = new ButtonType("💾 Réserver", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -237,8 +244,9 @@ public class ReservationViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.setStyle("-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; " +
-                           "-fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;");
+        saveButton.getStyleClass().add("form-button-primary");
+        Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
+        cancelButton.getStyleClass().add("form-button-secondary");
 
         ScrollPane form = createReservationForm(null);
         dialog.getDialogPane().setContent(form);
@@ -277,7 +285,8 @@ public class ReservationViewController implements Initializable {
 
         // Style the dialog
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setStyle("-fx-background-color: #F5F3E7;");
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
+        dialogPane.getStyleClass().add("form-dialog");
 
         ButtonType saveButtonType = new ButtonType("💾 Enregistrer", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -285,8 +294,9 @@ public class ReservationViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.setStyle("-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; " +
-                           "-fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;");
+        saveButton.getStyleClass().add("form-button-primary");
+        Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
+        cancelButton.getStyleClass().add("form-button-secondary");
 
         ScrollPane form = createReservationForm(reservation);
         dialog.getDialogPane().setContent(form);
@@ -350,49 +360,35 @@ public class ReservationViewController implements Initializable {
     private ScrollPane createReservationForm(Reservation reservation) {
         VBox container = new VBox(15);
         container.setPadding(new Insets(25));
-        container.setStyle("-fx-background-color: #F5F3E7; -fx-background-radius: 10;");
         container.setPrefWidth(500);
+        container.getStyleClass().add("form-card");
 
-        // Client Name
-        VBox nomBox = new VBox(5);
-        Label nomLabel = new Label("Nom du client *");
-        nomLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
-        TextField nomField = new TextField(reservation != null ? reservation.getClientNom() : "");
-        nomField.setPromptText("Ex: Ahmed Ben Salem");
-        nomField.setId("nomField");
-        nomField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
-        Label nomError = org.example.utils.FormValidator.createErrorLabel();
-        nomError.setId("nomError");
-        nomBox.getChildren().addAll(nomLabel, nomField, nomError);
+        Label titleLabel = new Label("Détails de la réservation");
+        titleLabel.getStyleClass().add("form-title");
 
-        // Email
-        VBox emailBox = new VBox(5);
-        Label emailLabel = new Label("Email *");
-        emailLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
-        TextField emailField = new TextField(reservation != null ? reservation.getClientEmail() : "");
-        emailField.setPromptText("Ex: ahmed.salem@email.com");
-        emailField.setId("emailField");
-        emailField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
-        Label emailError = org.example.utils.FormValidator.createErrorLabel();
-        emailError.setId("emailError");
-        emailBox.getChildren().addAll(emailLabel, emailField, emailError);
-
-        // Phone
-        VBox telBox = new VBox(5);
-        Label telLabel = new Label("Téléphone *");
-        telLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
-        TextField telField = new TextField(reservation != null ? reservation.getClientTelephone() : "");
-        telField.setPromptText("Ex: +216 20 123 456");
-        telField.setId("telField");
-        telField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
-        Label telError = org.example.utils.FormValidator.createErrorLabel();
-        telError.setId("telError");
-        telBox.getChildren().addAll(telLabel, telField, telError);
+        // User
+        VBox userBox = new VBox(5);
+        Label userLabel = new Label("Utilisateur *");
+        userLabel.getStyleClass().add("form-label");
+        ComboBox<String> userCombo = new ComboBox<>();
+        userCombo.setPromptText("Sélectionnez un utilisateur");
+        for (personne user : userList) {
+            userCombo.getItems().add(formatUserOption(user));
+        }
+        if (reservation != null) {
+            userCombo.setValue(findUserOption(reservation.getUserId()));
+        }
+        userCombo.setId("userCombo");
+        userCombo.getStyleClass().add("form-field");
+        userCombo.setPrefWidth(500);
+        Label userError = org.example.utils.FormValidator.createErrorLabel();
+        userError.setId("userError");
+        userBox.getChildren().addAll(userLabel, userCombo, userError);
 
         // Hotel
         VBox hotelBox = new VBox(5);
         Label hotelLabel = new Label("Hôtel *");
-        hotelLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        hotelLabel.getStyleClass().add("form-label");
         ComboBox<String> hotelCombo = new ComboBox<>();
         hotelCombo.setPromptText("Sélectionnez un hôtel");
         for (Hotel h : hotelList) {
@@ -402,7 +398,7 @@ public class ReservationViewController implements Initializable {
             hotelCombo.setValue(reservation.getHotelId() + " - " + getHotelName(reservation.getHotelId()));
         }
         hotelCombo.setId("hotelCombo");
-        hotelCombo.setStyle("-fx-padding: 5;");
+        hotelCombo.getStyleClass().add("form-field");
         hotelCombo.setPrefWidth(500);
         Label hotelError = org.example.utils.FormValidator.createErrorLabel();
         hotelError.setId("hotelError");
@@ -411,7 +407,7 @@ public class ReservationViewController implements Initializable {
         // Chambre
         VBox chambreBox = new VBox(5);
         Label chambreLabel = new Label("Chambre *");
-        chambreLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        chambreLabel.getStyleClass().add("form-label");
         ComboBox<String> chambreCombo = new ComboBox<>();
         chambreCombo.setPromptText("Sélectionnez d'abord un hôtel");
 
@@ -439,7 +435,7 @@ public class ReservationViewController implements Initializable {
             chambreCombo.setValue(reservation.getChambreId() + " - " + getChambreType(reservation.getChambreId()));
         }
         chambreCombo.setId("chambreCombo");
-        chambreCombo.setStyle("-fx-padding: 5;");
+        chambreCombo.getStyleClass().add("form-field");
         chambreCombo.setPrefWidth(500);
         Label chambreError = org.example.utils.FormValidator.createErrorLabel();
         chambreError.setId("chambreError");
@@ -448,10 +444,10 @@ public class ReservationViewController implements Initializable {
         // Date Début
         VBox dateDebutBox = new VBox(5);
         Label dateDebutLabel = new Label("Date de début *");
-        dateDebutLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        dateDebutLabel.getStyleClass().add("form-label");
         DatePicker dateDebutPicker = new DatePicker(reservation != null ? reservation.getDateDebut() : LocalDate.now());
         dateDebutPicker.setId("dateDebutPicker");
-        dateDebutPicker.setStyle("-fx-padding: 5;");
+        dateDebutPicker.getStyleClass().add("form-field");
         dateDebutPicker.setPrefWidth(500);
         Label dateDebutError = org.example.utils.FormValidator.createErrorLabel();
         dateDebutError.setId("dateDebutError");
@@ -460,10 +456,10 @@ public class ReservationViewController implements Initializable {
         // Date Fin
         VBox dateFinBox = new VBox(5);
         Label dateFinLabel = new Label("Date de fin *");
-        dateFinLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        dateFinLabel.getStyleClass().add("form-label");
         DatePicker dateFinPicker = new DatePicker(reservation != null ? reservation.getDateFin() : LocalDate.now().plusDays(1));
         dateFinPicker.setId("dateFinPicker");
-        dateFinPicker.setStyle("-fx-padding: 5;");
+        dateFinPicker.getStyleClass().add("form-field");
         dateFinPicker.setPrefWidth(500);
         Label dateFinError = org.example.utils.FormValidator.createErrorLabel();
         dateFinError.setId("dateFinError");
@@ -472,11 +468,11 @@ public class ReservationViewController implements Initializable {
         // Prix Total
         VBox prixBox = new VBox(5);
         Label prixLabel = new Label("Prix total (DT) *");
-        prixLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        prixLabel.getStyleClass().add("form-label");
         TextField prixField = new TextField(reservation != null ? String.valueOf(reservation.getPrixTotal()) : "");
         prixField.setPromptText("Ex: 450.00");
         prixField.setId("prixField");
-        prixField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        prixField.getStyleClass().add("form-field");
         Label prixError = org.example.utils.FormValidator.createErrorLabel();
         prixError.setId("prixError");
         prixBox.getChildren().addAll(prixLabel, prixField, prixError);
@@ -484,22 +480,43 @@ public class ReservationViewController implements Initializable {
         // Statut
         VBox statutBox = new VBox(5);
         Label statutLabel = new Label("Statut *");
-        statutLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        statutLabel.getStyleClass().add("form-label");
         ComboBox<String> statutCombo = new ComboBox<>();
         statutCombo.getItems().addAll("EN_ATTENTE", "CONFIRMEE", "ANNULEE");
         statutCombo.setValue(reservation != null ? reservation.getStatut() : "EN_ATTENTE");
         statutCombo.setId("statutCombo");
-        statutCombo.setStyle("-fx-padding: 5;");
+        statutCombo.getStyleClass().add("form-field");
         Label statutError = org.example.utils.FormValidator.createErrorLabel();
         statutError.setId("statutError");
         statutBox.getChildren().addAll(statutLabel, statutCombo, statutError);
 
         // Info text
         Label infoLabel = new Label("* Champs obligatoires");
-        infoLabel.setStyle("-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-style: italic;");
+        infoLabel.getStyleClass().add("form-help");
 
-        container.getChildren().addAll(nomBox, emailBox, telBox, hotelBox, chambreBox,
-                                        dateDebutBox, dateFinBox, prixBox, statutBox, infoLabel);
+        GridPane formGrid = new GridPane();
+        formGrid.getStyleClass().add("form-grid");
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(50);
+        col1.setHgrow(Priority.ALWAYS);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(50);
+        col2.setHgrow(Priority.ALWAYS);
+        formGrid.getColumnConstraints().addAll(col1, col2);
+
+        formGrid.add(userBox, 0, 0);
+        formGrid.add(hotelBox, 1, 0);
+
+        formGrid.add(chambreBox, 0, 1);
+        formGrid.add(statutBox, 1, 1);
+
+        formGrid.add(dateDebutBox, 0, 2);
+        formGrid.add(dateFinBox, 1, 2);
+
+        formGrid.add(prixBox, 0, 3);
+        GridPane.setColumnSpan(prixBox, 2);
+
+        container.getChildren().addAll(titleLabel, formGrid, infoLabel);
 
         // Wrap in ScrollPane
         ScrollPane scrollPane = new ScrollPane(container);
@@ -513,9 +530,7 @@ public class ReservationViewController implements Initializable {
 
     private Reservation getReservationFromForm(ScrollPane scrollPane, Reservation existingReservation) {
         VBox container = (VBox) scrollPane.getContent();
-        TextField nomField = (TextField) container.lookup("#nomField");
-        TextField emailField = (TextField) container.lookup("#emailField");
-        TextField telField = (TextField) container.lookup("#telField");
+        ComboBox<String> userCombo = (ComboBox<String>) container.lookup("#userCombo");
         ComboBox<String> hotelCombo = (ComboBox<String>) container.lookup("#hotelCombo");
         ComboBox<String> chambreCombo = (ComboBox<String>) container.lookup("#chambreCombo");
         DatePicker dateDebutPicker = (DatePicker) container.lookup("#dateDebutPicker");
@@ -523,9 +538,7 @@ public class ReservationViewController implements Initializable {
         TextField prixField = (TextField) container.lookup("#prixField");
         ComboBox<String> statutCombo = (ComboBox<String>) container.lookup("#statutCombo");
 
-        Label nomError = (Label) container.lookup("#nomError");
-        Label emailError = (Label) container.lookup("#emailError");
-        Label telError = (Label) container.lookup("#telError");
+        Label userError = (Label) container.lookup("#userError");
         Label hotelError = (Label) container.lookup("#hotelError");
         Label chambreError = (Label) container.lookup("#chambreError");
         Label dateDebutError = (Label) container.lookup("#dateDebutError");
@@ -535,9 +548,7 @@ public class ReservationViewController implements Initializable {
 
         // Validation
         boolean valid = true;
-        valid &= org.example.utils.FormValidator.validateRequired(nomField, nomError, "Le nom");
-        valid &= org.example.utils.FormValidator.validateEmail(emailField, emailError);
-        valid &= org.example.utils.FormValidator.validatePhone(telField, telError);
+        valid &= org.example.utils.FormValidator.validateComboBox(userCombo, userError, "un utilisateur");
         valid &= org.example.utils.FormValidator.validateComboBox(hotelCombo, hotelError, "un hôtel");
         valid &= org.example.utils.FormValidator.validateComboBox(chambreCombo, chambreError, "une chambre");
         valid &= org.example.utils.FormValidator.validateDateRange(dateDebutPicker, dateFinPicker, dateDebutError, dateFinError);
@@ -548,13 +559,12 @@ public class ReservationViewController implements Initializable {
             return null;
         }
 
+        int userId = Integer.parseInt(userCombo.getValue().split(" - ")[0]);
         int hotelId = Integer.parseInt(hotelCombo.getValue().split(" - ")[0]);
         int chambreId = Integer.parseInt(chambreCombo.getValue().split(" - ")[0]);
 
         if (existingReservation != null) {
-            existingReservation.setClientNom(nomField.getText().trim());
-            existingReservation.setClientEmail(emailField.getText().trim());
-            existingReservation.setClientTelephone(telField.getText().trim());
+            existingReservation.setUserId(userId);
             existingReservation.setHotelId(hotelId);
             existingReservation.setChambreId(chambreId);
             existingReservation.setDateDebut(dateDebutPicker.getValue());
@@ -564,9 +574,7 @@ public class ReservationViewController implements Initializable {
             return existingReservation;
         } else {
             return new Reservation(
-                nomField.getText().trim(),
-                emailField.getText().trim(),
-                telField.getText().trim(),
+                userId,
                 chambreId,
                 hotelId,
                 dateDebutPicker.getValue(),
@@ -587,11 +595,25 @@ public class ReservationViewController implements Initializable {
 
         reservationCardsContainer.getChildren().clear();
         for (Reservation reservation : reservationList) {
-            if (reservation.getClientNom().toLowerCase().contains(searchText) ||
-                reservation.getClientEmail().toLowerCase().contains(searchText)) {
+            String name = reservation.getUserDisplayName().toLowerCase();
+            String email = reservation.getUserEmail() != null ? reservation.getUserEmail().toLowerCase() : "";
+            if (name.contains(searchText) || email.contains(searchText)) {
                 reservationCardsContainer.getChildren().add(createReservationCard(reservation));
             }
         }
+    }
+
+    private String formatUserOption(personne user) {
+        return user.getId() + " - " + user.getPrenom() + " " + user.getNom() + " (" + user.getEmail() + ")";
+    }
+
+    private String findUserOption(int userId) {
+        for (personne user : userList) {
+            if (user.getId() == userId) {
+                return formatUserOption(user);
+            }
+        }
+        return null;
     }
 
     @FXML

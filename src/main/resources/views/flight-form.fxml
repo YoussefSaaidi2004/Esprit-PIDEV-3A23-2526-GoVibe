@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.example.controllers.FlightFormController"
+           stylesheets="@../styles/unified-styles.css"
+           styleClass="main-bg">
+    
+    
+    <VBox spacing="0" alignment="CENTER" styleClass="form-container">
+        <VBox styleClass="form-card" spacing="25" style="-fx-max-width: 700px;">
+            <VBox spacing="8" alignment="CENTER">
+                <HBox spacing="10" alignment="CENTER">
+                    <Text text="✈️" style="-fx-font-size: 24px; -fx-fill: #50C878;"/>
+                    <Text fx:id="formTitle" text="Flight Configuration" styleClass="title" style="-fx-font-size: 22;"/>
+                </HBox>
+                <Text text="Complete the details for this scheduled flight" styleClass="subtitle"/>
+            </VBox>
+
+            <GridPane hgap="20" vgap="20">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
+                    <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
+                </columnConstraints>
+
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="FLIGHT ID" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
+                        <Text text="🔹" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <TextField fx:id="txtFlightId" promptText="e.g. GV-101" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="AIRLINE" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
+                        <Text text="✈️" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <TextField fx:id="txtAirline" promptText="e.g. GoVibe Air" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="DEPARTURE" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
+                        <Text text="🛫" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <TextField fx:id="txtDepartureAirport" promptText="Departure City/Airport" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="DESTINATION" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
+                        <Text text="🛬" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <TextField fx:id="txtDestination" promptText="Destination City/Airport" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                    <Label text="DEPARTURE TIME" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
+                        <Text text="🕐" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <TextField fx:id="txtDepartureTime" promptText="HH:mm" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <Label text="ARRIVAL TIME" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
+                        <Text text="🕐" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <TextField fx:id="txtArrivalTime" promptText="HH:mm" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                    <Label text="TRAVEL CLASS" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
+                        <Text text="⭐" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <ComboBox fx:id="cmbClass" promptText="Select class" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS" prefWidth="200"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <Label text="TOTAL SEATS" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
+                        <Text text="🎫" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <TextField fx:id="txtSeats" promptText="e.g. 180" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                    <Label text="PRICE (DT)" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
+                        <Text text="💴" style="-fx-font-size: 14px; -fx-fill: #50C878;"/>
+                        <TextField fx:id="txtPrice" promptText="e.g. 450" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+                
+                <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                </VBox>
+                
+                <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
+                    <Label text="DESCRIPTION" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
+                    <HBox styleClass="input-with-icon" spacing="10" alignment="TOP_LEFT" style="-fx-padding: 12;">
+                        <Text text="📝" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <TextArea fx:id="txtDescription" prefHeight="80" promptText="Optional flight description..." style="-fx-background-color: transparent; -fx-border-width: 0;" wrapText="true" VBox.vgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+            </GridPane>
+
+            <HBox spacing="15" alignment="CENTER">
+                <Button onAction="#handleCancel" styleClass="btn-secondary" prefWidth="50" prefHeight="45" style="-fx-background-radius: 25;">
+                    <tooltip><Tooltip text="Cancel"/></tooltip>
+                    <graphic><HBox spacing="0" alignment="CENTER">
+                        <Text text="❌" style="-fx-font-size: 20px; -fx-fill: white;"/>
+                    </HBox></graphic>
+                </Button>
+                <Button onAction="#handleSave" styleClass="btn-primary" prefWidth="50" prefHeight="45" style="-fx-background-radius: 25;">
+                    <tooltip><Tooltip text="Save Flight"/></tooltip>
+                    <graphic><HBox spacing="0" alignment="CENTER">
+                        <Text text="💾" style="-fx-font-size: 20px; -fx-fill: white;"/>
+                    </HBox></graphic>
+                </Button>
+            </HBox>
+        </VBox>
+    </VBox>
+</StackPane>
+

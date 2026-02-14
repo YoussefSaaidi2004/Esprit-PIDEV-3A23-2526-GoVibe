@@ -9,6 +9,7 @@
             fx:controller="org.example.controllers.MainLayoutController"
             fx:id="mainContent"
             prefWidth="1400" prefHeight="800"
+            stylesheets="@styles.css"
             style="-fx-background-color: #D1F2EB;">
 
     <!-- ==================== SIDEBAR ==================== -->
@@ -50,10 +51,15 @@
 
                 <Separator style="-fx-background-color: rgba(255,255,255,0.2);"/>
 
+                <Button text="⬅  Dashboard"
+                    onAction="#backToAdmin"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: rgba(160,224,201,0.15); -fx-text-fill: #D1F2EB; -fx-padding: 14 20; -fx-background-radius: 10; -fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand;"/>
+
                 <Button text="🚪  Déconnexion"
-                        onAction="#deconnexion"
-                        maxWidth="Infinity"
-                        style="-fx-background-color: rgba(208,78,54,0.2); -fx-text-fill: #D84E36; -fx-padding: 14 20; -fx-background-radius: 10; -fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand; -fx-border-color: rgba(208,78,54,0.5); -fx-border-width: 1; -fx-border-radius: 10;"/>
+                    onAction="#deconnexion"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: rgba(208,78,54,0.2); -fx-text-fill: #D84E36; -fx-padding: 14 20; -fx-background-radius: 10; -fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand; -fx-border-color: rgba(208,78,54,0.5); -fx-border-width: 1; -fx-border-radius: 10;"/>
             </VBox>
 
         </VBox>

@@ -38,8 +38,12 @@ public class MainLayoutController implements Initializable {
 
     @FXML
     public void deconnexion() {
-        System.out.println("Déconnexion...");
-        System.exit(0);
+        org.example.mains.MainApp.switchScene("/org/example/LoginView.fxml", "GoVibe Connexion");
+    }
+
+    @FXML
+    public void backToAdmin() {
+        org.example.mains.MainApp.switchScene("/org/example/AdminDashboardView.fxml", "Admin Dashboard");
     }
 
     private void loadView(String fxmlFile) {

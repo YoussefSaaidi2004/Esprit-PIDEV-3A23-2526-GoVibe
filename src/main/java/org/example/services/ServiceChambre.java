@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceChambre implements IService<Chambre> {
+public class ServiceChambre {
 
     private Connection connection;
 
@@ -16,7 +16,6 @@ public class ServiceChambre implements IService<Chambre> {
     }
 
     // ================= INSERT =================
-    @Override
     public void insert(Chambre c) throws SQLException {
 
         String sql = "INSERT INTO chambre(type, capacite, equipements, hotel_id, prix_standard, prix_haute_saison, prix_basse_saison) VALUES (?,?,?,?,?,?,?)";
@@ -35,8 +34,8 @@ public class ServiceChambre implements IService<Chambre> {
         }
     }
 
+
     // ================= UPDATE =================
-    @Override
     public void update(Chambre c) throws SQLException {
 
         String sql = "UPDATE chambre SET type=?, capacite=?, equipements=?, hotel_id=?, prix_standard=?, prix_haute_saison=?, prix_basse_saison=? WHERE id=?";
@@ -57,7 +56,6 @@ public class ServiceChambre implements IService<Chambre> {
     }
 
     // ================= DELETE =================
-    @Override
     public void delete(int id) throws SQLException {
 
         String sql = "DELETE FROM chambre WHERE id=?";
@@ -86,7 +84,6 @@ public class ServiceChambre implements IService<Chambre> {
     }
 
     // ================= FIND ALL =================
-    @Override
     public List<Chambre> show() throws SQLException {
 
         List<Chambre> list = new ArrayList<>();
@@ -102,6 +99,7 @@ public class ServiceChambre implements IService<Chambre> {
 
         return list;
     }
+
 
     // ================= MAPPING =================
     private Chambre mapResultSetToChambre(ResultSet rs) throws SQLException {

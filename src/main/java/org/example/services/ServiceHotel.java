@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServiceHotel implements IService<Hotel> {
+public class ServiceHotel {
 
     private Connection connection;
 
@@ -17,7 +17,6 @@ public class ServiceHotel implements IService<Hotel> {
     }
 
     // 🔹 Insert
-    @Override
     public void insert(Hotel hotel) throws SQLException {
         if (connection == null) {
             throw new IllegalStateException("Connexion BD = NULL. Verify MyDataBase (URL/user/password).");
@@ -37,8 +36,8 @@ public class ServiceHotel implements IService<Hotel> {
         stmt.executeUpdate();
     }
 
+
     // 🔹 Update
-    @Override
     public void update(Hotel hotel) throws SQLException {
         String sql = "UPDATE hotel SET nom=?, adresse=?, ville=?, nombre_etoiles=?, description=?, photo_url=?, budget=? WHERE id=?";
         PreparedStatement stmt = connection.prepareStatement(sql);
@@ -56,7 +55,6 @@ public class ServiceHotel implements IService<Hotel> {
     }
 
     // 🔹 Delete
-    @Override
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM hotel WHERE id=?";
         PreparedStatement stmt = connection.prepareStatement(sql);
@@ -65,7 +63,6 @@ public class ServiceHotel implements IService<Hotel> {
     }
 
     // 🔹 Show
-    @Override
     public List<Hotel> show() throws SQLException {
         List<Hotel> hotels = new ArrayList<>();
         String sql = "SELECT * FROM hotel";
@@ -90,4 +87,5 @@ public class ServiceHotel implements IService<Hotel> {
 
         return hotels;
     }
+
 }

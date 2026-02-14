@@ -1,34 +1,38 @@
 package org.example.utils;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import org.example.config.UnifiedDatabaseManager;
 
+/**
+ * LEGACY CLASS - Use UnifiedDatabaseManager directly for new code
+ * This class is maintained for backward compatibility only.
+ * It delegates to UnifiedDatabaseManager to ensure consistent database access.
+ */
+@Deprecated
 public class MyDataBase {
-    private final String URL="jdbc:mysql://localhost:3306/voyage";
-    private final String USER="root";
-    private final String PASSWORD="";
-    private Connection myConnection;
+
     private static MyDataBase instance;
-    public MyDataBase() {
-        try {
-            myConnection= DriverManager.getConnection(URL,USER,PASSWORD);
-            System.out.println("Connected to database successfully");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+
+    private MyDataBase() {
+        System.out.println("⚠️  MyDataBase is DEPRECATED. Use UnifiedDatabaseManager instead.");
+    }
+
+    public static synchronized MyDataBase getInstance() {
+        if (instance == null) {
+            instance = new MyDataBase();
         }
+        return instance;
+    }
+
+    /**
+     * Get connection from unified manager
+     * @return Connection from UnifiedDatabaseManager
+     */
+    public Connection getConnection() {
+        return UnifiedDatabaseManager.getInstance().getConnection();
     }
 
     public Connection getMyConnection() {
-        return myConnection;
-    }
-
-    public static MyDataBase getInstance()
-    {
-        if(instance==null)
-        {
-            instance=new MyDataBase();
-        }
-        return instance;
+        return getConnection();
     }
 }

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.RoomBookingController"
+            stylesheets="@../styles.css">
+
+    <left>
+        <VBox prefWidth="240" spacing="10" alignment="TOP_CENTER"
+              style="-fx-background-color: #013220; -fx-padding: 24 16;">
+            <VBox alignment="CENTER" spacing="6">
+                <SVGPath content="M4 6h16v12H4zM6 8v8h2V8H6zm4 0v8h4V8h-4zm6 0v8h2V8h-2z"
+                         style="-fx-fill: #A0E0C9;" scaleX="1.1" scaleY="1.1"/>
+                <Text text="GoVibe" style="-fx-fill: #D1F2EB; -fx-font-size: 18; -fx-font-weight: bold;"/>
+                <Text text="Espace client" style="-fx-fill: #A0E0C9; -fx-font-size: 10;"/>
+            </VBox>
+
+            <Region prefHeight="8"/>
+
+            <Button onAction="#handleHome" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <SVGPath content="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+                                 style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                        <Text text="Accueil" style="-fx-fill: #A0E0C9;"/>
+                    </HBox>
+                </graphic>
+            </Button>
+
+            <Button onAction="#handleFlights" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
+                                 style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                        <Text text="Vols" style="-fx-fill: #A0E0C9;"/>
+                    </HBox>
+                </graphic>
+            </Button>
+
+            <Button onAction="#handleLocations" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <SVGPath content="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"
+                                 style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                        <Text text="Locations" style="-fx-fill: #A0E0C9;"/>
+                    </HBox>
+                </graphic>
+            </Button>
+
+            <Button onAction="#handleChambres" maxWidth="Infinity"
+                    style="-fx-background-color: rgba(80,200,120,0.2); -fx-text-fill: #D1F2EB; -fx-font-size: 14px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <SVGPath content="M3 10h18v8H3zM5 6h14v4H5z"
+                                 style="-fx-fill: #D1F2EB;" scaleX="0.9" scaleY="0.9"/>
+                        <Text text="Chambres" style="-fx-fill: #D1F2EB;"/>
+                    </HBox>
+                </graphic>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button onAction="#handleLogout" maxWidth="Infinity"
+                    style="-fx-background-color: rgba(231,76,60,0.15); -fx-text-fill: #e74c3c; -fx-font-size: 13px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <SVGPath content="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H9c-1.1 0-2 .9-2 2v3h2V5h11v14H9v-3H7v3c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+                                 style="-fx-fill: #e74c3c;" scaleX="0.9" scaleY="0.9"/>
+                        <Text text="Deconnexion" style="-fx-fill: #e74c3c;"/>
+                    </HBox>
+                </graphic>
+            </Button>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="0" style="-fx-background-color: #F5F3E7;">
+            <HBox alignment="CENTER_LEFT" spacing="15"
+                  style="-fx-background-color: linear-gradient(to right, #F5F3E7, #D1F2EB); -fx-padding: 25 40;">
+                <Label text="Chambres disponibles"
+                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #013220;"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <ComboBox fx:id="filterHotelCombo" promptText="Filtrer par hotel"
+                          onAction="#filterByHotel"
+                          prefWidth="220"/>
+
+                <TextField fx:id="searchField" promptText="Rechercher..."
+                           onKeyReleased="#searchChambres"
+                           prefWidth="260"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" style="-fx-background: #F5F3E7; -fx-background-color: #F5F3E7;"
+                        VBox.vgrow="ALWAYS">
+                <VBox style="-fx-background-color: #F5F3E7;">
+                    <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+                    <FlowPane fx:id="chambreCardsContainer" hgap="25" vgap="25"
+                              style="-fx-background-color: transparent;"/>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+</BorderPane>

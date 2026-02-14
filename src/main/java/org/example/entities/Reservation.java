@@ -5,9 +5,10 @@ import java.time.LocalDate;
 public class Reservation {
 
     private int id;
-    private String clientNom;
-    private String clientEmail;
-    private String clientTelephone;
+    private int userId;
+    private String userNom;
+    private String userPrenom;
+    private String userEmail;
     private int chambreId;
     private int hotelId;
     private LocalDate dateDebut;
@@ -18,12 +19,10 @@ public class Reservation {
     // Constructeurs
     public Reservation() {}
 
-    public Reservation(String clientNom, String clientEmail, String clientTelephone,
-                      int chambreId, int hotelId, LocalDate dateDebut, LocalDate dateFin,
+    public Reservation(int userId, int chambreId, int hotelId,
+                      LocalDate dateDebut, LocalDate dateFin,
                       double prixTotal, String statut) {
-        this.clientNom = clientNom;
-        this.clientEmail = clientEmail;
-        this.clientTelephone = clientTelephone;
+        this.userId = userId;
         this.chambreId = chambreId;
         this.hotelId = hotelId;
         this.dateDebut = dateDebut;
@@ -32,10 +31,10 @@ public class Reservation {
         this.statut = statut;
     }
 
-    public Reservation(int id, String clientNom, String clientEmail, String clientTelephone,
-                      int chambreId, int hotelId, LocalDate dateDebut, LocalDate dateFin,
+    public Reservation(int id, int userId, int chambreId, int hotelId,
+                      LocalDate dateDebut, LocalDate dateFin,
                       double prixTotal, String statut) {
-        this(clientNom, clientEmail, clientTelephone, chambreId, hotelId, dateDebut, dateFin, prixTotal, statut);
+        this(userId, chambreId, hotelId, dateDebut, dateFin, prixTotal, statut);
         this.id = id;
     }
 
@@ -43,14 +42,24 @@ public class Reservation {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public String getClientNom() { return clientNom; }
-    public void setClientNom(String clientNom) { this.clientNom = clientNom; }
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 
-    public String getClientEmail() { return clientEmail; }
-    public void setClientEmail(String clientEmail) { this.clientEmail = clientEmail; }
+    public String getUserNom() { return userNom; }
+    public void setUserNom(String userNom) { this.userNom = userNom; }
 
-    public String getClientTelephone() { return clientTelephone; }
-    public void setClientTelephone(String clientTelephone) { this.clientTelephone = clientTelephone; }
+    public String getUserPrenom() { return userPrenom; }
+    public void setUserPrenom(String userPrenom) { this.userPrenom = userPrenom; }
+
+    public String getUserEmail() { return userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
+
+    public String getUserDisplayName() {
+        String prenom = userPrenom != null ? userPrenom.trim() : "";
+        String nom = userNom != null ? userNom.trim() : "";
+        String fullName = (prenom + " " + nom).trim();
+        return fullName.isEmpty() ? "Utilisateur #" + userId : fullName;
+    }
 
     public int getChambreId() { return chambreId; }
     public void setChambreId(int chambreId) { this.chambreId = chambreId; }
@@ -72,7 +81,7 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Réservation #" + id + " - " + clientNom + " | " + dateDebut + " → " + dateFin;
+        return "Réservation #" + id + " - " + getUserDisplayName() + " | " + dateDebut + " → " + dateFin;
     }
 }
 

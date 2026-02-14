@@ -185,8 +185,8 @@ public class HotelViewController implements Initializable {
 
         // Style the dialog
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setStyle("-fx-background-color: #F5F3E7;");
-        dialogPane.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
+        dialogPane.getStyleClass().add("form-dialog");
 
         ButtonType saveButtonType = new ButtonType("💾 Enregistrer", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -194,8 +194,9 @@ public class HotelViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.setStyle("-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; " +
-                           "-fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;");
+        saveButton.getStyleClass().add("form-button-primary");
+        Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
+        cancelButton.getStyleClass().add("form-button-secondary");
 
         ScrollPane form = createHotelForm(null);
         dialog.getDialogPane().setContent(form);
@@ -234,8 +235,8 @@ public class HotelViewController implements Initializable {
 
         // Style the dialog
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setStyle("-fx-background-color: #F5F3E7;");
-        dialogPane.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
+        dialogPane.getStyleClass().add("form-dialog");
 
         ButtonType saveButtonType = new ButtonType("💾 Enregistrer", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -243,8 +244,9 @@ public class HotelViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.setStyle("-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; " +
-                           "-fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;");
+        saveButton.getStyleClass().add("form-button-primary");
+        Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
+        cancelButton.getStyleClass().add("form-button-secondary");
 
         ScrollPane form = createHotelForm(hotel);
         dialog.getDialogPane().setContent(form);
@@ -297,17 +299,20 @@ public class HotelViewController implements Initializable {
     private ScrollPane createHotelForm(Hotel hotel) {
         VBox container = new VBox(15);
         container.setPadding(new Insets(25));
-        container.setStyle("-fx-background-color: #F5F3E7; -fx-background-radius: 10;");
         container.setPrefWidth(480);
+        container.getStyleClass().add("form-card");
+
+        Label titleLabel = new Label("Informations de l'hotel");
+        titleLabel.getStyleClass().add("form-title");
 
         // Nom
         VBox nomBox = new VBox(5);
         Label nomLabel = new Label("Nom de l'hôtel *");
-        nomLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        nomLabel.getStyleClass().add("form-label");
         TextField nomField = new TextField(hotel != null ? hotel.getNom() : "");
         nomField.setPromptText("Ex: Hôtel Royal Palace");
         nomField.setId("nomField");
-        nomField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        nomField.getStyleClass().add("form-field");
         Label nomError = org.example.utils.FormValidator.createErrorLabel();
         nomError.setId("nomError");
         nomBox.getChildren().addAll(nomLabel, nomField, nomError);
@@ -315,11 +320,11 @@ public class HotelViewController implements Initializable {
         // Adresse
         VBox adresseBox = new VBox(5);
         Label adresseLabel = new Label("Adresse *");
-        adresseLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        adresseLabel.getStyleClass().add("form-label");
         TextField adresseField = new TextField(hotel != null ? hotel.getAdresse() : "");
         adresseField.setPromptText("Ex: 123 Avenue Habib Bourguiba");
         adresseField.setId("adresseField");
-        adresseField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        adresseField.getStyleClass().add("form-field");
         Label adresseError = org.example.utils.FormValidator.createErrorLabel();
         adresseError.setId("adresseError");
         adresseBox.getChildren().addAll(adresseLabel, adresseField, adresseError);
@@ -327,11 +332,11 @@ public class HotelViewController implements Initializable {
         // Ville
         VBox villeBox = new VBox(5);
         Label villeLabel = new Label("Ville *");
-        villeLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        villeLabel.getStyleClass().add("form-label");
         TextField villeField = new TextField(hotel != null ? hotel.getVille() : "");
         villeField.setPromptText("Ex: Tunis");
         villeField.setId("villeField");
-        villeField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        villeField.getStyleClass().add("form-field");
         Label villeError = org.example.utils.FormValidator.createErrorLabel();
         villeError.setId("villeError");
         villeBox.getChildren().addAll(villeLabel, villeField, villeError);
@@ -339,21 +344,21 @@ public class HotelViewController implements Initializable {
         // Étoiles
         VBox etoilesBox = new VBox(5);
         Label etoilesLabel = new Label("Nombre d'étoiles (1-5) *");
-        etoilesLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        etoilesLabel.getStyleClass().add("form-label");
         Spinner<Integer> etoilesSpinner = new Spinner<>(1, 5, hotel != null ? hotel.getNombreEtoiles() : 3);
         etoilesSpinner.setId("etoilesSpinner");
-        etoilesSpinner.setStyle("-fx-padding: 5;");
+        etoilesSpinner.getStyleClass().add("form-field");
         etoilesSpinner.setEditable(true);
         etoilesBox.getChildren().addAll(etoilesLabel, etoilesSpinner);
 
         // Budget
         VBox budgetBox = new VBox(5);
         Label budgetLabel = new Label("Budget (DT) *");
-        budgetLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        budgetLabel.getStyleClass().add("form-label");
         TextField budgetField = new TextField(hotel != null ? String.valueOf(hotel.getBudget()) : "");
         budgetField.setPromptText("Ex: 200.00");
         budgetField.setId("budgetField");
-        budgetField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        budgetField.getStyleClass().add("form-field");
         Label budgetError = org.example.utils.FormValidator.createErrorLabel();
         budgetError.setId("budgetError");
         budgetBox.getChildren().addAll(budgetLabel, budgetField, budgetError);
@@ -361,12 +366,12 @@ public class HotelViewController implements Initializable {
         // Description
         VBox descBox = new VBox(5);
         Label descLabel = new Label("Description *");
-        descLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        descLabel.getStyleClass().add("form-label");
         TextArea descArea = new TextArea(hotel != null ? hotel.getDescription() : "");
         descArea.setPromptText("Décrivez votre hôtel...");
         descArea.setPrefRowCount(3);
         descArea.setId("descArea");
-        descArea.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        descArea.getStyleClass().add("form-field");
         Label descError = org.example.utils.FormValidator.createErrorLabel();
         descError.setId("descError");
         descBox.getChildren().addAll(descLabel, descArea, descError);
@@ -374,7 +379,7 @@ public class HotelViewController implements Initializable {
         // Photo URL + Browse button
         VBox photoBox = new VBox(5);
         Label photoLabel = new Label("Image de l'hôtel (fichier local ou URL)");
-        photoLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #013220;");
+        photoLabel.getStyleClass().add("form-label");
 
         HBox photoRow = new HBox(8);
         photoRow.setAlignment(Pos.CENTER_LEFT);
@@ -382,11 +387,11 @@ public class HotelViewController implements Initializable {
         TextField photoField = new TextField(hotel != null ? hotel.getPhotoUrl() : "");
         photoField.setPromptText("Choisissez une image ou collez une URL...");
         photoField.setId("photoField");
-        photoField.setStyle("-fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 13px;");
+        photoField.getStyleClass().add("form-field");
         HBox.setHgrow(photoField, Priority.ALWAYS);
 
         Button browseBtn = new Button("Parcourir...");
-        browseBtn.setStyle("-fx-background-color: #50C878; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 6 12; -fx-font-size: 11px; -fx-cursor: hand;");
+        browseBtn.getStyleClass().add("form-button-ghost");
         browseBtn.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Choisir une image d'hôtel");
@@ -406,9 +411,34 @@ public class HotelViewController implements Initializable {
 
         // Info text
         Label infoLabel = new Label("* Champs obligatoires");
-        infoLabel.setStyle("-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-style: italic;");
+        infoLabel.getStyleClass().add("form-help");
 
-        container.getChildren().addAll(nomBox, adresseBox, villeBox, etoilesBox, budgetBox, descBox, photoBox, infoLabel);
+        GridPane formGrid = new GridPane();
+        formGrid.getStyleClass().add("form-grid");
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(50);
+        col1.setHgrow(Priority.ALWAYS);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(50);
+        col2.setHgrow(Priority.ALWAYS);
+        formGrid.getColumnConstraints().addAll(col1, col2);
+
+        formGrid.add(nomBox, 0, 0);
+        formGrid.add(villeBox, 1, 0);
+
+        formGrid.add(adresseBox, 0, 1);
+        GridPane.setColumnSpan(adresseBox, 2);
+
+        formGrid.add(etoilesBox, 0, 2);
+        formGrid.add(budgetBox, 1, 2);
+
+        formGrid.add(descBox, 0, 3);
+        GridPane.setColumnSpan(descBox, 2);
+
+        formGrid.add(photoBox, 0, 4);
+        GridPane.setColumnSpan(photoBox, 2);
+
+        container.getChildren().addAll(titleLabel, formGrid, infoLabel);
 
         // Wrap in ScrollPane
         ScrollPane scrollPane = new ScrollPane(container);

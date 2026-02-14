@@ -21,25 +21,35 @@
             </HBox>
             
             <Button onAction="#navDashboard" styleClass="nav-button" text="Dashboard">
-                <graphic><Text text="📊" styleClass="nav-icon"/></graphic>
+                <graphic>
+                    <SVGPath content="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" styleClass="nav-icon" scaleX="1.1" scaleY="1.1"/>
+                </graphic>
             </Button>
             
             <Button styleClass="nav-button, nav-button-active" text="Flights">
-                <graphic><Text text="✈️" styleClass="nav-icon"/></graphic>
+                <graphic>
+                    <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" styleClass="nav-icon" scaleX="1.1" scaleY="1.1"/>
+                </graphic>
             </Button>
             
             <Button onAction="#navBookings" styleClass="nav-button" text="Bookings">
-                <graphic><Text text="🎫" styleClass="nav-icon"/></graphic>
+                <graphic>
+                    <SVGPath content="M22 10V6c0-1.11-.9-2-2-2H4c-1.1 0-1.99.89-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-9 7.5h-2v-2h2v2zm0-4.5h-2v-2h2v2zm0-4.5h-2v-2h2v2z" styleClass="nav-icon" scaleX="1.1" scaleY="1.1"/>
+                </graphic>
             </Button>
 
             <Region VBox.vgrow="ALWAYS" />
 
             <Button onAction="#handleThemeToggle" styleClass="nav-button" text="Theme">
-                <graphic><Text text="🌗" styleClass="nav-icon"/></graphic>
+                <graphic>
+                    <SVGPath content="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" styleClass="nav-icon" scaleX="1.1" scaleY="1.1"/>
+                </graphic>
             </Button>
             
             <Button onAction="#navUser" styleClass="nav-button" text="User View">
-                <graphic><Text text="🔄" styleClass="nav-icon"/></graphic>
+                <graphic>
+                    <SVGPath content="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" styleClass="nav-icon" scaleX="1.1" scaleY="1.1"/>
+                </graphic>
             </Button>
         </VBox>
     </left>

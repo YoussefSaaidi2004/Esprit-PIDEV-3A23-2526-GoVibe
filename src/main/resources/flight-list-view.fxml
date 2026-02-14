@@ -7,7 +7,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.gestionvol.controller.FlightListController"
+            fx:controller="com.example.gestionvol.controller.admin.FlightListController"
             stylesheets="@../styles.css">
 
     <!-- Top Toolbar -->

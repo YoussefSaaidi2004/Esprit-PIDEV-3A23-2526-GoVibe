@@ -9,7 +9,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.gestionvol.controller.CheckoutFormController"
+            fx:controller="com.example.gestionvol.controller.user.CheckoutFormController"
             stylesheets="@../styles.css">
 
     <center>

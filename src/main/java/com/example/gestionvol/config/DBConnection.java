@@ -22,9 +22,9 @@ public class DBConnection {
             System.out.println("✅ Connected to MySQL");
             return conn;
         } catch (SQLException e) {
-            System.err.println("❌ DB Connection failed");
+            System.err.println("❌ DB Connection failed: " + e.getMessage());
             e.printStackTrace();
-            return null;
+            throw new RuntimeException("Database connection failed: " + e.getMessage(), e);
         }
     }
 }

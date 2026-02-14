@@ -5,7 +5,7 @@
 <?import javafx.scene.shape.SVGPath?>
 
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.example.gestionvol.controller.UserDashboardController"
+            fx:controller="com.example.gestionvol.controller.user.UserDashboardController"
            styleClass="main-bg">
     
     <VBox spacing="0" VBox.vgrow="ALWAYS">

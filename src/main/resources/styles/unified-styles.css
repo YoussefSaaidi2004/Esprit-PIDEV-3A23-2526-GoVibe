@@ -433,31 +433,46 @@
 /* ============ NAVIGATION SIDEBAR ============ */
 .sidebar {
     -fx-background-color: -fx-gv-dark;
-    -fx-padding: 30 15;
-    -fx-pref-width: 90;
-    -fx-alignment: top-center;
+    -fx-padding: 30 20;
+    -fx-pref-width: 250;
+    -fx-alignment: top-left;
 }
 
 .nav-button {
-    -fx-alignment: center;
+    -fx-alignment: center-left;
     -fx-background-color: transparent;
-    -fx-text-fill: transparent;
-    -fx-font-size: 0;
-    -fx-padding: 15;
+    -fx-text-fill: -fx-gv-text-secondary;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 20;
     -fx-background-radius: 12;
     -fx-cursor: hand;
-    -fx-max-width: 60;
-    -fx-min-width: 60;
-    -fx-pref-height: 60;
+    -fx-pref-width: 210;
+    -fx-graphic-text-gap: 15;
+}
+
+.nav-icon {
+    -fx-font-size: 20px;
+    -fx-fill: -fx-gv-text-secondary;
 }
 
 .nav-button:hover {
     -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-text-fill: white;
+}
+
+.nav-button:hover .nav-icon {
+    -fx-fill: white;
 }
 
 .nav-button-active {
     -fx-background-color: -fx-gv-primary;
+    -fx-text-fill: white;
     -fx-effect: dropshadow(three-pass-box, rgba(80, 200, 120, 0.3), 10, 0, 0, 4);
+}
+
+.nav-button-active .nav-icon {
+    -fx-fill: white;
 }
 
 /* ============ TOOLTIP ============ */

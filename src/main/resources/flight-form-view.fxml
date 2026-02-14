@@ -9,7 +9,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.gestionvol.controller.FlightFormController"
+            fx:controller="com.example.gestionvol.controller.admin.FlightFormController"
             stylesheets="@../styles.css">
 
     <center>

@@ -1,5 +1,6 @@
 package com.example.gestionvol;
 
+import com.example.gestionvol.util.ScreenManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,14 +28,11 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;  // Store stage reference
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("/views/user-dashboard.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
         
-        // Apply unified CSS stylesheet for consistent modern styling
-        scene.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
+        // Initialize ScreenManager with lazy loading and caching
+        ScreenManager.initialize(stage, MainApp.class);
         
         stage.setTitle("GoVibe Flight Management System");
-        stage.setScene(scene);
         
         // Set minimum window size for responsive design
         stage.setMinWidth(1000);
@@ -43,12 +41,8 @@ public class MainApp extends Application {
         // Maximize window on startup for better user experience
         stage.setMaximized(true);
         
-        // Set application icon (if available)
-        try {
-            // stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
-        } catch (Exception e) {
-            System.out.println("Icon not found, using default");
-        }
+        // Load initial screen through ScreenManager (consistent with all navigation)
+        ScreenManager.showScreen("/views/user/user-dashboard.fxml", "GoVibe Flight Management System");
         
         stage.show();
         System.out.println("✅ GoVibe Flight Management System launched successfully!");
@@ -60,35 +54,19 @@ public class MainApp extends Application {
     }
 
     /**
-     * Switch to a different scene/view
+     * Switch to a different scene/view (deprecated - use ScreenManager.showScreen instead)
      * @param fxmlPath The FXML file path
      * @param title The window title
      */
     public static void switchScene(String fxmlPath, String title) {
-        try {
-            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource(fxmlPath));
-            Scene scene = new Scene(loader.load());
-            
-            // Apply unified CSS stylesheet
-            scene.getStylesheets().add(MainApp.class.getResource("/styles/unified-styles.css").toExternalForm());
-            
-            // Apply dark mode class if enabled
-            if (isDarkTheme) {
-                scene.getRoot().getStyleClass().add("dark-mode");
-            }
-            
-            if (primaryStage != null) {
-                primaryStage.setScene(scene);
-                primaryStage.setTitle(title);
-                // Enforce full screen with runLater to ensure it applies after layout pass
-                javafx.application.Platform.runLater(() -> {
-                    primaryStage.setMaximized(true);
-                });
-            }
-        } catch (IOException e) {
-            System.err.println("Error switching scene: " + e.getMessage());
-            e.printStackTrace();
-        }
+        ScreenManager.showScreen(fxmlPath, title);
+    }
+
+    /**
+     * Clear cache for a specific screen
+     */
+    public static void clearScreenCache(String fxmlPath) {
+        ScreenManager.clearScreenCache(fxmlPath);
     }
 
     /**
@@ -96,15 +74,8 @@ public class MainApp extends Application {
      */
     public static void toggleTheme() {
         isDarkTheme = !isDarkTheme;
-        if (primaryStage != null && primaryStage.getScene() != null) {
-            if (isDarkTheme) {
-                if (!primaryStage.getScene().getRoot().getStyleClass().contains("dark-mode")) {
-                    primaryStage.getScene().getRoot().getStyleClass().add("dark-mode");
-                }
-            } else {
-                primaryStage.getScene().getRoot().getStyleClass().remove("dark-mode");
-            }
-        }
+        ScreenManager.toggleDarkMode();
+        System.out.println("🎨 Theme toggled to: " + (isDarkTheme ? "DARK" : "LIGHT"));
     }
 }
 

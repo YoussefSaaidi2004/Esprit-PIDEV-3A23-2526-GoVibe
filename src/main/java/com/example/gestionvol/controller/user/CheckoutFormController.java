@@ -1,5 +1,6 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.user;
 
+import com.example.gestionvol.MainApp;
 import com.example.gestionvol.entities.Checkout;
 import com.example.gestionvol.entities.Flight;
 import com.example.gestionvol.service.CheckoutService;
@@ -7,13 +8,9 @@ import com.example.gestionvol.service.FlightService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -129,7 +126,7 @@ public class CheckoutFormController {
 
             if (success) {
                 showAlert("Success", isEditMode ? "Checkout updated successfully!" : "Checkout added successfully!");
-                navigateBack();
+                MainApp.switchScene("/views/user/checkout-view.fxml", "Booking");
             } else {
                 showAlert("Error", "Failed to save checkout. Verify that User ID exists in the database.");
             }
@@ -145,21 +142,7 @@ public class CheckoutFormController {
 
     @FXML
     private void handleCancel() {
-        navigateBack();
-    }
-
-    private void navigateBack() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-view.fxml"));
-            Node view = loader.load();
-            
-            StackPane pageContainer = (StackPane) btnSave.getScene().lookup("#pageContainer");
-            if (pageContainer != null) {
-                pageContainer.getChildren().setAll(view);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MainApp.switchScene("/views/user/checkout-view.fxml", "Booking");
     }
 
     private void showAlert(String title, String content) {

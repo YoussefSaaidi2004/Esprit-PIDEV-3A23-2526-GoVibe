@@ -1,4 +1,4 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.user;
 
 import com.example.gestionvol.MainApp;
 import com.example.gestionvol.entities.Checkout;
@@ -177,7 +177,7 @@ public class CheckoutDetailController {
                         new Thread(() -> {
                             try {
                                 Thread.sleep(1500);
-                                Platform.runLater(() -> MainApp.switchScene("/views/user-dashboard.fxml", "User Dashboard"));
+                                Platform.runLater(() -> MainApp.switchScene("/views/user/user-dashboard.fxml", "User Dashboard"));
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -198,6 +198,6 @@ public class CheckoutDetailController {
 
     @FXML
     private void handleBack() {
-        MainApp.switchScene("/views/user-dashboard.fxml", "User Dashboard");
+        MainApp.switchScene("/views/user/user-dashboard.fxml", "User Dashboard");
     }
 }

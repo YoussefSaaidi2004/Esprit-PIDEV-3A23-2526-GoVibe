@@ -3,36 +3,43 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.TextFlow?>
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.gestionvol.controller.FlightManagementController"
+            fx:controller="com.example.gestionvol.controller.admin.FlightManagementController"
             styleClass="main-bg">
     
     <left>
-        <VBox styleClass="sidebar" spacing="30">
-            <VBox spacing="5" alignment="CENTER" style="-fx-padding: 0 0 30 0;">
-                <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" style="-fx-fill: #50C878;" scaleX="1.5" scaleY="1.5"/>
-                <Text text="GV" style="-fx-fill: white; -fx-font-size: 10; -fx-font-weight: bold;"/>
-            </VBox>
+        <VBox styleClass="sidebar" spacing="20">
+            <!-- Logo Section -->
+            <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 0 0 20 10;">
+                <SVGPath content="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" style="-fx-fill: #50C878;" scaleX="1.2" scaleY="1.2"/>
+                <TextFlow>
+                    <Text text="Go" style="-fx-fill: #50C878; -fx-font-weight: bold; -fx-font-size: 24px;"/>
+                    <Text text="Vibe" style="-fx-fill: #FFFFFF; -fx-font-weight: bold; -fx-font-size: 24px;"/>
+                </TextFlow>
+            </HBox>
             
-            <Button onAction="#navDashboard" styleClass="nav-button">
-                <graphic><Text text="📊" style="-fx-font-size: 24px; -fx-fill: #6c7d75;"/></graphic>
+            <Button onAction="#navDashboard" styleClass="nav-button" text="Dashboard">
+                <graphic><Text text="📊" styleClass="nav-icon"/></graphic>
             </Button>
             
-            <Button styleClass="nav-button, nav-button-active">
-                <graphic><Text text="✈️" style="-fx-font-size: 24px; -fx-fill: white;"/></graphic>
+            <Button styleClass="nav-button, nav-button-active" text="Flights">
+                <graphic><Text text="✈️" styleClass="nav-icon"/></graphic>
             </Button>
             
-            <Button onAction="#navBookings" styleClass="nav-button">
-                <graphic><Text text="🎫" style="-fx-font-size: 24px; -fx-fill: #6c7d75;"/></graphic>
+            <Button onAction="#navBookings" styleClass="nav-button" text="Bookings">
+                <graphic><Text text="🎫" styleClass="nav-icon"/></graphic>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Button onAction="#handleThemeToggle" styleClass="nav-button" text="Theme">
+                <graphic><Text text="🌗" styleClass="nav-icon"/></graphic>
             </Button>
             
-            <Button onAction="#handleThemeToggle" styleClass="nav-button">
-                <graphic><Text text="🌗" style="-fx-font-size: 24px; -fx-fill: #50C878;"/></graphic>
-            </Button>
-            
-            <Button onAction="#navUser" styleClass="nav-button">
-                <graphic><Text text="🔄" style="-fx-font-size: 24px; -fx-fill: #50C878;"/></graphic>
+            <Button onAction="#navUser" styleClass="nav-button" text="User View">
+                <graphic><Text text="🔄" styleClass="nav-icon"/></graphic>
             </Button>
         </VBox>
     </left>

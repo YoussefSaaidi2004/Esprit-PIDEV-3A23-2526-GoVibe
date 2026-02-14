@@ -1,4 +1,4 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.user;
 
 import com.example.gestionvol.entities.Checkout;
 import com.example.gestionvol.entities.Flight;
@@ -181,6 +181,6 @@ public class BookingController {
     @FXML
     private void handleBack() {
         // Return to User Dashboard
-        com.example.gestionvol.MainApp.switchScene("/views/user-dashboard.fxml", "User Dashboard");
+        com.example.gestionvol.MainApp.switchScene("/views/user/user-dashboard.fxml", "User Dashboard");
     }
 }

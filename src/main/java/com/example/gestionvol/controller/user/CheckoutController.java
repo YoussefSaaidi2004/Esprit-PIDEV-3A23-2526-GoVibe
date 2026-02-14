@@ -1,4 +1,4 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.user;
 
 import com.example.gestionvol.entities.Checkout;
 import com.example.gestionvol.service.CheckoutService;
@@ -165,7 +165,7 @@ public class CheckoutController {
 
     private void navigateToForm(Checkout checkout) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-form-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/user/checkout-form-view.fxml"));
             Node formView = loader.load();
             
             CheckoutFormController controller = loader.getController();
@@ -187,6 +187,24 @@ public class CheckoutController {
             alert.setContentText("Could not load checkout form: " + e.getMessage());
             alert.showAndWait();
         }
+    }
+
+    /**
+     * Confirm and submit the booking
+     */
+    @FXML
+    private void handleConfirm() {
+        System.out.println("✅ Booking confirmed");
+        // TODO: Implement booking submission logic
+    }
+
+    /**
+     * Go back to previous screen
+     */
+    @FXML
+    private void handleBack() {
+        System.out.println("⬅️ Back clicked");
+        // TODO: Implement navigation back
     }
 
     /**

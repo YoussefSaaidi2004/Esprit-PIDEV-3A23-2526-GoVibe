@@ -1,4 +1,4 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.admin;
 
 import com.example.gestionvol.entities.Flight;
 import com.example.gestionvol.service.FlightService;
@@ -219,7 +219,7 @@ public class FlightListController {
 
     private void navigateToForm(Flight flight) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-form.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/admin/flight-form.fxml"));
             Node formView = loader.load();
             
             FlightFormController controller = loader.getController();

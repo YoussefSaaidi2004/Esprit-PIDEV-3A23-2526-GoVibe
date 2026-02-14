@@ -5,7 +5,7 @@
 <?import javafx.scene.shape.SVGPath?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" 
-      fx:controller="com.example.gestionvol.controller.CheckoutCardController"
+      fx:controller="com.example.gestionvol.controller.user.CheckoutCardController"
       styleClass="checkout-card" spacing="0" prefWidth="380">
     
     <!-- Ticket Header -->

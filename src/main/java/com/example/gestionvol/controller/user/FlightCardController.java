@@ -1,4 +1,4 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.user;
 
 import com.example.gestionvol.entities.Flight;
 import com.example.gestionvol.utils.IconUtils;

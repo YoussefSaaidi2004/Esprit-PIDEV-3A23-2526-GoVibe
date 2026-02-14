@@ -1,4 +1,4 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.user;
 
 import com.example.gestionvol.MainApp;
 import com.example.gestionvol.entities.Checkout;
@@ -67,7 +67,7 @@ public class UserDashboardController {
             
             if (f.getPrix() <= maxPrice && matches) {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-card.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/user/flight-card.fxml"));
                     VBox card = loader.load();
                     FlightCardController ctrl = loader.getController();
                     ctrl.setData(f, false, this::handleBook, null, null, null);
@@ -91,7 +91,7 @@ public class UserDashboardController {
                 .collect(Collectors.toList());
         for (Checkout c : bookings) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-card.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/user/checkout-card.fxml"));
                 VBox card = loader.load();
                 CheckoutCardController ctrl = loader.getController();
                 ctrl.setData(c, false, null, null, this::handleCancel);
@@ -103,7 +103,7 @@ public class UserDashboardController {
     private void handleBook(Flight f) {
         // Pass flight to checkout
         CheckoutController.setSelectedFlight(f);
-        MainApp.switchScene("/views/checkout-view.fxml", "Confirm Booking");
+        MainApp.switchScene("/views/user/checkout-view.fxml", "Confirm Booking");
     }
 
     private void handleCancel(Checkout c) {
@@ -119,7 +119,7 @@ public class UserDashboardController {
         loadMyBookings();
     }
 
-    @FXML private void handleAdminSwap() { MainApp.switchScene("/views/admin-dashboard.fxml", "Admin Dashboard"); }
+    @FXML private void handleAdminSwap() { MainApp.switchScene("/views/admin/admin-dashboard.fxml", "Admin Dashboard"); }
     @FXML private void handleThemeToggle() { MainApp.toggleTheme(); }
     @FXML private void handleLogout() { 
         // Placeholder for logout functionality

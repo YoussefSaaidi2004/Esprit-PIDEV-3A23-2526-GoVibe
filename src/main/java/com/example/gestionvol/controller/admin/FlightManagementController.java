@@ -1,5 +1,6 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.admin;
 
+import com.example.gestionvol.controller.user.FlightCardController;
 import com.example.gestionvol.entities.Flight;
 import com.example.gestionvol.service.FlightService;
 import javafx.fxml.FXML;
@@ -115,7 +116,7 @@ public class FlightManagementController {
         // Display flight cards
         for (Flight f : filteredFlights) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-card.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/user/flight-card.fxml"));
                 VBox card = loader.load();
                 FlightCardController controller = loader.getController();
                 controller.setData(f, true, null, this::handleEdit, this::handleCopy, this::handleDelete);
@@ -165,7 +166,7 @@ public class FlightManagementController {
 
     private void openForm(Flight f) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-form.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/admin/flight-form.fxml"));
             Parent root = loader.load();
             if (f != null) ((FlightFormController)loader.getController()).setFlightForEdit(f);
             Stage stage = new Stage();
@@ -185,8 +186,8 @@ public class FlightManagementController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    @FXML private void navDashboard() { com.example.gestionvol.MainApp.switchScene("/views/admin-dashboard.fxml", "Admin Dashboard"); }
-    @FXML private void navBookings() { com.example.gestionvol.MainApp.switchScene("/views/checkout-management.fxml", "All Reservations"); }
-    @FXML private void navUser() { com.example.gestionvol.MainApp.switchScene("/views/user-dashboard.fxml", "User Dashboard"); }
+    @FXML private void navDashboard() { com.example.gestionvol.MainApp.switchScene("/views/admin/admin-dashboard.fxml", "Admin Dashboard"); }
+    @FXML private void navBookings() { com.example.gestionvol.MainApp.switchScene("/views/admin/checkout-management.fxml", "All Reservations"); }
+    @FXML private void navUser() { com.example.gestionvol.MainApp.switchScene("/views/user/user-dashboard.fxml", "User Dashboard"); }
     @FXML private void handleThemeToggle() { com.example.gestionvol.MainApp.toggleTheme(); }
 }

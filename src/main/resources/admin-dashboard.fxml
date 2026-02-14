@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.gestionvol.controller.AdminDashboardController" stylesheets="@styles.css">
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.gestionvol.controller.admin.AdminDashboardController" stylesheets="@styles.css">
     <top>
         <VBox spacing="10" alignment="CENTER" styleClass="header">
             <Text text="GoVibe Admin" styleClass="label-header"/>

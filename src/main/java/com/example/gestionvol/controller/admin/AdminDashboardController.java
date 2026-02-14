@@ -1,5 +1,6 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.admin;
 
+import com.example.gestionvol.controller.user.CheckoutCardController;
 import com.example.gestionvol.entities.Checkout;
 import com.example.gestionvol.service.CheckoutService;
 import com.example.gestionvol.service.DashboardService;
@@ -36,7 +37,7 @@ public class AdminDashboardController {
         List<Checkout> pending = checkoutService.getPendingCheckouts();
         for (Checkout c : pending) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-card.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/user/checkout-card.fxml"));
                 VBox card = loader.load();
                 CheckoutCardController controller = loader.getController();
                 controller.setData(c, true, this::handleApprove, this::handleReject, null);
@@ -61,8 +62,8 @@ public class AdminDashboardController {
 
     @FXML private void navPending() { navBookings(); }
     @FXML private void navDashboard() { refreshMetrics(); loadPending(); }
-    @FXML private void navFlights() { MainApp.switchScene("/views/flight-management.fxml", "Flight Management"); }
-    @FXML private void navBookings() { MainApp.switchScene("/views/checkout-management.fxml", "All Reservations"); }
-    @FXML private void navUser() { MainApp.switchScene("/views/user-dashboard.fxml", "User Dashboard"); }
+    @FXML private void navFlights() { MainApp.switchScene("/views/admin/flight-management.fxml", "Flight Management"); }
+    @FXML private void navBookings() { MainApp.switchScene("/views/admin/checkout-management.fxml", "All Reservations"); }
+    @FXML private void navUser() { MainApp.switchScene("/views/user/user-dashboard.fxml", "User Dashboard"); }
     @FXML private void handleThemeToggle() { MainApp.toggleTheme(); }
 }

@@ -1,4 +1,4 @@
-package com.example.gestionvol.controller;
+package com.example.gestionvol.controller.user;
 
 import com.example.gestionvol.dao.FlightDAO;
 import com.example.gestionvol.entities.Checkout;
@@ -85,6 +85,6 @@ public class CheckoutCardController {
 
     private void handleViewDetails() {
         CheckoutDetailController.setSelectedCheckout(checkout);
-        com.example.gestionvol.MainApp.switchScene("/views/checkout-detail.fxml", "Booking Details");
+        com.example.gestionvol.MainApp.switchScene("/views/user/checkout-detail.fxml", "Booking Details");
     }
 }

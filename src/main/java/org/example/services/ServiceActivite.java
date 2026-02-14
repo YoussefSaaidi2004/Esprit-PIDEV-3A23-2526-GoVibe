@@ -18,7 +18,12 @@ public class ServiceActivite {
 
     // ✅ AJOUT
     public void ajouter(Activite a) throws SQLException {
-        String sql = "INSERT INTO activite (name, description, type, localisation, prix) VALUES (?, ?, ?, ?, ?)";
+        // Validation basique du status
+        if (a.getStatus() == null || a.getStatus().isEmpty()) {
+            a.setStatus(Activite.STATUS_CONFIRMED); // Par défaut Confirmed si pas précisé (legacy)
+        }
+
+        String sql = "INSERT INTO activite (name, description, type, localisation, prix, status) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, a.getName());
@@ -26,21 +31,23 @@ public class ServiceActivite {
             ps.setString(3, a.getType());
             ps.setString(4, a.getLocalisation());
             ps.setBigDecimal(5, a.getPrix());
+            ps.setString(6, a.getStatus());
 
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) a.setId(rs.getInt(1));
+                if (rs.next())
+                    a.setId(rs.getInt(1));
             }
         }
     }
 
-    // ✅ AFFICHER CONSOLE (optionnel)
+    // ✅ AFFICHER CONSOLE
     public void afficher() throws SQLException {
         String sql = "SELECT * FROM activite ORDER BY id";
 
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+                ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 System.out.println(
@@ -49,52 +56,73 @@ public class ServiceActivite {
                                 rs.getString("description") + " | " +
                                 rs.getString("type") + " | " +
                                 rs.getString("localisation") + " | " +
-                                rs.getBigDecimal("prix")
-                );
+                                rs.getBigDecimal("prix") + " | " +
+                                rs.getString("status"));
             }
         }
     }
 
-    // ✅ LISTE POUR JAVAFX
+    // ✅ LISTE POUR CLIENTS (CONFIRMED UNIQUEMENT)
     public List<Activite> getAll() throws SQLException {
         List<Activite> list = new ArrayList<>();
-        String sql = "SELECT * FROM activite ORDER BY id";
+        // ⚠️ Filtre sur le status
+        String sql = "SELECT * FROM activite WHERE status = 'Confirmed' ORDER BY id";
 
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-
+                ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
-                Activite a = new Activite(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getString("type"),
-                        rs.getString("localisation"),
-                        rs.getBigDecimal("prix")
-                );
-                list.add(a);
+                list.add(mapRow(rs));
             }
         }
         return list;
     }
 
-    // ✅ GET BY ID (NOUVEAU) — pour charger avant modification
+    // ✅ LISTE VALIDATION (PENDING UNIQUEMENT)
+    public List<Activite> getAllPending() throws SQLException {
+        List<Activite> list = new ArrayList<>();
+        String sql = "SELECT * FROM activite WHERE status = 'Pending' ORDER BY id";
+
+        try (Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        }
+        return list;
+    }
+
+    // ✅ LISTE TOUT (POUR ADMIN DASHBOARD GLOBAL)
+    public List<Activite> getAllAll() throws SQLException {
+        List<Activite> list = new ArrayList<>();
+        String sql = "SELECT * FROM activite ORDER BY id";
+
+        try (Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        }
+        return list;
+    }
+
+    // ✅ VALIDER UNE ACTIVITÉ
+    public void valider(int id) throws SQLException {
+        String sql = "UPDATE activite SET status = 'Confirmed' WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
+
+    // ✅ GET BY ID
     public Activite getById(int id) throws SQLException {
         String sql = "SELECT * FROM activite WHERE id = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
-
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new Activite(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getString("description"),
-                            rs.getString("type"),
-                            rs.getString("localisation"),
-                            rs.getBigDecimal("prix")
-                    );
+                    return mapRow(rs);
                 }
             }
         }
@@ -103,11 +131,11 @@ public class ServiceActivite {
 
     // ✅ MODIFIER PAR ID
     public void modifierParId(int id,
-                              String name,
-                              String description,
-                              String type,
-                              String localisation,
-                              BigDecimal prix) throws SQLException {
+            String name,
+            String description,
+            String type,
+            String localisation,
+            BigDecimal prix) throws SQLException {
 
         String sql = "UPDATE activite SET name = ?, description = ?, type = ?, localisation = ?, prix = ? WHERE id = ?";
 
@@ -131,5 +159,18 @@ public class ServiceActivite {
             ps.setInt(1, id);
             ps.executeUpdate();
         }
+    }
+
+    // Helper pour mapper le ResultSet
+    private Activite mapRow(ResultSet rs) throws SQLException {
+        return new Activite(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("type"),
+                rs.getString("localisation"),
+                rs.getBigDecimal("prix"),
+                rs.getString("status") // Si status n'existe pas en DB, ça plantera (SQL column not found)
+        );
     }
 }

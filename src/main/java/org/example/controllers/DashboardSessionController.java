@@ -23,18 +23,28 @@ import java.sql.SQLException;
 
 public class DashboardSessionController {
 
-    @FXML private BorderPane root;
+    @FXML
+    private BorderPane root;
 
-    @FXML private TableView<Session> tableSession;
-    @FXML private TableColumn<Session, Integer> colId;
-    @FXML private TableColumn<Session, Date> colDate;
-    @FXML private TableColumn<Session, Time> colHeure;
-    @FXML private TableColumn<Session, Integer> colCapacite;
-    @FXML private TableColumn<Session, Integer> colRestant;
-    @FXML private TableColumn<Session, Integer> colActiviteId;
+    @FXML
+    private TableView<Session> tableSession;
+    @FXML
+    private TableColumn<Session, Integer> colId;
+    @FXML
+    private TableColumn<Session, Date> colDate;
+    @FXML
+    private TableColumn<Session, Time> colHeure;
+    @FXML
+    private TableColumn<Session, Integer> colCapacite;
+    @FXML
+    private TableColumn<Session, Integer> colRestant;
+    @FXML
+    private TableColumn<Session, Integer> colActiviteId;
 
-    @FXML private Label lblCount;
-    @FXML private Label lblMsg;
+    @FXML
+    private Label lblCount;
+    @FXML
+    private Label lblMsg;
 
     private final ServiceSession service = new ServiceSession();
     private final ObservableList<Session> data = FXCollections.observableArrayList();
@@ -77,6 +87,12 @@ public class DashboardSessionController {
         safeSwitchTo("/DashboardSession.fxml");
     }
 
+    // ✅ NOUVEAU : Retour vers Dashboard Activités
+    @FXML
+    private void openDashboardActivites() {
+        safeSwitchTo("/Dashboard.fxml");
+    }
+
     @FXML
     private void openAjoutSession() {
         safeSwitchTo("/SessionAjout.fxml"); // change si ton fichier a un autre nom
@@ -90,6 +106,12 @@ public class DashboardSessionController {
     @FXML
     private void openSuppressionSession() {
         safeSwitchTo("/SessionSuppression.fxml");
+    }
+
+    // ✅ NOUVEAU : Déconnexion
+    @FXML
+    private void logout() {
+        safeSwitchTo("/RoleSelection.fxml");
     }
 
     private void safeSwitchTo(String fxml) {

@@ -25,11 +25,15 @@ import java.util.List;
 
 public class SessionAjoutController {
 
-    @FXML private BorderPane root;
+    @FXML
+    private BorderPane root;
 
-    @FXML private ComboBox<Activite> cbActivite;
-    @FXML private TextField tfDate, tfHeure, tfCapacite, tfRestant;
-    @FXML private Label lblMsg;
+    @FXML
+    private ComboBox<Activite> cbActivite;
+    @FXML
+    private TextField tfDate, tfHeure, tfCapacite, tfRestant;
+    @FXML
+    private Label lblMsg;
 
     private final ServiceSession serviceSession = new ServiceSession();
     private final ServiceActivite serviceActivite = new ServiceActivite();
@@ -46,10 +50,15 @@ public class SessionAjoutController {
 
             // Afficher nom + id dans la combo
             cbActivite.setConverter(new StringConverter<>() {
-                @Override public String toString(Activite a) {
+                @Override
+                public String toString(Activite a) {
                     return (a == null) ? "" : (a.getName() + " (ID=" + a.getId() + ")");
                 }
-                @Override public Activite fromString(String s) { return null; }
+
+                @Override
+                public Activite fromString(String s) {
+                    return null;
+                }
             });
 
         } catch (SQLException e) {
@@ -63,7 +72,8 @@ public class SessionAjoutController {
     private void ajouter() {
         try {
             Activite selected = cbActivite.getValue();
-            if (selected == null) throw new IllegalArgumentException("Choisis une activité.");
+            if (selected == null)
+                throw new IllegalArgumentException("Choisis une activité.");
 
             if (tfDate.getText() == null || tfDate.getText().trim().isEmpty())
                 throw new IllegalArgumentException("Date obligatoire (yyyy-mm-dd)");
@@ -72,14 +82,28 @@ public class SessionAjoutController {
                 throw new IllegalArgumentException("Heure obligatoire (HH:mm ou HH:mm:ss)");
 
             int capacite = Integer.parseInt(tfCapacite.getText().trim());
-            int restant  = Integer.parseInt(tfRestant.getText().trim());
+            int restant = Integer.parseInt(tfRestant.getText().trim());
 
-            if (capacite <= 0) throw new IllegalArgumentException("Capacité doit être > 0");
-            if (restant < 0) throw new IllegalArgumentException("Places restantes doit être >= 0");
-            if (restant > capacite) throw new IllegalArgumentException("Places restantes > capacité");
+            if (capacite <= 0)
+                throw new IllegalArgumentException("Capacité doit être > 0");
+            if (restant < 0)
+                throw new IllegalArgumentException("Places restantes doit être >= 0");
+            if (restant > capacite)
+                throw new IllegalArgumentException("Places restantes > capacité");
 
-            Date date = Date.valueOf(tfDate.getText().trim());  // yyyy-mm-dd
-            Time heure = parseTime(tfHeure.getText().trim());   // HH:mm or HH:mm:ss
+            Date date;
+            try {
+                date = Date.valueOf(tfDate.getText().trim()); // yyyy-mm-dd
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Format de date invalide. Utilisez yyyy-mm-dd");
+            }
+
+            Time heure;
+            try {
+                heure = parseTime(tfHeure.getText().trim()); // HH:mm or HH:mm:ss
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Format d'heure invalide. Utilisez HH:mm");
+            }
 
             // ✅ ID automatique depuis l'activité choisie
             int activiteId = selected.getId();
@@ -104,20 +128,37 @@ public class SessionAjoutController {
 
     private Time parseTime(String input) {
         String t = input.trim();
-        if (t.matches("^\\d{2}:\\d{2}$")) t = t + ":00";
+        if (t.matches("^\\d{2}:\\d{2}$"))
+            t = t + ":00";
         return Time.valueOf(t);
     }
 
     // ===== NAVIGATION (sessions فقط) =====
-    @FXML private void openDashboardSessions() { safeSwitchTo("/DashboardSession.fxml"); }
-    @FXML private void openAjoutSession() { safeSwitchTo("/SessionAjout.fxml"); }
-    @FXML private void openModifierSession() { safeSwitchTo("/SessionModifier.fxml"); }
-    @FXML private void openSuppressionSession() { safeSwitchTo("/SessionSuppression.fxml"); }
+    @FXML
+    private void openDashboardSessions() {
+        safeSwitchTo("/DashboardSession.fxml");
+    }
+
+    @FXML
+    private void openAjoutSession() {
+        safeSwitchTo("/SessionAjout.fxml");
+    }
+
+    @FXML
+    private void openModifierSession() {
+        safeSwitchTo("/SessionModifier.fxml");
+    }
+
+    @FXML
+    private void openSuppressionSession() {
+        safeSwitchTo("/SessionSuppression.fxml");
+    }
 
     private void safeSwitchTo(String fxml) {
         try {
             var url = getClass().getResource(fxml);
-            if (url == null) throw new IllegalArgumentException("FXML introuvable: " + fxml);
+            if (url == null)
+                throw new IllegalArgumentException("FXML introuvable: " + fxml);
 
             Stage stage = (Stage) root.getScene().getWindow();
             Parent p = FXMLLoader.load(url);
@@ -130,6 +171,17 @@ public class SessionAjoutController {
             a.setHeaderText("Navigation impossible");
             a.setContentText(e.getMessage());
             a.showAndWait();
+        }
+    }
+
+    public void selectActivite(Activite a) {
+        if (a == null)
+            return;
+        for (Activite item : cbActivite.getItems()) {
+            if (item.getId() == a.getId()) {
+                cbActivite.setValue(item);
+                break;
+            }
         }
     }
 }

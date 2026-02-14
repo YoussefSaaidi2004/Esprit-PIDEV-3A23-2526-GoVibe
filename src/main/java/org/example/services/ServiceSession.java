@@ -17,30 +17,24 @@ public class ServiceSession implements IService<Session> {
 
     @Override
     public void ajouter(Session s) throws SQLException {
-        String sql = "INSERT INTO sessions (date, heure, capacite, nbr_places_restant, activite_id) "
-                + "VALUES (?, ?, ?, ?, ?)";
-
+        String sql = "INSERT INTO sessions (date, heure, capacite, nbr_places_restant, activite_id) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setDate(1, s.getDate());
             ps.setTime(2, s.getHeure());
             ps.setInt(3, s.getCapacite());
             ps.setInt(4, s.getNbr_places_restant());
             ps.setInt(5, s.getActivite_id());
-
             ps.executeUpdate();
 
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                s.setId_session(rs.getInt(1));
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) s.setId_session(rs.getInt(1));
             }
         }
     }
 
     @Override
     public void modifier(Session s) throws SQLException {
-        String sql = "UPDATE sessions SET date = ?, heure = ?, capacite = ?, nbr_places_restant = ?, activite_id = ? "
-                + "WHERE id_session = ?";
-
+        String sql = "UPDATE sessions SET date=?, heure=?, capacite=?, nbr_places_restant=?, activite_id=? WHERE id_session=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setDate(1, s.getDate());
             ps.setTime(2, s.getHeure());
@@ -48,15 +42,13 @@ public class ServiceSession implements IService<Session> {
             ps.setInt(4, s.getNbr_places_restant());
             ps.setInt(5, s.getActivite_id());
             ps.setInt(6, s.getId_session());
-
             ps.executeUpdate();
         }
     }
 
     @Override
     public void supprimer(int id) throws SQLException {
-        String sql = "DELETE FROM sessions WHERE id_session = ?";
-
+        String sql = "DELETE FROM sessions WHERE id_session=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
@@ -66,10 +58,8 @@ public class ServiceSession implements IService<Session> {
     @Override
     public void afficher() throws SQLException {
         String sql = "SELECT * FROM sessions ORDER BY id_session";
-
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
-
             while (rs.next()) {
                 System.out.println(
                         rs.getInt("id_session") + " | " +
@@ -85,24 +75,46 @@ public class ServiceSession implements IService<Session> {
 
     public List<Session> getAll() throws SQLException {
         List<Session> list = new ArrayList<>();
-
-        String sql = "SELECT * FROM sessions";
-
+        String sql = "SELECT * FROM sessions ORDER BY date, heure";
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) list.add(mapRow(rs));
+        }
+        return list;
+    }
 
-            while (rs.next()) {
-                Session s = new Session(
-                        rs.getInt("id_session"),
-                        rs.getDate("date"),
-                        rs.getTime("heure"),
-                        rs.getInt("capacite"),
-                        rs.getInt("nbr_places_restant"),
-                        rs.getInt("activite_id")
-                );
-                list.add(s);
+    public Session getById(int idSession) throws SQLException {
+        String sql = "SELECT * FROM sessions WHERE id_session = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idSession);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return mapRow(rs);
+            }
+        }
+        return null;
+    }
+
+    // ✅ Utilisé par HomeUser (réservation)
+    public List<Session> getByActiviteId(int activiteId) throws SQLException {
+        List<Session> list = new ArrayList<>();
+        String sql = "SELECT * FROM sessions WHERE activite_id = ? ORDER BY date, heure";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, activiteId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
             }
         }
         return list;
+    }
+
+    private Session mapRow(ResultSet rs) throws SQLException {
+        return new Session(
+                rs.getInt("id_session"),
+                rs.getDate("date"),
+                rs.getTime("heure"),
+                rs.getInt("capacite"),
+                rs.getInt("nbr_places_restant"),
+                rs.getInt("activite_id")
+        );
     }
 }

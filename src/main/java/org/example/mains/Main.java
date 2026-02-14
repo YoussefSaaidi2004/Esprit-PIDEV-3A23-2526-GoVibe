@@ -37,7 +37,8 @@ public class Main {
                     break;
 
                 case 2:
-                    // Afficher les activités et demander l'ID activité AVANT d'entrer dans le CRUD session
+                    // Afficher les activités et demander l'ID activité AVANT d'entrer dans le CRUD
+                    // session
                     try {
                         System.out.println("\nListe des activités :");
                         serviceActivite.afficher();

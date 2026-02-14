@@ -20,18 +20,30 @@ import java.math.BigDecimal;
 
 public class DashboardActiviteController {
 
-    @FXML private BorderPane root;
+    @FXML
+    private BorderPane root;
 
-    @FXML private TableView<Activite> tableActivite;
-    @FXML private TableColumn<Activite, Integer> colId;
-    @FXML private TableColumn<Activite, String> colName;
-    @FXML private TableColumn<Activite, String> colDesc;
-    @FXML private TableColumn<Activite, String> colType;
-    @FXML private TableColumn<Activite, String> colLoc;
-    @FXML private TableColumn<Activite, BigDecimal> colPrix;
+    @FXML
+    private TableView<Activite> tableActivite;
+    @FXML
+    private TableColumn<Activite, Integer> colId;
+    @FXML
+    private TableColumn<Activite, String> colName;
+    @FXML
+    private TableColumn<Activite, String> colDesc;
+    @FXML
+    private TableColumn<Activite, String> colType;
+    @FXML
+    private TableColumn<Activite, String> colLoc;
+    @FXML
+    private TableColumn<Activite, BigDecimal> colPrix;
+    @FXML
+    private TableColumn<Activite, String> colStatus;
 
-    @FXML private Label lblCount;
-    @FXML private Label lblMsg;
+    @FXML
+    private Label lblCount;
+    @FXML
+    private Label lblMsg;
 
     private final ServiceActivite service = new ServiceActivite();
     private final ObservableList<Activite> data = FXCollections.observableArrayList();
@@ -44,15 +56,65 @@ public class DashboardActiviteController {
         colType.setCellValueFactory(new PropertyValueFactory<>("type"));
         colLoc.setCellValueFactory(new PropertyValueFactory<>("localisation"));
         colPrix.setCellValueFactory(new PropertyValueFactory<>("prix"));
+        colStatus.setCellValueFactory(new PropertyValueFactory<>("status")); // ✅ Ajout binding
 
         tableActivite.setItems(data);
         rafraichir();
     }
 
     @FXML
+    private void validerActivite() {
+        Activite selected = tableActivite.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Attention");
+            a.setHeaderText("Aucune activité sélectionnée");
+            a.setContentText("Veuillez sélectionner une activité à valider.");
+            a.showAndWait();
+            return;
+        }
+
+        try {
+            // 1. Valider en base (passe en 'Confirmed')
+            service.valider(selected.getId());
+
+            // 2. Rafraîchir la table pour voir le changement de statut
+            rafraichir();
+
+            Alert info = new Alert(Alert.AlertType.INFORMATION);
+            info.setTitle("Succès");
+            info.setHeaderText("Activité validée !");
+            info.setContentText(
+                    "L'activité '" + selected.getName() + "' est maintenant visible pour les utilisateurs.\n" +
+                            "Vous allez être redirigé pour ajouter une session.");
+            info.showAndWait();
+
+            // 3. Redirection vers Ajout Session avec présélection
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/SessionAjout.fxml"));
+            Parent p = loader.load();
+
+            SessionAjoutController controller = loader.getController();
+            controller.selectActivite(selected); // ✅ Présélection
+
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.setScene(new Scene(p, 1100, 700));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setTitle("Erreur");
+            a.setHeaderText("Erreur lors de la validation");
+            a.setContentText(e.getMessage());
+            a.showAndWait();
+        }
+    }
+
+    @FXML
     private void rafraichir() {
         try {
-            data.setAll(service.getAll());
+            // On affiche TOUTES les activités (Pending + Confirmed) pour l'admin
+            data.setAll(service.getAllAll());
             lblCount.setText("✅ " + data.size() + " activité(s)");
             lblMsg.setText("Liste chargée avec succès.");
         } catch (Exception e) {
@@ -88,6 +150,12 @@ public class DashboardActiviteController {
     @FXML
     private void openSessionsDashboard() {
         safeSwitchTo("/DashboardSession.fxml");
+    }
+
+    // ✅ NOUVEAU : Déconnexion
+    @FXML
+    private void logout() {
+        safeSwitchTo("/RoleSelection.fxml");
     }
 
     private void safeSwitchTo(String fxml) {

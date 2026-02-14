@@ -34,8 +34,13 @@
             <Label fx:id="welcomeLabel" text="Bonjour !"
                    style="-fx-text-fill: #013220; -fx-font-size: 14px; -fx-font-weight: bold;"/>
 
+            <Button text="Proposer une activité" onAction="#openProposeActivity"
+                    style="-fx-background-color: #084E36; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;
+                           -fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand;"/>
+
             <Button text="Déconnexion" onAction="#handleLogout"
-                    style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand;"/>
+                    style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;
+                           -fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand;"/>
         </HBox>
     </HBox>
 
@@ -49,7 +54,7 @@
             <Text text="Vivez l'aventure, explorez le monde"
                   style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-fill: white;"/>
 
-            <Label text="Double‑clic sur une activité pour voir les détails"
+            <Label text="Clique sur une activité pour voir les détails"
                    style="-fx-text-fill: #D1F2EB; -fx-font-size: 14px;"/>
         </VBox>
     </StackPane>

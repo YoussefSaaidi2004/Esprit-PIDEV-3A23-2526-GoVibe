@@ -16,10 +16,13 @@ import java.math.BigDecimal;
 
 public class ActiviteAjoutController {
 
-    @FXML private BorderPane root;
+    @FXML
+    private BorderPane root;
 
-    @FXML private TextField tfName, tfDescription, tfType, tfLocalisation, tfPrix;
-    @FXML private Label lblMsg;
+    @FXML
+    private TextField tfName, tfDescription, tfType, tfLocalisation, tfPrix;
+    @FXML
+    private Label lblMsg;
 
     private final ServiceActivite service = new ServiceActivite();
 
@@ -37,8 +40,7 @@ public class ActiviteAjoutController {
                     tfDescription.getText(),
                     tfType.getText(),
                     tfLocalisation.getText(),
-                    prix
-            );
+                    prix);
 
             service.ajouter(a);
 
@@ -58,15 +60,31 @@ public class ActiviteAjoutController {
     }
 
     // ===== NAVIGATION =====
-    @FXML private void openDashboard() { safeSwitchTo("/Dashboard.fxml"); }
-    @FXML private void openAjout() { safeSwitchTo("/ActiviteAjout.fxml"); }
-    @FXML private void openModifier() { safeSwitchTo("/ActiviteModifier.fxml"); }
-    @FXML private void openSuppression() { safeSwitchTo("/ActiviteSuppression.fxml"); }
+    @FXML
+    private void openDashboard() {
+        safeSwitchTo("/Dashboard.fxml");
+    }
+
+    @FXML
+    private void openAjout() {
+        safeSwitchTo("/ActiviteAjout.fxml");
+    }
+
+    @FXML
+    private void openModifier() {
+        safeSwitchTo("/ActiviteModifier.fxml");
+    }
+
+    @FXML
+    private void openSuppression() {
+        safeSwitchTo("/ActiviteSuppression.fxml");
+    }
 
     private void safeSwitchTo(String fxml) {
         try {
             var url = getClass().getResource(fxml);
-            if (url == null) throw new IllegalArgumentException("FXML introuvable: " + fxml);
+            if (url == null)
+                throw new IllegalArgumentException("FXML introuvable: " + fxml);
 
             Stage stage = (Stage) root.getScene().getWindow();
             Parent p = FXMLLoader.load(url);

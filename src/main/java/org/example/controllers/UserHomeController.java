@@ -5,11 +5,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -20,114 +17,77 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import org.example.entites.Session;
+import org.example.services.ServiceReservationSession;
+import org.example.services.ServiceSession;
+
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class UserHomeController {
 
-    @FXML private Label welcomeLabel;
-    @FXML private TilePane activitiesPane;
+    @FXML
+    private Label welcomeLabel;
+    @FXML
+    private TilePane activitiesPane;
 
-    // ✅ Données 100% dans le code
-    private static class ActivityData {
-        String name;
-        String shortDesc;
-        String longDetails;
-        String imageFile; // ex: randonnee-cap-bon.png
+    private final ServiceSession serviceSession = new ServiceSession();
+    private final ServiceReservationSession serviceRes = new ServiceReservationSession();
 
-        ActivityData(String name, String shortDesc, String longDetails, String imageFile) {
-            this.name = name;
-            this.shortDesc = shortDesc;
-            this.longDetails = longDetails;
-            this.imageFile = imageFile;
-        }
-    }
-
-    private final List<ActivityData> activities = new ArrayList<>();
+    private final org.example.services.ServiceActivite serviceActivite = new org.example.services.ServiceActivite();
+    private final List<org.example.entites.Activite> activities = new ArrayList<>();
 
     @FXML
     public void initialize() {
         welcomeLabel.setText("Bonjour !");
-
-        // ✅ 6 activités (images dans src/main/resources/images/)
-        activities.add(new ActivityData(
-                "Randonnée Cap Bon",
-                "Randonnée nature avec guide local.",
-                "📍 Lieu: Cap Bon\n⏱ Durée: 4h\n🎯 Niveau: Moyen\n✅ Inclus: Guide + eau\n🎒 À prendre: chaussures, casquette",
-                "randonnee-cap-bon.png"
-        ));
-
-        activities.add(new ActivityData(
-                "Visite Médina Tunis",
-                "Découverte de la médina et du patrimoine.",
-                "📍 Lieu: Tunis\n⏱ Durée: 2h30\n✅ Inclus: Guide\n📌 Point de départ: Bab Bhar\n💡 Conseil: venez tôt",
-                "visite-medina-tunis.png"
-        ));
-
-        activities.add(new ActivityData(
-                "Kayak Ghar El Melh",
-                "Balade en kayak dans un cadre magnifique.",
-                "📍 Lieu: Ghar El Melh\n⏱ Durée: 2h\n🎯 Niveau: Facile\n✅ Inclus: gilet + pagaie\n🛟 Sécurité: briefing avant départ",
-                "kayak-ghar-el-melh.png"
-        ));
-
-        activities.add(new ActivityData(
-                "Atelier Poterie Nabeul",
-                "Atelier artisanal (initiation poterie).",
-                "📍 Lieu: Nabeul\n⏱ Durée: 1h30\n✅ Inclus: matériel\n🎁 Vous repartez avec votre création",
-                "atelier-poterie-nabeul.png"
-        ));
-
-        activities.add(new ActivityData(
-                "Dégustation Huile d’Olive",
-                "Dégustation de produits locaux.",
-                "📍 Lieu: Domaine local\n⏱ Durée: 1h\n✅ Inclus: dégustation\n⭐ Bonus: conseils de conservation",
-                "degustation-huile-olive.png"
-        ));
-
-        activities.add(new ActivityData(
-                "Balade Sidi Bou Saïd",
-                "Visite panoramique + spots photo.",
-                "📍 Lieu: Sidi Bou Saïd\n⏱ Durée: 2h\n✅ Inclus: guide\n🌅 Conseil: coucher de soleil recommandé",
-                "balade-sidi-bou-said.png"
-        ));
-
+        loadActivitiesFromDB();
         loadCards();
+    }
+
+    private void loadActivitiesFromDB() {
+        try {
+            activities.clear();
+            activities.addAll(serviceActivite.getAll());
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Erreur lors du chargement des activités : " + e.getMessage())
+                    .showAndWait();
+        }
     }
 
     private void loadCards() {
         activitiesPane.getChildren().clear();
-        for (ActivityData a : activities) {
+        for (org.example.entites.Activite a : activities) {
             activitiesPane.getChildren().add(createCard(a));
         }
     }
 
-    private Node createCard(ActivityData a) {
+    private Node createCard(org.example.entites.Activite a) {
         VBox card = new VBox(8);
         card.setPrefWidth(300);
         card.setStyle("""
-            -fx-background-color: white;
-            -fx-background-radius: 12;
-            -fx-padding: 12;
-            -fx-border-color: #A0E0C9;
-            -fx-border-radius: 12;
-            -fx-cursor: hand;
-            -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 10, 0, 0, 3);
-        """);
+                    -fx-background-color: white;
+                    -fx-background-radius: 12;
+                    -fx-padding: 12;
+                    -fx-border-color: #A0E0C9;
+                    -fx-border-radius: 12;
+                    -fx-cursor: hand;
+                    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 10, 0, 0, 3);
+                """);
 
-        ImageView img = new ImageView(loadImageFromResources(a.imageFile));
+        // ✅ Image dynamique selon la localisation
+        String imagePath = getImagePathForLocation(a.getLocalisation());
+        ImageView img = new ImageView(loadImageFromResources(imagePath));
         img.setFitWidth(276);
         img.setFitHeight(150);
         img.setPreserveRatio(false);
         img.setSmooth(true);
 
-        Label title = new Label(a.name);
+        Label title = new Label(a.getName());
         title.setWrapText(true);
         title.setStyle("-fx-text-fill: #013220; -fx-font-size: 15px; -fx-font-weight: bold;");
 
-        Label desc = new Label(a.shortDesc);
+        Label desc = new Label(a.getDescription());
         desc.setWrapText(true);
         desc.setStyle("-fx-text-fill: #084E36; -fx-font-size: 12px;");
 
@@ -135,13 +95,12 @@ public class UserHomeController {
         spacer.setMinHeight(4);
 
         HBox footer = new HBox();
-        Label hint = new Label("Clic → Réserver | Détails");
+        Label hint = new Label("Clic → Réserver | " + a.getPrix() + " DT");
         hint.setStyle("-fx-text-fill: #50C878; -fx-font-size: 11px; -fx-font-weight: bold;");
         footer.getChildren().add(hint);
 
         card.getChildren().addAll(img, title, desc, spacer, footer);
 
-        // ✅ 1 clic -> popup avec bouton Réserver
         card.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 1) {
                 showDetailsWithReservation(a);
@@ -151,30 +110,45 @@ public class UserHomeController {
         return card;
     }
 
-    // ✅ charge depuis src/main/resources/images/<fileName>
     private Image loadImageFromResources(String fileName) {
         URL url = getClass().getResource("/images/" + fileName);
-        if (url != null) return new Image(url.toExternalForm(), true);
+        if (url != null)
+            return new Image(url.toExternalForm(), true);
 
         URL placeholder = getClass().getResource("/images/placeholder.png");
-        if (placeholder != null) return new Image(placeholder.toExternalForm(), true);
+        if (placeholder != null)
+            return new Image(placeholder.toExternalForm(), true);
 
         return null;
     }
 
-    // ✅ Popup Détails + bouton Réserver
-    private void showDetailsWithReservation(ActivityData a) {
+    private String getImagePathForLocation(String location) {
+        if (location == null)
+            return "placeholder.png";
 
-        ButtonType reserverBtn = new ButtonType("Réserver", ButtonBar.ButtonData.OK_DONE);
-        ButtonType fermerBtn = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
+        return switch (location) {
+            case "Tunis (Médina)" -> "visite-medina-tunis.png";
+            case "Nabeul" -> "atelier-poterie-nabeul.png";
+            case "Sidi Bou Said" -> "balade-sidi-bou-said.png";
+            case "Ghar El Melh" -> "kayak-ghar-el-melh.png";
+            case "Cap Bon" -> "randonnee-cap-bon.png";
+            case "Dégustation Huile d'Olive" -> "degustation-huile-olive.png";
+            default -> "placeholder.png";
+        };
+    }
+
+    // ✅ Popup détail + bouton Réserver
+    private void showDetailsWithReservation(org.example.entites.Activite a) {
+        ButtonType reserverBtn = new ButtonType("Réserver", ButtonData.OK_DONE);
+        ButtonType fermerBtn = new ButtonType("Fermer", ButtonData.CANCEL_CLOSE);
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Activité");
-        alert.setHeaderText(a.name);
-        alert.setContentText(a.shortDesc);
+        alert.setHeaderText(a.getName());
+        alert.setContentText(a.getDescription());
 
-        // ✅ Zone détails (multi-lignes)
-        TextArea area = new TextArea(a.longDetails);
+        TextArea area = new TextArea(
+                a.getDescription() + "\n\nPrix: " + a.getPrix() + " DT\nLieu: " + a.getLocalisation());
         area.setWrapText(true);
         area.setEditable(false);
         area.setFont(Font.font("System", 12));
@@ -182,39 +156,99 @@ public class UserHomeController {
 
         VBox box = new VBox(10, area);
         box.setStyle("-fx-padding: 10;");
-
         alert.getDialogPane().setExpandableContent(box);
         alert.getDialogPane().setExpanded(true);
 
-        // ✅ Ajout des boutons
         alert.getButtonTypes().setAll(reserverBtn, fermerBtn);
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == reserverBtn) {
-            reserveActivity(a);
+            reserveActivity(a); // ✅ réservation DB
         }
     }
 
-    // ✅ Action de réservation (à connecter plus tard à ta vraie logique)
-    private void reserveActivity(ActivityData a) {
-        Alert ok = new Alert(Alert.AlertType.INFORMATION);
-        ok.setTitle("Réservation");
-        ok.setHeaderText("Réservation confirmée ✅");
-        ok.setContentText("Vous avez réservé : " + a.name);
-        ok.showAndWait();
+    /**
+     * ✅ Réservation DB SANS setConverter():
+     * On affiche une liste de String et on map vers Session.
+     */
+    private void reserveActivity(org.example.entites.Activite a) {
+        try {
+            List<Session> sessions = serviceSession.getByActiviteId(a.getId());
 
-        // TODO: ici tu peux ouvrir Reservation.fxml ou envoyer vers DB etc.
+            List<Session> dispo = new ArrayList<>();
+            for (Session s : sessions) {
+                if (s.getNbr_places_restant() > 0)
+                    dispo.add(s);
+            }
+
+            if (dispo.isEmpty()) {
+                new Alert(Alert.AlertType.WARNING, "Aucune session disponible pour cette activité.").showAndWait();
+                return;
+            }
+
+            // Build String choices + mapping
+            Map<String, Session> map = new HashMap<>();
+            List<String> choices = new ArrayList<>();
+
+            for (Session s : dispo) {
+                String label = "ID=" + s.getId_session()
+                        + " | " + s.getDate() + " " + s.getHeure()
+                        + " | Restant=" + s.getNbr_places_restant();
+                choices.add(label);
+                map.put(label, s);
+            }
+
+            ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+            dialog.setTitle("Réserver");
+            dialog.setHeaderText("Choisir une session pour : " + a.getName());
+            dialog.setContentText("Session :");
+
+            Optional<String> chosenStr = dialog.showAndWait();
+            if (chosenStr.isEmpty())
+                return;
+
+            Session chosen = map.get(chosenStr.get());
+            if (chosen == null)
+                return;
+
+            // user_ref temporaire (ton groupe remplacera plus tard)
+            serviceRes.reserver(chosen.getId_session(), 1, "guest");
+
+            new Alert(Alert.AlertType.INFORMATION,
+                    "✅ Réservation confirmée !\n" +
+                            "Activité: " + a.getName() + "\n" +
+                            "Session: " + chosen.getDate() + " " + chosen.getHeure())
+                    .showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "❌ Erreur réservation: " + e.getMessage()).showAndWait();
+        }
     }
 
     @FXML
     private void handleLogout(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Dashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/RoleSelection.fxml"));
             Scene scene = new Scene(loader.load(), 1100, 700);
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(scene);
-            stage.setTitle("GoVibe - Dashboard Activités");
+            stage.setTitle("GoVibe - Accueil");
+            stage.centerOnScreen();
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void openProposeActivity(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ProposeActivity.fxml"));
+            Scene scene = new Scene(loader.load(), 1100, 700);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("GoVibe - Proposer une activité");
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();

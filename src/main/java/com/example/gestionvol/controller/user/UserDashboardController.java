@@ -25,38 +25,50 @@ public class UserDashboardController {
     private final CheckoutService checkoutService = new CheckoutService();
     private int userId = 1; // Logic placeholder
 
+    private List<Flight> cachedFlights;
+
     @FXML
     public void initialize() {
+        // Load data once
+        refreshData();
+
+        // Listeners for real-time filtering
         priceSlider.valueProperty().addListener((obs, old, val) -> {
             priceLabel.setText(String.format("%.0f DT", val.doubleValue()));
-            loadAvailableFlights();
+            updateFlightGrid();
         });
+        
         searchField.textProperty().addListener((obs, old, val) -> {
-            System.out.println("DEBUG: User Input Changed -> '" + val + "'");
-            loadAvailableFlights();
+            updateFlightGrid();
         });
-        loadAvailableFlights();
+        
         loadMyBookings();
     }
+    
+    // Fetch data from DB
+    private void refreshData() {
+        cachedFlights = flightService.getAvailableFlights();
+        updateFlightGrid();
+    }
 
-    private void loadAvailableFlights() {
+    // Filter and update UI
+    private void updateFlightGrid() {
         flightGrid.getChildren().clear();
-        List<Flight> flights = flightService.getAvailableFlights();
         
-        String rawFilter = (searchField != null && searchField.getText() != null) ? searchField.getText().toLowerCase().trim() : "";
-        
-        // Debugging
-        System.out.println("Search Filter: '" + rawFilter + "', Max Price: " + (priceSlider != null ? priceSlider.getValue() : "N/A"));
-        
-        double maxPrice = (priceSlider != null) ? priceSlider.getValue() : Double.MAX_VALUE;
+        if (cachedFlights == null) return;
 
-        for (Flight f : flights) {
+        String rawFilter = (searchField.getText() != null) ? searchField.getText().toLowerCase().trim() : "";
+        double maxPrice = (priceSlider != null) ? priceSlider.getValue() : Double.MAX_VALUE;
+        
+        // Debug
+        // System.out.println("Filtering: '" + rawFilter + "', Max Price: " + maxPrice + ", Total Flights: " + cachedFlights.size());
+
+        for (Flight f : cachedFlights) {
             boolean matches = false;
             
             if (rawFilter.isEmpty()) {
                 matches = true;
             } else {
-                // Check all relevant fields
                 if (containsIgnoreCase(f.getDestination(), rawFilter) ||
                     containsIgnoreCase(f.getAirline(), rawFilter) ||
                     containsIgnoreCase(f.getFlightId(), rawFilter) ||
@@ -73,7 +85,6 @@ public class UserDashboardController {
                     ctrl.setData(f, false, this::handleBook, null, null, null);
                     flightGrid.getChildren().add(card);
                 } catch (Exception e) { 
-                    System.err.println("Error loading flight card: " + e.getMessage());
                     e.printStackTrace(); 
                 }
             }
@@ -109,13 +120,13 @@ public class UserDashboardController {
     private void handleCancel(Checkout c) {
         if (checkoutService.cancelCheckout(c.getCheckoutId(), 1)) {
             loadMyBookings();
-            loadAvailableFlights(); // Refresh flights to show updated seat availability
+            refreshData(); // Refresh flights to show updated seat availability
         }
     }
     
     @FXML 
     private void handleRefresh() {
-        loadAvailableFlights();
+        refreshData();
         loadMyBookings();
     }
 

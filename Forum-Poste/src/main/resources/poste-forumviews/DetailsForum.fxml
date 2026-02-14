@@ -14,40 +14,38 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.effect.DropShadow?>
 
+<?import javafx.scene.control.Separator?>
 <BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.DetailsForumController">
 
     <!-- Top Navigation Bar -->
-    <top>
-        <HBox alignment="CENTER" spacing="0" style="-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-border-width: 0 0 1 0;">
-            <padding><Insets bottom="10" left="40" right="40" top="10" /></padding>
-
-            <!-- Logo -->
-            <HBox alignment="CENTER_LEFT" spacing="8" HBox.hgrow="NEVER">
-                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+    <left>
+        <VBox styleClass="sidebar">
+            <!-- Logo Area -->
+            <VBox styleClass="sidebar-logo-box">
+                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
                     <image><Image url="@images/logo.png" /></image>
                 </ImageView>
-                <Label style="-fx-text-fill: #013220; -fx-font-size: 20px; -fx-font-weight: bold;" text="GoVibe" />
-            </HBox>
+                <Label style="-fx-text-fill: #D1F2EB; -fx-font-size: 20px; -fx-font-weight: bold;" text="GoVibe" />
+                <Label fx:id="roleLabel" style="-fx-text-fill: #A0E0C9; -fx-font-size: 11px;" text="Espace client" />
+            </VBox>
 
-            <Region HBox.hgrow="ALWAYS" />
+            <!-- Navigation Area -->
+            <VBox styleClass="sidebar-nav-container">
+                <Button onAction="#handleGoToPosts" styleClass="nav-button" text="🏠  Accueil" />
+                <Button onAction="#handleGoToForums" styleClass="nav-button, nav-button-active" text="💬  Forums" />
+                <Button styleClass="nav-button" text="📅  Événements" />
+                <Button styleClass="nav-button" text="ℹ️  À propos" />
+            </VBox>
 
-            <!-- Nav Links -->
-            <HBox alignment="CENTER" spacing="30">
-                <Hyperlink onAction="#handleGoToPosts" style="-fx-text-fill: #013220; -fx-font-size: 14px; -fx-font-weight: bold; -fx-underline: false;" text="Accueil" />
-                <Hyperlink onAction="#handleGoToForums" style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-underline: false;" text="Forums" />
-                <Hyperlink style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-underline: false;" text="Événements" />
-                <Hyperlink style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-underline: false;" text="À propos" />
-            </HBox>
+            <Region VBox.vgrow="ALWAYS" />
 
-            <Region HBox.hgrow="ALWAYS" />
-
-            <!-- User Info -->
-            <HBox alignment="CENTER_RIGHT" spacing="12">
-                <Label style="-fx-text-fill: #013220; -fx-font-size: 14px; -fx-font-weight: bold;" text="Bonjour !" />
-                <Button onAction="#handleLogout" style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6; -fx-cursor: hand;" text="Déconnexion" />
-            </HBox>
-        </HBox>
-    </top>
+            <!-- Footer Area -->
+            <VBox spacing="8" alignment="CENTER">
+                <Separator styleClass="sidebar-separator" />
+                <Button onAction="#handleLogout" styleClass="logout-sidebar-btn" text="🚪  Déconnexion" />
+            </VBox>
+        </VBox>
+    </left>
 
     <!-- Main Content Area -->
     <center>
@@ -56,8 +54,8 @@
                 <VBox alignment="TOP_CENTER" spacing="30" style="-fx-background-color: #F4F7F6; -fx-padding: 0 0 50 0;">
                     
                     <!-- Hero/Cover Section -->
-                    <StackPane alignment="BOTTOM_LEFT" prefHeight="300.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 20, 0, 0, 0);">
-                        <ImageView fx:id="coverImage" fitHeight="300.0" fitWidth="1600.0" preserveRatio="false" style="-fx-opacity: 0.9;" />
+                    <StackPane alignment="BOTTOM_LEFT" maxWidth="1100" prefHeight="300.0" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 20, 0, 0, 0);">
+                        <ImageView fx:id="coverImage" fitHeight="300.0" fitWidth="1100.0" preserveRatio="false" style="-fx-opacity: 0.9;" />
                         
                         <!-- Gradient Overlay for Readability -->
                         <Region style="-fx-background-color: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%);" />
@@ -88,20 +86,23 @@
                             
                             <Region HBox.hgrow="ALWAYS" />
                             
-                            <Button onAction="#handleAjoutPost" style="-fx-background-color: transparent; -fx-cursor: hand;">
-                                <graphic>
-                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                        <image>
-                                            <Image url="@images/add.png" />
-                                        </image>
-                                    </ImageView>
-                                </graphic>
-                            </Button>
+                            <HBox alignment="CENTER_RIGHT" spacing="10">
+                                <Button fx:id="leaveButton" onAction="#handleLeaveForum" style="-fx-background-color: transparent; -fx-text-fill: #ff4d4d; -fx-font-weight: bold; -fx-border-color: #ff4d4d; -fx-border-radius: 20; -fx-padding: 5 15; -fx-cursor: hand;" text="Quitter le forum" visible="false" managed="false" />
+                                <Button onAction="#handleAjoutPost" style="-fx-background-color: transparent; -fx-cursor: hand;">
+                                    <graphic>
+                                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@images/add.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                            </HBox>
                         </HBox>
 
-                        <HBox spacing="25" alignment="TOP_CENTER">
+                        <HBox alignment="TOP_CENTER" spacing="25">
                             <!-- Posts Feed (Left) -->
-                            <VBox fx:id="postsContainer" spacing="20" HBox.hgrow="ALWAYS">
+                            <VBox fx:id="postsContainer" spacing="20" HBox.hgrow="ALWAYS" maxWidth="750">
                                 <!-- Posts will be loaded here dynamically -->
                             </VBox>
 

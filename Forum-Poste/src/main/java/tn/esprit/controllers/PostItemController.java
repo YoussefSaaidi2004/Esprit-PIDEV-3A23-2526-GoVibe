@@ -166,11 +166,11 @@ public class PostItemController {
     private void hideMedia() {
         postImageView.setVisible(false);
         postImageView.setManaged(false);
-        mediaPlaceholder.setVisible(true);
-        mediaPlaceholder.setManaged(true);
+        mediaPlaceholder.setVisible(false);
+        mediaPlaceholder.setManaged(false);
 
-        // Optionally hide the entire media pane if no media and you want to save space
-        // mediaPane.setVisible(false);
-        // mediaPane.setManaged(false);
+        // Hide the entire media pane to save space
+        mediaPane.setVisible(false);
+        mediaPane.setManaged(false);
     }
 }

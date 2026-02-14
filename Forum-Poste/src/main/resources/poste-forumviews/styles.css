@@ -12,30 +12,61 @@
 
 /* Sidebar Styling */
 .sidebar {
-    -fx-background-color: white;
-    -fx-border-color: #E0E0E0;
-    -fx-border-width: 0 1 0 0;
+    -fx-background-color: -fx-secondary-green;
+    -fx-pref-width: 240;
+    -fx-padding: 25 15;
 }
 
-.sidebar-button {
+.sidebar-logo-box {
+    -fx-alignment: CENTER;
+    -fx-spacing: 5;
+    -fx-padding: 0 0 30 0;
+}
+
+.sidebar-nav-container {
+    -fx-spacing: 5;
+}
+
+.nav-button {
     -fx-background-color: transparent;
-    -fx-text-fill: -fx-accent-green;
+    -fx-text-fill: #A0E0C9;
     -fx-font-size: 14px;
     -fx-padding: 12 18;
     -fx-background-radius: 8;
     -fx-cursor: hand;
     -fx-alignment: CENTER_LEFT;
+    -fx-max-width: Infinity;
 }
 
-.sidebar-button:hover {
-    -fx-background-color: -fx-light-green;
-    -fx-text-fill: -fx-accent-green;
+.nav-button:hover {
+    -fx-background-color: rgba(80, 200, 120, 0.1);
+    -fx-text-fill: #D1F2EB;
 }
 
-.sidebar-button-active {
-    -fx-background-color: -fx-primary-green;
-    -fx-text-fill: white;
+.nav-button-active {
+    -fx-background-color: rgba(80, 200, 120, 0.2);
+    -fx-text-fill: #D1F2EB;
     -fx-font-weight: bold;
+}
+
+.logout-sidebar-btn {
+    -fx-background-color: rgba(231, 76, 60, 0.1);
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 13px;
+    -fx-padding: 10 18;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+    -fx-max-width: Infinity;
+}
+
+.logout-sidebar-btn:hover {
+    -fx-background-color: rgba(231, 76, 60, 0.2);
+}
+
+.sidebar-separator {
+    -fx-border-color: #084E36;
+    -fx-border-width: 1 0 0 0;
 }
 
 /* Form Card Container */
@@ -62,6 +93,11 @@
 .text-field:focused {
     -fx-border-color: -fx-primary-green;
     -fx-effect: dropshadow(three-pass-box, rgba(80, 200, 120, 0.15), 10, 0, 0, 0);
+}
+
+.error-border {
+    -fx-border-color: -fx-error-red !important;
+    -fx-effect: dropshadow(three-pass-box, rgba(231, 76, 60, 0.15), 10, 0, 0, 0);
 }
 
 /* Control Buttons */

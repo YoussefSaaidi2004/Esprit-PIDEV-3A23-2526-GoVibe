@@ -39,12 +39,15 @@ public class ForumItemController {
     @FXML
     private Label creatorLabel;
     @FXML
+    private javafx.scene.control.Button leaveButton;
+    @FXML
     private javafx.scene.control.Button editButton;
     @FXML
     private javafx.scene.control.Button deleteButton;
 
     private Forum currentForum;
     private final ServiceForum serviceForum = new ServiceForum();
+    private final tn.esprit.services.ServiceMembre serviceMembre = new tn.esprit.services.ServiceMembre();
     private final tn.esprit.services.ServicePersonne servicePersonne = new tn.esprit.services.ServicePersonne();
 
     public void setData(Forum f) {
@@ -74,16 +77,52 @@ public class ForumItemController {
 
         // Access Control Logic
         boolean canManage = false;
+        boolean isMember = false;
+        boolean isOwner = false;
+
         if (tn.esprit.mains.MainApp.loggedInUser != null) {
-            boolean isOwner = f.getCreated_by() == tn.esprit.mains.MainApp.loggedInUser.getId();
+            int currentUserId = tn.esprit.mains.MainApp.loggedInUser.getId();
+            isOwner = f.getCreated_by() == currentUserId;
             boolean isAdmin = "admin".equalsIgnoreCase(tn.esprit.mains.MainApp.loggedInUser.getRole());
             canManage = isOwner || isAdmin;
+            isMember = serviceMembre.estMembre(f.getForum_id(), currentUserId);
         }
+
+        // Show Leave button if member and NOT creator
+        boolean showLeave = isMember && !isOwner;
+        leaveButton.setVisible(showLeave);
+        leaveButton.setManaged(showLeave);
 
         editButton.setVisible(canManage);
         editButton.setManaged(canManage);
         deleteButton.setVisible(canManage);
         deleteButton.setManaged(canManage);
+    }
+
+    @FXML
+    private void handleLeaveForum(ActionEvent event) {
+        if (tn.esprit.mains.MainApp.loggedInUser == null)
+            return;
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Quitter le forum");
+        alert.setHeaderText("Confirmation");
+        alert.setContentText("Voulez-vous vraiment quitter ce forum ?");
+
+        if (alert.showAndWait().get() == ButtonType.OK) {
+            try {
+                serviceMembre.supprimer(currentForum.getForum_id(), tn.esprit.mains.MainApp.loggedInUser.getId());
+
+                // Refresh list
+                Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+
+            } catch (SQLException | IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML

@@ -34,6 +34,9 @@ public class DetailsForumController {
     private Label creatorLabel;
 
     @FXML
+    private Label roleLabel;
+
+    @FXML
     private VBox postsContainer;
 
     private Forum currentForum;
@@ -46,8 +49,11 @@ public class DetailsForumController {
     private javafx.scene.layout.VBox creatorControls;
     @FXML
     private javafx.scene.control.TextField memberEmailField;
+    @FXML
+    private javafx.scene.control.Button leaveButton;
 
     public void initData(Forum forum) {
+        syncSidebarRole();
         this.currentForum = forum;
         forumNameLabel.setText(forum.getName());
         forumDescriptionLabel.setText(forum.getDescription());
@@ -81,19 +87,41 @@ public class DetailsForumController {
             }
 
             // Show creator controls if owner
-            if (forum.getCreated_by() == userId) {
+            boolean isOwner = forum.getCreated_by() == userId;
+            boolean isMember = serviceMembre.estMembre(forum.getForum_id(), userId);
+
+            if (isOwner) {
                 creatorControls.setVisible(true);
                 creatorControls.setManaged(true);
             } else {
                 creatorControls.setVisible(false);
                 creatorControls.setManaged(false);
             }
+
+            // Show Leave button if member and NOT creator
+            boolean showLeave = isMember && !isOwner;
+            leaveButton.setVisible(showLeave);
+            leaveButton.setManaged(showLeave);
+
         } else {
             creatorControls.setVisible(false);
             creatorControls.setManaged(false);
+            leaveButton.setVisible(false);
+            leaveButton.setManaged(false);
         }
 
         loadForumPosts();
+    }
+
+    private void syncSidebarRole() {
+        if (roleLabel != null && tn.esprit.mains.MainApp.loggedInUser != null) {
+            String role = tn.esprit.mains.MainApp.loggedInUser.getRole();
+            if ("admin".equalsIgnoreCase(role)) {
+                roleLabel.setText("Espace admin");
+            } else {
+                roleLabel.setText("Espace client");
+            }
+        }
     }
 
     @FXML
@@ -234,6 +262,27 @@ public class DetailsForumController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleLeaveForum(ActionEvent event) {
+        if (tn.esprit.mains.MainApp.loggedInUser == null)
+            return;
+
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Quitter le forum");
+        alert.setHeaderText("Confirmation");
+        alert.setContentText("Voulez-vous vraiment quitter ce forum ?");
+
+        if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
+            try {
+                serviceMembre.supprimer(currentForum.getForum_id(), tn.esprit.mains.MainApp.loggedInUser.getId());
+                handleGoToForums(event);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package tn.esprit.controllers;
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.Label;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -18,13 +19,28 @@ import java.util.List;
 public class ListPostController {
 
     @FXML
+    private Label roleLabel;
+
+    @FXML
     private VBox postsContainer;
 
     private final ServicePoste servicePoste = new ServicePoste();
 
     @FXML
     public void initialize() {
+        syncSidebarRole();
         loadPosts();
+    }
+
+    private void syncSidebarRole() {
+        if (roleLabel != null && tn.esprit.mains.MainApp.loggedInUser != null) {
+            String role = tn.esprit.mains.MainApp.loggedInUser.getRole();
+            if ("admin".equalsIgnoreCase(role)) {
+                roleLabel.setText("Espace admin");
+            } else {
+                roleLabel.setText("Espace client");
+            }
+        }
     }
 
     private void loadPosts() {

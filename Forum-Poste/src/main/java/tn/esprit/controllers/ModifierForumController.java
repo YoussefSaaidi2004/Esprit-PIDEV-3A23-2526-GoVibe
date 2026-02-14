@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import tn.esprit.entities.Forum;
@@ -20,6 +21,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class ModifierForumController {
+
+    @FXML
+    private Label roleLabel;
 
     @FXML
     private TextField nameField;
@@ -34,6 +38,7 @@ public class ModifierForumController {
     private final ServiceForum serviceForum = new ServiceForum();
 
     public void initData(Forum f) {
+        syncSidebarRole();
         this.currentForum = f;
         nameField.setText(f.getName());
         descriptionArea.setText(f.getDescription());
@@ -42,6 +47,17 @@ public class ModifierForumController {
 
         if (f.isIs_private()) {
             privateToggle.setText("🔒 Privé");
+        }
+    }
+
+    private void syncSidebarRole() {
+        if (roleLabel != null && tn.esprit.mains.MainApp.loggedInUser != null) {
+            String role = tn.esprit.mains.MainApp.loggedInUser.getRole();
+            if ("admin".equalsIgnoreCase(role)) {
+                roleLabel.setText("Espace admin");
+            } else {
+                roleLabel.setText("Espace client");
+            }
         }
     }
 
@@ -109,8 +125,20 @@ public class ModifierForumController {
     }
 
     @FXML
+    private void handleGoToForums(ActionEvent event) {
+        handleCancel(event);
+    }
+
+    @FXML
     private void handleLogout(ActionEvent event) {
-        // Logique de déconnexion
-        System.out.println("Déconnexion demandée depuis ModifierForum");
+        tn.esprit.mains.MainApp.loggedInUser = null;
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/Login.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

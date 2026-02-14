@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import tn.esprit.entities.Poste;
@@ -24,6 +25,9 @@ public class ModifierPostController {
 
     private final ServicePoste servicePoste = new ServicePoste();
     private Poste currentPost;
+
+    @FXML
+    private Label roleLabel;
 
     @FXML
     private TextArea contenuArea;
@@ -51,6 +55,7 @@ public class ModifierPostController {
 
     @FXML
     public void initialize() {
+        syncSidebarRole();
         mediaToggle.selectedProperty().addListener((obs, oldVal, newVal) -> {
             mediaUrlContainer.setVisible(newVal);
             mediaUrlContainer.setManaged(newVal);
@@ -77,6 +82,17 @@ public class ModifierPostController {
         contenuArea.textProperty().addListener((obs, oldVal, newVal) -> {
             charCountLabel.setText(newVal.length() + " / 500");
         });
+    }
+
+    private void syncSidebarRole() {
+        if (roleLabel != null && tn.esprit.mains.MainApp.loggedInUser != null) {
+            String role = tn.esprit.mains.MainApp.loggedInUser.getRole();
+            if ("admin".equalsIgnoreCase(role)) {
+                roleLabel.setText("Espace admin");
+            } else {
+                roleLabel.setText("Espace client");
+            }
+        }
     }
 
     public void initData(Poste p) {
@@ -182,6 +198,15 @@ public class ModifierPostController {
     }
 
     @FXML
-    private void handleLogout() {
-        /* Logic */ }
+    private void handleLogout(ActionEvent event) {
+        tn.esprit.mains.MainApp.loggedInUser = null;
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/Login.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

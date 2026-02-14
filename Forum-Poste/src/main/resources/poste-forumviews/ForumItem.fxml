@@ -42,7 +42,8 @@
             </HBox>
         </VBox>
         <VBox alignment="CENTER_RIGHT" spacing="10">
-            <HBox spacing="10">
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="leaveButton" onAction="#handleLeaveForum" style="-fx-background-color: transparent; -fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-border-color: #e74c3c; -fx-border-radius: 6; -fx-padding: 6 12; -fx-cursor: hand; -fx-font-size: 11px;" text="Quitter" visible="false" managed="false" />
                 <Button onAction="#handleViewDetails" styleClass="button-primary" style="-fx-padding: 8 15; -fx-font-size: 12px; -fx-background-color: #084E36;" text="Voir" />
                 <Button fx:id="editButton" onAction="#handleEditForum" style="-fx-background-color: transparent; -fx-cursor: hand;">
                     <graphic>

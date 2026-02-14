@@ -33,7 +33,7 @@ public class ServiceMembre {
         ps.executeUpdate();
 
         // Update member count in forum
-        // Ideally we should decrement, but logic might vary. For now let's just insert.
+        decrementForumMemberCount(forumId);
     }
 
     public boolean estMembre(int forumId, int userId) {
@@ -68,6 +68,13 @@ public class ServiceMembre {
 
     private void updateForumMemberCount(int forumId) throws SQLException {
         String updateSql = "UPDATE forum SET nbr_members = nbr_members + 1 WHERE forum_id = ?";
+        PreparedStatement psUpdate = cnx.prepareStatement(updateSql);
+        psUpdate.setInt(1, forumId);
+        psUpdate.executeUpdate();
+    }
+
+    private void decrementForumMemberCount(int forumId) throws SQLException {
+        String updateSql = "UPDATE forum SET nbr_members = GREATEST(0, nbr_members - 1) WHERE forum_id = ?";
         PreparedStatement psUpdate = cnx.prepareStatement(updateSql);
         psUpdate.setInt(1, forumId);
         psUpdate.executeUpdate();

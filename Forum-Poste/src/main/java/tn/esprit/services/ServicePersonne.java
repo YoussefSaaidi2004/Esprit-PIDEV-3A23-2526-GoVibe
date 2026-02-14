@@ -27,6 +27,7 @@ public class ServicePersonne {
                 personne.setEmail(rs.getString("email"));
                 personne.setPassword(rs.getString("password"));
                 personne.setRole(rs.getString("role"));
+                personne.setCreated_at(rs.getTimestamp("created_at"));
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération de la personne : " + e.getMessage());
@@ -61,6 +62,7 @@ public class ServicePersonne {
                 personne.setEmail(rs.getString("email"));
                 personne.setPassword(rs.getString("password"));
                 personne.setRole(rs.getString("role"));
+                personne.setCreated_at(rs.getTimestamp("created_at"));
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors du login : " + e.getMessage());
@@ -96,6 +98,7 @@ public class ServicePersonne {
                 personne.setEmail(rs.getString("email"));
                 personne.setPassword(rs.getString("password"));
                 personne.setRole(rs.getString("role"));
+                personne.setCreated_at(rs.getTimestamp("created_at"));
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération par email : " + e.getMessage());

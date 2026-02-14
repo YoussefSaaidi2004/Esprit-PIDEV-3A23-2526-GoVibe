@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import tn.esprit.entities.Poste;
@@ -28,6 +29,9 @@ public class AjoutPostController {
         // Optionnel : changer le titre ou interface pour indiquer qu'on poste dans un
         // forum
     }
+
+    @FXML
+    private Label roleLabel;
 
     @FXML
     private TextArea contenuArea;
@@ -52,6 +56,7 @@ public class AjoutPostController {
 
     @FXML
     public void initialize() {
+        syncSidebarRole();
         // Logique pour afficher/masquer les champs média
         mediaUrlContainer.setVisible(false); // Initially hidden
         mediaUrlContainer.setManaged(false); // Initially not managed
@@ -80,6 +85,25 @@ public class AjoutPostController {
                         .setStyle("-fx-background-color: white; -fx-border-color: #50C878; -fx-text-fill: #50C878;");
             }
         });
+
+        // Character count listener
+        if (contenuArea != null) {
+            contenuArea.textProperty().addListener((observable, oldValue, newValue) -> {
+                // Remove error border if user starts typing (optional immediate feedback)
+                // contenuArea.getStyleClass().remove("error-border");
+            });
+        }
+    }
+
+    private void syncSidebarRole() {
+        if (roleLabel != null && tn.esprit.mains.MainApp.loggedInUser != null) {
+            String role = tn.esprit.mains.MainApp.loggedInUser.getRole();
+            if ("admin".equalsIgnoreCase(role)) {
+                roleLabel.setText("Espace admin");
+            } else {
+                roleLabel.setText("Espace client");
+            }
+        }
     }
 
     @FXML
@@ -102,16 +126,32 @@ public class AjoutPostController {
     }
 
     @FXML
-    private void handlePublish(javafx.event.ActionEvent event) {
+    private void handlePublish(ActionEvent event) {
         String contenu = contenuArea.getText();
-        String url = urlField.getText();
+        String url = mediaToggle.isSelected() ? urlField.getText() : null; // Clear URL if text status
         String type = mediaToggle.isSelected() ? "MEDIA" : "STATUS";
 
-        if (contenu.trim().isEmpty()) {
+        boolean isValid = true;
+        StringBuilder errorMessage = new StringBuilder();
+
+        // Validation: Not empty and Max 500 chars
+        if (contenu == null || contenu.trim().isEmpty()) {
+            contenuArea.getStyleClass().add("error-border");
+            errorMessage.append("Le contenu ne peut pas être vide.\n");
+            isValid = false;
+        } else if (contenu.length() > 500) {
+            contenuArea.getStyleClass().add("error-border");
+            errorMessage.append("Le contenu ne peut pas dépasser 500 caractères.\n");
+            isValid = false;
+        } else {
+            contenuArea.getStyleClass().remove("error-border");
+        }
+
+        if (!isValid) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Champ vide");
+            alert.setTitle("Validation échouée");
             alert.setHeaderText(null);
-            alert.setContentText("Le contenu de la publication ne peut pas être vide.");
+            alert.setContentText(errorMessage.toString());
             alert.showAndWait();
             return;
         }
@@ -153,31 +193,26 @@ public class AjoutPostController {
     }
 
     @FXML
-    private void handleCancel(javafx.event.ActionEvent event) {
+    private void handleCancel(ActionEvent event) {
         try {
             if (currentForum != null) {
                 // Retour au détail du forum
-                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                        getClass().getResource("/poste-forumviews/DetailsForum.fxml"));
-                javafx.scene.Parent root = loader.load();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/DetailsForum.fxml"));
+                Parent root = loader.load();
                 DetailsForumController controller = loader.getController();
                 controller.initData(currentForum);
 
-                javafx.stage.Stage stage = (javafx.stage.Stage) ((javafx.scene.Node) event.getSource()).getScene()
-                        .getWindow();
-                stage.setScene(new javafx.scene.Scene(root));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
                 stage.show();
             } else {
                 // Retour à la liste globale
-                javafx.scene.Parent root = javafx.fxml.FXMLLoader
-                        .load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
-                javafx.stage.Stage stage = (javafx.stage.Stage) ((javafx.scene.Node) event.getSource()).getScene()
-                        .getWindow();
-                javafx.scene.Scene scene = new javafx.scene.Scene(root);
-                stage.setScene(scene);
+                Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
                 stage.show();
             }
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

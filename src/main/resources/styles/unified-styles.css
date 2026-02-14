@@ -62,6 +62,26 @@
     -fx-text-alignment: CENTER;
 }
 
+/* ============ USER HEADER ============ */
+.user-header {
+    -fx-background-color: linear-gradient(to right, #1a4d2e, #2e8b57);
+    -fx-padding: 15 30;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0, 0, 2);
+}
+
+.header-icon {
+    -fx-fill: white;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s;
+}
+
+.header-icon:hover {
+    -fx-fill: #50C878;
+    -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.4), 8, 0, 0, 0);
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
 /* ============ NAVIGATION BUTTONS ============ */
 .toolbar {
     -fx-alignment: CENTER;
@@ -957,4 +977,28 @@
 .search-icon {
     -fx-fill: #50C878;
     -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.4), 5, 0, 0, 0);
+}
+
+/* ============ NAV DROPDOWN ============ */
+.nav-dropdown {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 15, 0, 0, 5);
+    -fx-padding: 10;
+}
+
+.nav-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2d3436;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 15;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+}
+
+.nav-item:hover {
+    -fx-background-color: #f0fdf4;
+    /* Light Green */
+    -fx-text-fill: #50C878;
+    -fx-background-radius: 5;
 }

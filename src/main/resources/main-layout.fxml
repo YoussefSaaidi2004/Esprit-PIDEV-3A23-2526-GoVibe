@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.MainLayoutController"
+            fx:id="mainContent"
+            prefWidth="1400" prefHeight="800"
+            style="-fx-background-color: #D1F2EB;">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <left>
+        <VBox prefWidth="280" alignment="TOP_CENTER"
+              style="-fx-background-color: linear-gradient(to bottom, #013220, #0B6E4F); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 2, 0);">
+            <padding><Insets top="30" right="20" bottom="30" left="20"/></padding>
+
+            <!-- Logo & Title -->
+            <VBox alignment="CENTER" spacing="8">
+                <Label text="✈️" style="-fx-font-size: 48px;"/>
+                <Label text="GoVibe Travel"
+                       style="-fx-text-fill: #D1F2EB; -fx-font-size: 24px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+                <Label text="Gestion Hôtelière"
+                       style="-fx-text-fill: #A0E0C9; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <Region prefHeight="40"/>
+
+            <!-- Navigation Buttons -->
+            <VBox spacing="8" VBox.vgrow="ALWAYS">
+
+                <Button text="🏨  Hôtels" maxWidth="Infinity"
+                        onAction="#loadHotels"
+                        styleClass="nav-button"
+                        style="-fx-background-color: rgba(80,200,120,0.25); -fx-text-fill: #D1F2EB; -fx-padding: 16 20; -fx-background-radius: 10; -fx-font-weight: bold; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-border-color: #50C878; -fx-border-width: 1; -fx-border-radius: 10;"/>
+
+                <Button text="🛏️  Chambres" maxWidth="Infinity"
+                        onAction="#loadChambres"
+                        styleClass="nav-button"
+                        style="-fx-background-color: rgba(160,224,201,0.15); -fx-text-fill: #D1F2EB; -fx-padding: 16 20; -fx-background-radius: 10; -fx-font-weight: bold; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+                <Button text="📅  Réservations Client" maxWidth="Infinity"
+                        onAction="#loadReservations"
+                        styleClass="nav-button"
+                        style="-fx-background-color: rgba(160,224,201,0.15); -fx-text-fill: #D1F2EB; -fx-padding: 16 20; -fx-background-radius: 10; -fx-font-weight: bold; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+                <Region VBox.vgrow="ALWAYS"/>
+
+                <Separator style="-fx-background-color: rgba(255,255,255,0.2);"/>
+
+                <Button text="🚪  Déconnexion"
+                        onAction="#deconnexion"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: rgba(208,78,54,0.2); -fx-text-fill: #D84E36; -fx-padding: 14 20; -fx-background-radius: 10; -fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand; -fx-border-color: rgba(208,78,54,0.5); -fx-border-width: 1; -fx-border-radius: 10;"/>
+            </VBox>
+
+        </VBox>
+    </left>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <center>
+        <!-- Content will be dynamically loaded here -->
+    </center>
+
+</BorderPane>
+

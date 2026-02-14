@@ -12,14 +12,12 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
 
         FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/hotel.fxml")
-
-
+                getClass().getResource("/main-layout.fxml")
         );
 
-        Scene scene = new Scene(fxmlLoader.load(), 1000, 600);
+        Scene scene = new Scene(fxmlLoader.load(), 1400, 800);
 
-        stage.setTitle("GoVibe - Gestion Hôtels");
+        stage.setTitle("GoVibe Travel - Gestion Hôtelière");
         stage.setScene(scene);
         stage.show();
     }

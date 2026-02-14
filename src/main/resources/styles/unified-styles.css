@@ -710,6 +710,23 @@
     -fx-background-color: linear-gradient(to right, #50C878 0%, #40A865 50%, #50C878 100%);
 }
 
+/* User Dashboard Header */
+.user-header {
+    -fx-background-color: linear-gradient(to right, #0B3D2E, #145A32);
+    -fx-padding: 15 40;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 10, 0, 0, 4);
+}
+
+.header-icon {
+    -fx-fill: #E0F2F1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
+}
+
+.icon-btn:hover .header-icon {
+    -fx-fill: #50C878;
+    -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.4), 8, 0, 0, 0);
+}
+
 /* Loading States */
 .spinner-overlay {
     -fx-background-color: rgba(255, 255, 255, 0.9);

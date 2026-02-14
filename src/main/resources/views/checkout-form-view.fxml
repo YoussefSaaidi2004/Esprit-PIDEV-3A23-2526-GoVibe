@@ -9,7 +9,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.gestionvol.controller.CheckoutFormController"
+            fx:controller="org.example.controllers.CheckoutFormController"
             stylesheets="@../styles.css">
 
     <center>
@@ -48,10 +48,10 @@
                         <ComboBox fx:id="cmbStatus" promptText="Select status" maxWidth="Infinity">
                             <items>
                                 <FXCollections fx:factory="observableArrayList">
-                                    <String fx:value="Pending"/>
-                                    <String fx:value="Confirmed"/>
-                                    <String fx:value="Cancelled"/>
-                                    <String fx:value="Completed"/>
+                                    <String fx:value="PENDING"/>
+                                    <String fx:value="CONFIRMED"/>
+                                    <String fx:value="CANCELLED"/>
+                                    <String fx:value="COMPLETED"/>
                                 </FXCollections>
                             </items>
                         </ComboBox>

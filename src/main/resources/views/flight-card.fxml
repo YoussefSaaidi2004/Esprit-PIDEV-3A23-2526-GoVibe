@@ -5,7 +5,7 @@
 <?import javafx.scene.shape.SVGPath?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" 
-      fx:controller="com.example.gestionvol.controller.FlightCardController"
+      fx:controller="org.example.controllers.FlightCardController"
       styleClass="interactive-card" spacing="15" prefWidth="320" style="-fx-padding: 20;">
     
     <!-- Header with Status Badge -->

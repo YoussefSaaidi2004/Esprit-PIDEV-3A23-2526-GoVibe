@@ -5,7 +5,8 @@
 <?import javafx.scene.shape.SVGPath?>
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
            fx:id="rootPane"
-           fx:controller="com.example.gestionvol.controller.CheckoutDetailController"
+           fx:controller="org.example.controllers.CheckoutDetailController"
+           stylesheets="@../styles/unified-styles.css"
            styleClass="main-bg">
     
     <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">

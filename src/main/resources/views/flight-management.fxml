@@ -3,37 +3,64 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.shape.SVGPath?>
+<?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.gestionvol.controller.FlightManagementController"
+            fx:controller="org.example.controllers.FlightManagementController"
+            stylesheets="@../styles/unified-styles.css"
             styleClass="main-bg">
     
     <left>
-        <VBox styleClass="sidebar" spacing="30">
-            <VBox spacing="5" alignment="CENTER" style="-fx-padding: 0 0 30 0;">
-                <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" style="-fx-fill: #50C878;" scaleX="1.5" scaleY="1.5"/>
-                <Text text="GV" style="-fx-fill: white; -fx-font-size: 10; -fx-font-weight: bold;"/>
+        <VBox prefWidth="260" spacing="0" alignment="TOP_CENTER"
+              style="-fx-background-color: #013220;">
+            <padding><Insets top="25" right="15" bottom="25" left="15"/></padding>
+
+            <VBox alignment="CENTER" spacing="5">
+                <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" style="-fx-fill: #D1F2EB;" scaleX="1.4" scaleY="1.4"/>
+                <Label text="GoVibe" style="-fx-text-fill: #D1F2EB; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                <Label text="Gestion des vols" style="-fx-text-fill: #A0E0C9; -fx-font-size: 11px;"/>
             </VBox>
-            
-            <Button onAction="#navDashboard" styleClass="nav-button">
-                <graphic><Text text="📊" style="-fx-font-size: 24px; -fx-fill: #6c7d75;"/></graphic>
-            </Button>
-            
-            <Button styleClass="nav-button, nav-button-active">
-                <graphic><Text text="✈️" style="-fx-font-size: 24px; -fx-fill: white;"/></graphic>
-            </Button>
-            
-            <Button onAction="#navBookings" styleClass="nav-button">
-                <graphic><Text text="🎫" style="-fx-font-size: 24px; -fx-fill: #6c7d75;"/></graphic>
-            </Button>
-            
-            <Button onAction="#handleThemeToggle" styleClass="nav-button">
-                <graphic><Text text="🌗" style="-fx-font-size: 24px; -fx-fill: #50C878;"/></graphic>
-            </Button>
-            
-            <Button onAction="#navUser" styleClass="nav-button">
-                <graphic><Text text="🔄" style="-fx-font-size: 24px; -fx-fill: #50C878;"/></graphic>
-            </Button>
+
+            <Region prefHeight="30"/>
+
+            <VBox spacing="4">
+                <Button text="📋 Dashboard" onAction="#handleDashboard" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="👤 Personnes" onAction="#handlePersonnes" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="🚗 Voitures" onAction="#handleVoitures" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="📅 Locations" onAction="#handleLocations" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+                <Button maxWidth="Infinity"
+                        style="-fx-background-color: rgba(80,200,120,0.2); -fx-text-fill: #D1F2EB; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
+                                     style="-fx-fill: #D1F2EB;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Vols" style="-fx-text-fill: #D1F2EB; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button onAction="#handleCheckouts" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M19.5 6h-15c-.83 0-1.5.67-1.5 1.5v3c0 .55.45 1 1 1s1 .45 1 1-.45 1-1 1v3c0 .83.67 1.5 1.5 1.5h15c.83 0 1.5-.67 1.5-1.5v-3c0-.55-.45-1-1-1s-1-.45-1-1 .45-1 1-1v-3c0-.83-.67-1.5-1.5-1.5z"
+                                     style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Checkouts" style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox spacing="8" alignment="CENTER">
+                <Separator style="-fx-border-color: #084E36;"/>
+                <Button text="🚪 Déconnexion" onAction="#handleLogout" maxWidth="Infinity"
+                        style="-fx-background-color: rgba(231,76,60,0.15); -fx-text-fill: #e74c3c; -fx-font-size: 13px; -fx-padding: 10 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+            </VBox>
         </VBox>
     </left>
 
@@ -111,3 +138,4 @@
         </VBox>
     </center>
 </BorderPane>
+

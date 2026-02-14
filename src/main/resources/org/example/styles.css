@@ -1,0 +1,142 @@
+/* ============================================================
+   GoVibe — Nature Premium Theme Stylesheet
+   ============================================================ */
+
+/* ---------- ROOT & GLOBALS ---------- */
+.root {
+    -fx-background-color: #D1F2EB; /* Light Mint Background */
+    -fx-font-family: "Segoe UI", "Inter", system;
+}
+
+* {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* ---------- TEXT STYLES ---------- */
+.title-text {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-fill: #013220; /* Dark Green */
+}
+
+.subtitle-text {
+    -fx-font-size: 16px;
+    -fx-fill: #084E36; /* Deep Green / Grayish */
+}
+
+.label-text {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #013220;
+}
+
+/* ---------- CONTAINERS ---------- */
+.auth-container {
+    -fx-background-color: #F5F3E7; /* Off-White / Cream Card */
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(1, 50, 32, 0.2), 20, 0, 0, 8);
+    -fx-padding: 40;
+}
+
+/* ---------- FORM FIELDS ---------- */
+.text-field, .password-field, .combo-box {
+    -fx-background-color: white;
+    -fx-text-fill: #013220;
+    -fx-prompt-text-fill: #A0E0C9;
+    -fx-padding: 12;
+    -fx-background-radius: 8;
+    -fx-border-color: #A0E0C9; /* Soft Mint Border */
+    -fx-border-radius: 8;
+    -fx-border-width: 1.5;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .password-field:focused, .combo-box:focused {
+    -fx-border-color: #50C878; /* Emerald Green Focus */
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.25), 8, 0, 0, 0);
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-primary {
+    -fx-background-color: #50C878; /* Emerald Green */
+    -fx-text-fill: #013220; /* Dark Green Text for Contrast (or White?) Let's try White for Emerald */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 24;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.4), 10, 0, 0, 4);
+}
+
+.btn-primary:hover {
+    -fx-background-color: #084E36; /* Deep Green Hover */
+    -fx-effect: dropshadow(gaussian, rgba(8, 78, 54, 0.5), 12, 0, 0, 5);
+}
+
+.btn-secondary {
+    -fx-background-color: transparent;
+    -fx-text-fill: #013220;
+    -fx-font-size: 13px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-border-color: #013220;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: rgba(1, 50, 32, 0.1);
+}
+
+.link-text {
+    -fx-text-fill: #0B64EF; /* Blue Accent */
+    -fx-underline: true;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.link-text:visited {
+    -fx-text-fill: #0B64EF;
+}
+
+/* ---------- RADIO BUTTONS ---------- */
+.radio-button {
+    -fx-text-fill: #013220;
+    -fx-font-size: 14px;
+}
+
+.radio-button .radio {
+    -fx-background-color: white;
+    -fx-border-color: #50C878;
+    -fx-border-radius: 10px;
+}
+
+.radio-button:selected .radio .dot {
+    -fx-background-color: #50C878;
+    -fx-background-insets: 0;
+}
+
+/* ---------- MAIN APP HEADER ---------- */
+.header-bar {
+    -fx-background-color: #013220; /* Dark Green Header */
+}
+
+.header-title {
+    -fx-text-fill: #D1F2EB; /* Light Mint Text */
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- ALERTS / NOTIFICATIONS ---------- */
+.error-label {
+    -fx-text-fill: #e74c3c; /* Keep standard red for errors or adjust to dark red? Standard red is clearer */
+    -fx-font-weight: bold;
+}
+
+.success-label {
+    -fx-text-fill: #50C878;
+    -fx-font-weight: bold;
+}

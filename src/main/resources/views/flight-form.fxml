@@ -5,7 +5,8 @@
 <?import javafx.geometry.Insets?>
 
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.example.gestionvol.controller.FlightFormController"
+           fx:controller="org.example.controllers.FlightFormController"
+           stylesheets="@../styles/unified-styles.css"
            styleClass="main-bg">
     
     
@@ -28,7 +29,7 @@
                 <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="0">
                     <Label text="FLIGHT ID" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
                     <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
-                        <Text text="🏷️" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <Text text="🔹" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
                         <TextField fx:id="txtFlightId" promptText="e.g. GV-101" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
                     </HBox>
                 </VBox>
@@ -36,7 +37,7 @@
                 <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="0">
                     <Label text="AIRLINE" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
                     <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
-                        <Text text="🏢" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <Text text="✈️" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
                         <TextField fx:id="txtAirline" promptText="e.g. GoVibe Air" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
                     </HBox>
                 </VBox>
@@ -60,7 +61,7 @@
                 <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="2">
                     <Label text="DEPARTURE TIME" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
                     <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
-                        <Text text="🕒" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <Text text="🕐" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
                         <TextField fx:id="txtDepartureTime" promptText="HH:mm" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
                     </HBox>
                 </VBox>
@@ -68,7 +69,7 @@
                 <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <Label text="ARRIVAL TIME" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
                     <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
-                        <Text text="🕒" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <Text text="🕐" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
                         <TextField fx:id="txtArrivalTime" promptText="HH:mm" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
                     </HBox>
                 </VBox>
@@ -84,7 +85,7 @@
                 <VBox spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="3">
                     <Label text="TOTAL SEATS" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
                     <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
-                        <Text text="👥" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
+                        <Text text="🎫" style="-fx-font-size: 14px; -fx-fill: #8D99AE;"/>
                         <TextField fx:id="txtSeats" promptText="e.g. 180" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
                     </HBox>
                 </VBox>
@@ -92,7 +93,7 @@
                 <VBox spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="4">
                     <Label text="PRICE (DT)" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10;"/>
                     <HBox styleClass="input-with-icon" spacing="10" alignment="CENTER_LEFT">
-                        <Text text="💰" style="-fx-font-size: 14px; -fx-fill: #50C878;"/>
+                        <Text text="💴" style="-fx-font-size: 14px; -fx-fill: #50C878;"/>
                         <TextField fx:id="txtPrice" promptText="e.g. 450" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
                     </HBox>
                 </VBox>
@@ -126,3 +127,4 @@
         </VBox>
     </VBox>
 </StackPane>
+

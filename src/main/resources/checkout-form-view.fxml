@@ -9,7 +9,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.gestionvol.controller.CheckoutFormController"
+            fx:controller="org.example.controllers.CheckoutFormController"
             stylesheets="@../styles.css">
 
     <center>
@@ -72,9 +72,9 @@
                 <Separator/>
                 
                 <HBox spacing="15" alignment="CENTER_RIGHT">
-                    <Button fx:id="btnCancel" text="❌ Cancel" styleClass="button, btn-cancel" 
+                        <Button fx:id="btnCancel" text="Cancel" styleClass="button, btn-cancel" 
                             onAction="#handleCancel"/>
-                    <Button fx:id="btnSave" text="✅ Save" styleClass="button, btn-save" 
+                        <Button fx:id="btnSave" text="Save" styleClass="button, btn-save" 
                             onAction="#handleSave"/>
                 </HBox>
                 

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.AdminDashboardController"
+            stylesheets="@styles.css">
+
+    <!-- ==================== LEFT SIDEBAR ==================== -->
+    <left>
+        <VBox prefWidth="260" spacing="0" alignment="TOP_CENTER"
+              style="-fx-background-color: #013220;">
+            <padding><Insets top="25" right="15" bottom="25" left="15"/></padding>
+
+            <!-- Logo -->
+            <VBox alignment="CENTER" spacing="5">
+                <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="@images/logo.png"/></image>
+                </ImageView>
+                <Label text="GoVibe" style="-fx-text-fill: #D1F2EB; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                <Label text="Panneau d'administration" style="-fx-text-fill: #A0E0C9; -fx-font-size: 11px;"/>
+            </VBox>
+
+            <Region prefHeight="30"/>
+
+            <!-- Navigation -->
+            <VBox spacing="4">
+                <Button maxWidth="Infinity"
+                        style="-fx-background-color: rgba(80,200,120,0.2); -fx-text-fill: #D1F2EB; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
+                                     style="-fx-fill: #D1F2EB;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Dashboard" style="-fx-text-fill: #D1F2EB; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button onAction="#handlePersonnes" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                                     style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Personnes" style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button onAction="#handleVoitures" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M18.92 5.01C18.72 4.42 18.16 4 17.5 4h-11c-.66 0-1.21.42-1.42 1.01L3 11v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 15c-.83 0-1.5-.67-1.5-1.5S5.67 12 6.5 12s1.5.67 1.5 1.5S7.33 15 6.5 15zm11 0c-.83 0-1.5-.67-1.5-1.5S16.67 12 17.5 12s1.5.67 1.5 1.5S18.33 15 17.5 15zM5 10l1.5-4.5h11L19 10H5z"
+                                     style="-fx-fill: #A0E0C9;" scaleX="0.8" scaleY="0.8"/>
+                            <Label text="Voitures" style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button onAction="#handleLocations" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"
+                                     style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Locations" style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button onAction="#handleFlights" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
+                                     style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Vols" style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button onAction="#handleCheckouts" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M19.5 6h-15c-.83 0-1.5.67-1.5 1.5v3c0 .55.45 1 1 1s1 .45 1 1-.45 1-1 1v3c0 .83.67 1.5 1.5 1.5h15c.83 0 1.5-.67 1.5-1.5v-3c0-.55-.45-1-1-1s-1-.45-1-1 .45-1 1-1v-3c0-.83-.67-1.5-1.5-1.5z"
+                                     style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Checkouts" style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M3 17h2v-7H3v7zm4 0h2V3H7v14zm4 0h2v-4h-2v4zm4 0h2V7h-2v10zm4 0h2v-2h-2v2z"
+                                     style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Statistiques" style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+                                     style="-fx-fill: #A0E0C9;" scaleX="0.8" scaleY="0.8"/>
+                            <Label text="Paramètres" style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Logout -->
+            <VBox spacing="8" alignment="CENTER">
+                <Separator style="-fx-border-color: #084E36;"/>
+                <Button onAction="#handleLogout" maxWidth="Infinity"
+                        style="-fx-background-color: rgba(231,76,60,0.15); -fx-text-fill: #e74c3c; -fx-font-size: 13px; -fx-padding: 10 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M10 17l1.41-1.41L8.83 13H20v-2H8.83l2.58-2.59L10 7l-5 5 5 5z"
+                                     style="-fx-fill: #e74c3c;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Déconnexion" style="-fx-text-fill: #e74c3c; -fx-font-size: 13px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <center>
+        <VBox spacing="0" style="-fx-background-color: #D1F2EB;">
+
+            <!-- TOP HEADER BAR -->
+            <HBox alignment="CENTER_LEFT" spacing="15"
+                  style="-fx-background-color: #F5F3E7; -fx-border-color: #A0E0C9; -fx-border-width: 0 0 1 0;">
+                <padding><Insets top="18" right="40" bottom="18" left="40"/></padding>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label fx:id="welcomeLabel" text="Bonjour, Admin"
+                           style="-fx-text-fill: #013220; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                    <Label fx:id="roleLabel" text="Administrateur"
+                           style="-fx-text-fill: #084E36; -fx-font-size: 13px;"/>
+                </VBox>
+                <Label text="✅ En ligne"
+                       style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #50C878; -fx-padding: 6 16; -fx-background-radius: 20; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <!-- Dashboard Content -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent; -fx-background: #D1F2EB;">
+                <VBox spacing="25">
+                    <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+
+                    <!-- Stats Cards Row -->
+                    <HBox spacing="20">
+                        <!-- Card 1 -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER"
+                              style="-fx-background-color: #F5F3E7; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(1,50,32,0.1), 8, 0, 0, 3);">
+                            <Label text="👥" style="-fx-font-size: 28px;"/>
+                            <Label text="Utilisateurs" style="-fx-text-fill: #084E36; -fx-font-size: 14px;"/>
+                            <Label text="---" style="-fx-text-fill: #013220; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                        </VBox>
+                        <!-- Card 2 -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER"
+                              style="-fx-background-color: #F5F3E7; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(1,50,32,0.1), 8, 0, 0, 3);">
+                            <Label text="🌐" style="-fx-font-size: 28px;"/>
+                            <Label text="Villes" style="-fx-text-fill: #084E36; -fx-font-size: 14px;"/>
+                            <Label text="150+" style="-fx-text-fill: #013220; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                        </VBox>
+                        <!-- Card 3 -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER"
+                              style="-fx-background-color: #F5F3E7; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(1,50,32,0.1), 8, 0, 0, 3);">
+                            <Label text="🎉" style="-fx-font-size: 28px;"/>
+                            <Label text="🎉 Événements" style="-fx-text-fill: #084E36; -fx-font-size: 14px;"/>
+                            <Label text="2K+" style="-fx-text-fill: #013220; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                        </VBox>
+                        <!-- Card 4 -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER"
+                              style="-fx-background-color: #F5F3E7; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(1,50,32,0.1), 8, 0, 0, 3);">
+                            <Label text="⭐" style="-fx-font-size: 28px;"/>
+                            <Label text="Note moyenne" style="-fx-text-fill: #084E36; -fx-font-size: 14px;"/>
+                            <Label text="4.9" style="-fx-text-fill: #013220; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Quick Actions -->
+                    <VBox spacing="15"
+                          style="-fx-background-color: #F5F3E7; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(three-pass-box, rgba(1,50,32,0.1), 8, 0, 0, 3);">
+                        <Label text="Actions rapides" style="-fx-text-fill: #013220; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                        <HBox spacing="12">
+                            <Button text="👤 Gérer les personnes" onAction="#handlePersonnes"
+                                    style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Button text="🚘 Gérer les voitures" onAction="#handleVoitures"
+                                style="-fx-background-color: #0B64EF; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Button text="📅 Gérer les locations" onAction="#handleLocations"
+                                style="-fx-background-color: #084E36; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Button text="📈 Voir Statistiques"
+                                    style="-fx-background-color: #0B64EF; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Button text="⚙️ Paramètres"
+                                    style="-fx-background-color: #084E36; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        </HBox>
+                        <HBox spacing="12">
+                            <Button text="✈️ Gérer les vols" onAction="#handleFlights"
+                                    style="-fx-background-color: #E67E22; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Button text="🎫 Gérer les checkouts" onAction="#handleCheckouts"
+                                    style="-fx-background-color: #C0392B; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        </HBox>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+        </VBox>
+    </center>
+
+</BorderPane>
+

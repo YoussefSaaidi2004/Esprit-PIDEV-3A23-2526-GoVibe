@@ -64,57 +64,67 @@
                     </VBox>
                 </HBox>
 
-                <FlowPane hgap="25" vgap="25">
-                    <VBox styleClass="card, metric-card" alignment="CENTER" spacing="12">
-                        <Text text="🕒" style="-fx-font-size: 28px; -fx-fill: #FFD166;"/>
-                        <Text fx:id="pendingCount" style="-fx-font-size: 26; -fx-font-weight: bold;" text="12"/>
-                        <Text text="PENDING" styleClass="subtitle" style="-fx-font-size: 10; -fx-font-weight: bold;"/>
-                        <Button styleClass="text-btn" onAction="#navPending">
-                            <graphic>
-                                <HBox spacing="5" alignment="CENTER">
-                                    <Text text="View All" style="-fx-fill: #2E8B57; -fx-font-weight: bold;"/>
-                                    <Text text="►" style="-fx-fill: #2E8B57; -fx-font-size: 10;"/>
-                                </HBox>
-                            </graphic>
-                        </Button>
-                    </VBox>
-                    <HBox styleClass="card, metric-card" spacing="15" alignment="CENTER_LEFT">
-                        <StackPane styleClass="icon-container" prefWidth="60" prefHeight="60" style="-fx-background-color: rgba(46, 139, 87, 0.1); -fx-background-radius: 30;">
-                            <Text text="✈" style="-fx-font-size: 24; -fx-fill: #2E8B57;"/>
+                <FlowPane hgap="30" vgap="30">
+                    <!-- Pending Approvals Card -->
+                    <HBox styleClass="metric-card-modern" spacing="20" alignment="CENTER_LEFT">
+                        <StackPane styleClass="icon-container-modern" style="-fx-background-color: rgba(255, 209, 102, 0.15);">
+                            <SVGPath content="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" style="-fx-fill: #FFD166;" scaleX="1.5" scaleY="1.5"/>
                         </StackPane>
-                        <VBox alignment="CENTER_LEFT">
-                            <Text fx:id="flightCount" styleClass="metric-value" text="0"/>
-                            <Text text="Total Flights" styleClass="metric-label"/>
+                        <VBox alignment="CENTER_LEFT" spacing="2">
+                            <Text fx:id="pendingCount" styleClass="metric-value-modern" text="12"/>
+                            <Text text="Pending Approvals" styleClass="metric-label-modern"/>
+                            <Button styleClass="text-btn" onAction="#navPending" style="-fx-padding: 5 0 0 0;">
+                                <graphic>
+                                    <HBox spacing="5" alignment="CENTER_LEFT">
+                                        <Text text="Review Now" style="-fx-fill: #013220; -fx-font-weight: bold; -fx-font-size: 11;"/>
+                                        <SVGPath content="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" style="-fx-fill: #013220;" scaleX="0.8" scaleY="0.8"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Total Flights Card -->
+                    <HBox styleClass="metric-card-modern" spacing="20" alignment="CENTER_LEFT">
+                        <StackPane styleClass="icon-container-modern" style="-fx-background-color: rgba(80, 200, 120, 0.1);">
+                            <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" style="-fx-fill: #50C878;" scaleX="1.5" scaleY="1.5"/>
+                        </StackPane>
+                        <VBox alignment="CENTER_LEFT" spacing="2">
+                            <Text fx:id="flightCount" styleClass="metric-value-modern" text="0"/>
+                            <Text text="Active Flights" styleClass="metric-label-modern"/>
                         </VBox>
                     </HBox>
                     
-                    <HBox styleClass="card, metric-card" spacing="15" alignment="CENTER_LEFT">
-                        <StackPane styleClass="icon-container" prefWidth="60" prefHeight="60" style="-fx-background-color: rgba(211, 84, 0, 0.1); -fx-background-radius: 30;">
-                            <Text text="👥" style="-fx-font-size: 24; -fx-fill: #D35400;"/>
+                    <!-- Total Bookings Card -->
+                    <HBox styleClass="metric-card-modern" spacing="20" alignment="CENTER_LEFT">
+                        <StackPane styleClass="icon-container-modern" style="-fx-background-color: rgba(211, 84, 0, 0.1);">
+                            <SVGPath content="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" style="-fx-fill: #D35400;" scaleX="1.5" scaleY="1.5"/>
                         </StackPane>
-                        <VBox alignment="CENTER_LEFT">
-                            <Text fx:id="totalBookingsText" styleClass="metric-value" text="0"/>
-                            <Text text="Total Bookings" styleClass="metric-label"/>
+                        <VBox alignment="CENTER_LEFT" spacing="2">
+                            <Text fx:id="totalBookingsText" styleClass="metric-value-modern" text="0"/>
+                            <Text text="Total Bookings" styleClass="metric-label-modern"/>
                         </VBox>
                     </HBox>
                     
-                    <HBox styleClass="card, metric-card" spacing="15" alignment="CENTER_LEFT">
-                        <StackPane styleClass="icon-container" prefWidth="60" prefHeight="60" style="-fx-background-color: rgba(192, 57, 43, 0.1); -fx-background-radius: 30;">
-                            <Text text="💰" style="-fx-font-size: 24; -fx-fill: #C0392B;"/>
+                    <!-- Total Revenue Card -->
+                    <HBox styleClass="metric-card-modern" spacing="20" alignment="CENTER_LEFT">
+                        <StackPane styleClass="icon-container-modern" style="-fx-background-color: rgba(192, 57, 43, 0.1);">
+                            <SVGPath content="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" style="-fx-fill: #C0392B;" scaleX="1.5" scaleY="1.5"/>
                         </StackPane>
-                        <VBox alignment="CENTER_LEFT">
-                            <Text fx:id="revenueText" styleClass="metric-value" text="0 DT"/>
-                            <Text text="Total Revenue" styleClass="metric-label"/>
+                        <VBox alignment="CENTER_LEFT" spacing="2">
+                            <Text fx:id="revenueText" styleClass="metric-value-modern" text="0 DT"/>
+                            <Text text="Total Revenue" styleClass="metric-label-modern"/>
                         </VBox>
                     </HBox>
                     
-                    <HBox styleClass="card, metric-card" spacing="15" alignment="CENTER_LEFT">
-                        <StackPane styleClass="icon-container" prefWidth="60" prefHeight="60" style="-fx-background-color: rgba(17, 120, 100, 0.1); -fx-background-radius: 30;">
-                            <Text text="📊" style="-fx-font-size: 24; -fx-fill: #117864;"/>
+                    <!-- Avg Occupancy Card -->
+                    <HBox styleClass="metric-card-modern" spacing="20" alignment="CENTER_LEFT">
+                        <StackPane styleClass="icon-container-modern" style="-fx-background-color: rgba(17, 120, 100, 0.1);">
+                            <SVGPath content="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" style="-fx-fill: #117864;" scaleX="1.5" scaleY="1.5"/>
                         </StackPane>
-                        <VBox alignment="CENTER_LEFT">
-                            <Text fx:id="occupancyText" styleClass="metric-value" text="0%"/>
-                            <Text text="Avg. Occupancy" styleClass="metric-label"/>
+                        <VBox alignment="CENTER_LEFT" spacing="2">
+                            <Text fx:id="occupancyText" styleClass="metric-value-modern" text="0%"/>
+                            <Text text="Avg. Occupancy" styleClass="metric-label-modern"/>
                         </VBox>
                     </HBox>
                 </FlowPane>
@@ -124,7 +134,9 @@
                         <Text text="Recent Pending Approvals" styleClass="title" style="-fx-font-size: 18;"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <Button onAction="#navBookings" styleClass="icon-btn">
-                            <graphic><Text text="➡️" style="-fx-font-size: 18px; -fx-fill: #50C878;"/></graphic>
+                            <graphic>
+                                <SVGPath content="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" style="-fx-fill: #50C878;" scaleX="1.2" scaleY="1.2"/>
+                            </graphic>
                         </Button>
                     </HBox>
                     <FlowPane fx:id="pendingGrid" hgap="25" vgap="25" alignment="CENTER" style="-fx-padding: 20;"/>

@@ -273,6 +273,50 @@
     -fx-pref-height: 140;
 }
 
+/* ============ MODERN METRIC CARDS ============ */
+.metric-card-modern {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 20, 0, 0, 8);
+    -fx-padding: 25px;
+    -fx-min-width: 260px;
+    -fx-pref-width: 260px;
+    -fx-pref-height: 130px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.metric-card-modern:hover {
+    -fx-translate-y: -5;
+    -fx-effect: dropshadow(three-pass-box, rgba(80, 200, 120, 0.25), 25, 0, 0, 12);
+    -fx-background-color: #ffffff;
+}
+
+.icon-container-modern {
+    -fx-background-radius: 50%;
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+    -fx-max-width: 60px;
+    -fx-max-height: 60px;
+    -fx-alignment: CENTER;
+}
+
+.metric-value-modern {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 28px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #2d3436;
+}
+
+.metric-label-modern {
+    -fx-font-family: "Open Sans", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #636e72;
+    -fx-font-weight: bold;
+    -fx-text-transform: uppercase;
+    -fx-letter-spacing: 0.5px;
+}
+
 /* ============ FORM STYLES ============ */
 .form-container {
     -fx-alignment: center;

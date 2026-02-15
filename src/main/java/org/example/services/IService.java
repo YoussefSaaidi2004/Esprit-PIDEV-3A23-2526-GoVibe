@@ -1,12 +1,10 @@
 package org.example.services;
 
-import java.sql.SQLException;
 import java.util.List;
 
-public interface IService <T> {
-    void ajouter(T t) throws SQLException;
-    void modifier(T t) throws SQLException;
-    void supprimer(int id) throws SQLException;
-    void afficher() throws SQLException;
-
+public interface IService<T> {
+    void add(T t);
+    void update(T t);
+    void delete(int id);
+    List<T> getAll();
 }

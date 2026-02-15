@@ -1,52 +1,38 @@
 package org.example.utils;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import org.example.config.UnifiedDatabaseManager;
 
+/**
+ * LEGACY CLASS - Use UnifiedDatabaseManager directly for new code
+ * This class is maintained for backward compatibility only.
+ * It delegates to UnifiedDatabaseManager to ensure consistent database access.
+ */
+@Deprecated
 public class MyDataBase {
 
-    private final String url = "jdbc:mysql://127.0.0.1:3306/govibe_project?useSSL=false&serverTimezone=UTC";
-    private final String user = "root";
-    private final String password = "";
-
-    private Connection connection;
     private static MyDataBase instance;
 
     private MyDataBase() {
-        try {
-            connection = DriverManager.getConnection(url, user, password);
-            System.out.println("✅ Connected to database successfully");
-            checkSchema(); // Auto-migration
-        } catch (SQLException e) {
-            System.out.println("❌ DB Connection error: " + e.getMessage());
-        }
+        System.out.println("⚠️  MyDataBase is DEPRECATED. Use UnifiedDatabaseManager instead.");
     }
 
-    private void checkSchema() {
-        try {
-            java.sql.DatabaseMetaData meta = connection.getMetaData();
-            java.sql.ResultSet rs = meta.getColumns(null, null, "activite", "status");
-            if (!rs.next()) {
-                System.out.println("⚠️ Column 'status' missing. Adding it now...");
-                try (java.sql.Statement st = connection.createStatement()) {
-                    st.executeUpdate("ALTER TABLE activite ADD COLUMN status VARCHAR(20) DEFAULT 'Confirmed'");
-                    System.out.println("✅ Column 'status' added successfully.");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static MyDataBase getInstance() {
+    public static synchronized MyDataBase getInstance() {
         if (instance == null) {
             instance = new MyDataBase();
         }
         return instance;
     }
 
+    /**
+     * Get connection from unified manager
+     * @return Connection from UnifiedDatabaseManager
+     */
     public Connection getConnection() {
-        return connection;
+        return UnifiedDatabaseManager.getInstance().getConnection();
+    }
+
+    public Connection getMyConnection() {
+        return getConnection();
     }
 }

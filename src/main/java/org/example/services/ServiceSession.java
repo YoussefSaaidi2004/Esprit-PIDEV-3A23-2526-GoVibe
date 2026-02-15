@@ -1,6 +1,6 @@
 package org.example.services;
 
-import org.example.entites.Session;
+import org.example.entities.Session;
 import org.example.utils.MyDataBase;
 
 import java.sql.*;
@@ -15,7 +15,44 @@ public class ServiceSession implements IService<Session> {
         connection = MyDataBase.getInstance().getConnection();
     }
 
+    // --- IService Implementation (Required by group pattern) ---
     @Override
+    public void add(Session s) {
+        try {
+            ajouter(s);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void update(Session s) {
+        try {
+            modifier(s);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(int id) {
+        try {
+            supprimer(id);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Session> getAll() {
+        try {
+            return readAll();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // --- Original Methods (Used by existing controllers) ---
     public void ajouter(Session s) throws SQLException {
         String sql = "INSERT INTO sessions (date, heure, capacite, nbr_places_restant, activite_id) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -27,12 +64,12 @@ public class ServiceSession implements IService<Session> {
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) s.setId_session(rs.getInt(1));
+                if (rs.next())
+                    s.setId_session(rs.getInt(1));
             }
         }
     }
 
-    @Override
     public void modifier(Session s) throws SQLException {
         String sql = "UPDATE sessions SET date=?, heure=?, capacite=?, nbr_places_restant=?, activite_id=? WHERE id_session=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -46,7 +83,6 @@ public class ServiceSession implements IService<Session> {
         }
     }
 
-    @Override
     public void supprimer(int id) throws SQLException {
         String sql = "DELETE FROM sessions WHERE id_session=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -55,11 +91,10 @@ public class ServiceSession implements IService<Session> {
         }
     }
 
-    @Override
     public void afficher() throws SQLException {
         String sql = "SELECT * FROM sessions ORDER BY id_session";
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+                ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 System.out.println(
                         rs.getInt("id_session") + " | " +
@@ -67,18 +102,20 @@ public class ServiceSession implements IService<Session> {
                                 rs.getTime("heure") + " | " +
                                 rs.getInt("capacite") + " | " +
                                 rs.getInt("nbr_places_restant") + " | " +
-                                rs.getInt("activite_id")
-                );
+                                rs.getInt("activite_id"));
             }
         }
     }
 
-    public List<Session> getAll() throws SQLException {
+    // ✅ Renommé readAll pour éviter conflit avec getAll() de l'interface qui a une
+    // signature différente (SQLException)
+    public List<Session> readAll() throws SQLException {
         List<Session> list = new ArrayList<>();
         String sql = "SELECT * FROM sessions ORDER BY date, heure";
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) list.add(mapRow(rs));
+                ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next())
+                list.add(mapRow(rs));
         }
         return list;
     }
@@ -88,7 +125,8 @@ public class ServiceSession implements IService<Session> {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, idSession);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return mapRow(rs);
+                if (rs.next())
+                    return mapRow(rs);
             }
         }
         return null;
@@ -101,7 +139,8 @@ public class ServiceSession implements IService<Session> {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, activiteId);
             try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) list.add(mapRow(rs));
+                while (rs.next())
+                    list.add(mapRow(rs));
             }
         }
         return list;
@@ -114,7 +153,6 @@ public class ServiceSession implements IService<Session> {
                 rs.getTime("heure"),
                 rs.getInt("capacite"),
                 rs.getInt("nbr_places_restant"),
-                rs.getInt("activite_id")
-        );
+                rs.getInt("activite_id"));
     }
 }

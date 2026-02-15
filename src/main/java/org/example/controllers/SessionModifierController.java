@@ -13,8 +13,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
-import org.example.entites.Activite;
-import org.example.entites.Session;
+import org.example.entities.Activite;
+import org.example.entities.Session;
 import org.example.services.ServiceActivite;
 import org.example.services.ServiceSession;
 
@@ -25,11 +25,15 @@ import java.util.List;
 
 public class SessionModifierController {
 
-    @FXML private BorderPane root;
+    @FXML
+    private BorderPane root;
 
-    @FXML private TextField tfId, tfDate, tfHeure, tfCapacite, tfRestant;
-    @FXML private ComboBox<Activite> cbActivite;
-    @FXML private Label lblMsg;
+    @FXML
+    private TextField tfId, tfDate, tfHeure, tfCapacite, tfRestant;
+    @FXML
+    private ComboBox<Activite> cbActivite;
+    @FXML
+    private Label lblMsg;
 
     private final ServiceSession serviceSession = new ServiceSession();
     private final ServiceActivite serviceActivite = new ServiceActivite();
@@ -45,10 +49,15 @@ public class SessionModifierController {
             cbActivite.setItems(FXCollections.observableArrayList(list));
 
             cbActivite.setConverter(new StringConverter<>() {
-                @Override public String toString(Activite a) {
+                @Override
+                public String toString(Activite a) {
                     return (a == null) ? "" : (a.getName() + " (ID=" + a.getId() + ")");
                 }
-                @Override public Activite fromString(String s) { return null; }
+
+                @Override
+                public Activite fromString(String s) {
+                    return null;
+                }
             });
 
         } catch (SQLException e) {
@@ -85,14 +94,16 @@ public class SessionModifierController {
     }
 
     private Session findSessionById(int id) throws SQLException {
-        for (Session s : serviceSession.getAll()) {
-            if (s.getId_session() == id) return s;
+        for (Session s : serviceSession.readAll()) {
+            if (s.getId_session() == id)
+                return s;
         }
         return null;
     }
 
     private void preselectActiviteById(int activiteId) {
-        if (cbActivite.getItems() == null) return;
+        if (cbActivite.getItems() == null)
+            return;
         cbActivite.getItems().stream()
                 .filter(a -> a.getId() == activiteId)
                 .findFirst()
@@ -105,17 +116,21 @@ public class SessionModifierController {
             int id = Integer.parseInt(tfId.getText().trim());
 
             Activite selected = cbActivite.getValue();
-            if (selected == null) throw new IllegalArgumentException("Choisis une activité.");
+            if (selected == null)
+                throw new IllegalArgumentException("Choisis une activité.");
 
-            Date date = Date.valueOf(tfDate.getText().trim());  // yyyy-mm-dd
-            Time heure = parseTime(tfHeure.getText().trim());   // HH:mm ou HH:mm:ss
+            Date date = Date.valueOf(tfDate.getText().trim()); // yyyy-mm-dd
+            Time heure = parseTime(tfHeure.getText().trim()); // HH:mm ou HH:mm:ss
 
             int capacite = Integer.parseInt(tfCapacite.getText().trim());
-            int restant  = Integer.parseInt(tfRestant.getText().trim());
+            int restant = Integer.parseInt(tfRestant.getText().trim());
 
-            if (capacite <= 0) throw new IllegalArgumentException("Capacité doit être > 0");
-            if (restant < 0) throw new IllegalArgumentException("Places restantes doit être >= 0");
-            if (restant > capacite) throw new IllegalArgumentException("Places restantes > capacité");
+            if (capacite <= 0)
+                throw new IllegalArgumentException("Capacité doit être > 0");
+            if (restant < 0)
+                throw new IllegalArgumentException("Places restantes doit être >= 0");
+            if (restant > capacite)
+                throw new IllegalArgumentException("Places restantes > capacité");
 
             // ✅ construire la session + modifier via service.modifier(s)
             Session s = new Session(id, date, heure, capacite, restant, selected.getId());
@@ -130,7 +145,8 @@ public class SessionModifierController {
 
     private Time parseTime(String input) {
         String t = input.trim();
-        if (t.matches("^\\d{2}:\\d{2}$")) t = t + ":00";
+        if (t.matches("^\\d{2}:\\d{2}$"))
+            t = t + ":00";
         return Time.valueOf(t);
     }
 
@@ -146,15 +162,31 @@ public class SessionModifierController {
     }
 
     // ===== NAVIGATION (sessions only) =====
-    @FXML private void openDashboardSessions() { safeSwitchTo("/DashboardSession.fxml"); }
-    @FXML private void openAjoutSession() { safeSwitchTo("/SessionAjout.fxml"); }
-    @FXML private void openModifierSession() { safeSwitchTo("/SessionModifier.fxml"); }
-    @FXML private void openSuppressionSession() { safeSwitchTo("/SessionSuppression.fxml"); }
+    @FXML
+    private void openDashboardSessions() {
+        safeSwitchTo("/DashboardSession.fxml");
+    }
+
+    @FXML
+    private void openAjoutSession() {
+        safeSwitchTo("/SessionAjout.fxml");
+    }
+
+    @FXML
+    private void openModifierSession() {
+        safeSwitchTo("/SessionModifier.fxml");
+    }
+
+    @FXML
+    private void openSuppressionSession() {
+        safeSwitchTo("/SessionSuppression.fxml");
+    }
 
     private void safeSwitchTo(String fxml) {
         try {
             var url = getClass().getResource(fxml);
-            if (url == null) throw new IllegalArgumentException("FXML introuvable: " + fxml);
+            if (url == null)
+                throw new IllegalArgumentException("FXML introuvable: " + fxml);
 
             Stage stage = (Stage) root.getScene().getWindow();
             Parent p = FXMLLoader.load(url);

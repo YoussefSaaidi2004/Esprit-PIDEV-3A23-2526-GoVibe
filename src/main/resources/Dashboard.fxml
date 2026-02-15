@@ -74,12 +74,13 @@
 
             <Region VBox.vgrow="ALWAYS"/>
 
-            <!-- Déconnexion -->
-            <Button text="⏻  Se déconnecter" maxWidth="Infinity"
-                    onAction="#logout"
-                    style="-fx-background-color: rgba(255, 82, 82, 0.2); -fx-text-fill: #FF5252;
-                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
-                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-weight: bold;"/>
+            <!-- Retour Dashboard Admin -->
+            <Button text="⬅  Retour Dashboard" maxWidth="Infinity"
+                    onAction="#goBackToDashboard"
+                    style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #8FE7C9;
+                           -fx-font-size: 13px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
 
 
             <Separator style="-fx-border-color: rgba(255,255,255,0.25);"/>

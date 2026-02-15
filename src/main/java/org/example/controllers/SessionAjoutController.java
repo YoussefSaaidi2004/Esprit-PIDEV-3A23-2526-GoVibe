@@ -13,8 +13,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
-import org.example.entites.Activite;
-import org.example.entites.Session;
+import org.example.entities.Activite;
+import org.example.entities.Session;
 import org.example.services.ServiceActivite;
 import org.example.services.ServiceSession;
 

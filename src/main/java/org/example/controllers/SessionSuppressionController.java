@@ -7,17 +7,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.example.entites.Session;
+import org.example.entities.Session;
 import org.example.services.ServiceSession;
 
 import java.sql.SQLException;
 
 public class SessionSuppressionController {
 
-    @FXML private BorderPane root;
+    @FXML
+    private BorderPane root;
 
-    @FXML private TextField tfId, tfDate, tfHeure, tfCapacite, tfRestant, tfActiviteId;
-    @FXML private Label lblMsg;
+    @FXML
+    private TextField tfId, tfDate, tfHeure, tfCapacite, tfRestant, tfActiviteId;
+    @FXML
+    private Label lblMsg;
 
     private final ServiceSession service = new ServiceSession();
 
@@ -48,8 +51,9 @@ public class SessionSuppressionController {
     }
 
     private Session findSessionById(int id) throws SQLException {
-        for (Session s : service.getAll()) {
-            if (s.getId_session() == id) return s;
+        for (Session s : service.readAll()) {
+            if (s.getId_session() == id)
+                return s;
         }
         return null;
     }
@@ -72,7 +76,8 @@ public class SessionSuppressionController {
             confirm.setHeaderText("Supprimer la session ID=" + id);
             confirm.setContentText("Tu es sûr ?");
 
-            if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) return;
+            if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+                return;
 
             service.supprimer(id);
 
@@ -101,15 +106,31 @@ public class SessionSuppressionController {
     }
 
     // ===== Navigation (Sessions فقط) =====
-    @FXML private void openDashboardSessions() { safeSwitchTo("/DashboardSession.fxml"); }
-    @FXML private void openAjoutSession() { safeSwitchTo("/SessionAjout.fxml"); }
-    @FXML private void openModifierSession() { safeSwitchTo("/SessionModifier.fxml"); }
-    @FXML private void openSuppressionSession() { safeSwitchTo("/SessionSuppression.fxml"); }
+    @FXML
+    private void openDashboardSessions() {
+        safeSwitchTo("/DashboardSession.fxml");
+    }
+
+    @FXML
+    private void openAjoutSession() {
+        safeSwitchTo("/SessionAjout.fxml");
+    }
+
+    @FXML
+    private void openModifierSession() {
+        safeSwitchTo("/SessionModifier.fxml");
+    }
+
+    @FXML
+    private void openSuppressionSession() {
+        safeSwitchTo("/SessionSuppression.fxml");
+    }
 
     private void safeSwitchTo(String fxml) {
         try {
             var url = getClass().getResource(fxml);
-            if (url == null) throw new IllegalArgumentException("FXML introuvable: " + fxml);
+            if (url == null)
+                throw new IllegalArgumentException("FXML introuvable: " + fxml);
 
             Stage stage = (Stage) root.getScene().getWindow();
             Parent p = FXMLLoader.load(url);

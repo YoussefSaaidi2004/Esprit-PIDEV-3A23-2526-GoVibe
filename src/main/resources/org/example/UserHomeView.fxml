@@ -43,6 +43,8 @@
                         style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
                 <Button text="🛏️ Chambres" onAction="#handleChambres" maxWidth="Infinity"
                         style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="✨ Activités" onAction="#handleActivities" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;"/>
             </VBox>
 
             <Region VBox.vgrow="ALWAYS"/>

@@ -65,6 +65,17 @@
                 </graphic>
             </Button>
 
+            <Button onAction="#handleActivities" maxWidth="Infinity"
+                    style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                <graphic>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <SVGPath content="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                                 style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                        <Text text="Activités" style="-fx-fill: #A0E0C9;"/>
+                    </HBox>
+                </graphic>
+            </Button>
+
             <Region VBox.vgrow="ALWAYS"/>
 
             <Button onAction="#handleLogout" maxWidth="Infinity"

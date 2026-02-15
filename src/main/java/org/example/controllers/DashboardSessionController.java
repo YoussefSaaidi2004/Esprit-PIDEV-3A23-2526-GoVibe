@@ -14,7 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-import org.example.entites.Session;
+import org.example.entities.Session;
 import org.example.services.ServiceSession;
 
 import java.sql.Date;
@@ -66,7 +66,7 @@ public class DashboardSessionController {
     @FXML
     private void rafraichir() {
         try {
-            data.setAll(service.getAll());
+            data.setAll(service.readAll());
             lblCount.setText("✅ " + data.size() + " session(s)");
             lblMsg.setText("Liste chargée avec succès.");
         } catch (SQLException e) {

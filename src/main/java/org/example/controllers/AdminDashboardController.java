@@ -15,8 +15,10 @@ import java.io.IOException;
 
 public class AdminDashboardController {
 
-    @FXML private Label welcomeLabel;
-    @FXML private Label roleLabel;
+    @FXML
+    private Label welcomeLabel;
+    @FXML
+    private Label roleLabel;
 
     private personne currentUser;
 
@@ -78,7 +80,6 @@ public class AdminDashboardController {
         }
     }
 
-
     @FXML
     private void handleCheckouts() {
         try {
@@ -105,6 +106,19 @@ public class AdminDashboardController {
     @FXML
     private void handleHotelReservations() {
         openHotelModule("reservations");
+    }
+
+    @FXML
+    private void handleActivites() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Dashboard.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setMaximized(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void openHotelModule(String initialView) {

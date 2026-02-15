@@ -120,6 +120,16 @@
                         </HBox>
                     </graphic>
                 </Button>
+                <Button onAction="#handleActivites" maxWidth="Infinity"
+                        style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <SVGPath content="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                                     style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
+                            <Label text="Activités" style="-fx-text-fill: #A0E0C9; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
                 <Button maxWidth="Infinity"
                         style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 18; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
                     <graphic>
@@ -244,6 +254,8 @@
                                 style="-fx-background-color: #0B4F35; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
                             <Button text="📅 Réservations hôtels" onAction="#handleHotelReservations"
                                 style="-fx-background-color: #34495E; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Button text="✨ Gérer les activités" onAction="#handleActivites"
+                                style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;"/>
                         </HBox>
                     </VBox>
 

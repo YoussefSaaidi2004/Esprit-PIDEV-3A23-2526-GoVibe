@@ -1,6 +1,6 @@
 package org.example.services;
 
-import org.example.entites.Activite;
+import org.example.entities.Activite;
 import org.example.utils.MyDataBase;
 
 import java.sql.*;

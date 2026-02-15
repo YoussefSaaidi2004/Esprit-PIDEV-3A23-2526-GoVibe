@@ -7,15 +7,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.example.entites.Activite;
+import org.example.entities.Activite;
 import org.example.services.ServiceActivite;
 
 public class ActiviteSuppressionController {
 
-    @FXML private BorderPane root;
+    @FXML
+    private BorderPane root;
 
-    @FXML private TextField tfId, tfName, tfDescription, tfType, tfLocalisation, tfPrix;
-    @FXML private Label lblMsg;
+    @FXML
+    private TextField tfId, tfName, tfDescription, tfType, tfLocalisation, tfPrix;
+    @FXML
+    private Label lblMsg;
 
     private final ServiceActivite service = new ServiceActivite();
 
@@ -53,7 +56,8 @@ public class ActiviteSuppressionController {
             confirm.setHeaderText("Supprimer l'activité ID=" + id);
             confirm.setContentText("Tu es sûr ?");
 
-            if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) return;
+            if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+                return;
 
             service.supprimerParId(id);
 
@@ -80,15 +84,31 @@ public class ActiviteSuppressionController {
     }
 
     // ===== Navigation (comme tes autres pages) =====
-    @FXML private void openDashboard() { safeSwitchTo("/Dashboard.fxml"); }
-    @FXML private void openAjout() { safeSwitchTo("/ActiviteAjout.fxml"); }
-    @FXML private void openModifier() { safeSwitchTo("/ActiviteModifier.fxml"); }
-    @FXML private void openSuppression() { safeSwitchTo("/ActiviteSuppression.fxml"); }
+    @FXML
+    private void openDashboard() {
+        safeSwitchTo("/Dashboard.fxml");
+    }
+
+    @FXML
+    private void openAjout() {
+        safeSwitchTo("/ActiviteAjout.fxml");
+    }
+
+    @FXML
+    private void openModifier() {
+        safeSwitchTo("/ActiviteModifier.fxml");
+    }
+
+    @FXML
+    private void openSuppression() {
+        safeSwitchTo("/ActiviteSuppression.fxml");
+    }
 
     private void safeSwitchTo(String fxml) {
         try {
             var url = getClass().getResource(fxml);
-            if (url == null) throw new IllegalArgumentException("FXML introuvable: " + fxml);
+            if (url == null)
+                throw new IllegalArgumentException("FXML introuvable: " + fxml);
 
             Stage stage = (Stage) root.getScene().getWindow();
             Parent p = FXMLLoader.load(url);

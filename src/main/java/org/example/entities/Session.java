@@ -1,4 +1,4 @@
-package org.example.entites;
+package org.example.entities;
 
 import java.sql.Date;
 import java.sql.Time;

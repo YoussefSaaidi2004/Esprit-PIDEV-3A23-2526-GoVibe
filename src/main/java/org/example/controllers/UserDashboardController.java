@@ -21,16 +21,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserDashboardController {
-    @FXML private FlowPane flightGrid, bookingGrid;
-    @FXML private TextField searchField;
-    @FXML private Slider priceSlider;
-    @FXML private Text priceLabel;
-    @FXML private ScrollPane mainScroll;
-    @FXML private VBox contentRoot;
-    @FXML private VBox flightsSection;
-    @FXML private VBox bookingsSection;
-    @FXML private ToggleButton bookTab;
-    @FXML private ToggleButton bookingsTab;
+    @FXML
+    private FlowPane flightGrid, bookingGrid;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private Slider priceSlider;
+    @FXML
+    private Text priceLabel;
+    @FXML
+    private ScrollPane mainScroll;
+    @FXML
+    private VBox contentRoot;
+    @FXML
+    private VBox flightsSection;
+    @FXML
+    private VBox bookingsSection;
+    @FXML
+    private ToggleButton bookTab;
+    @FXML
+    private ToggleButton bookingsTab;
 
     private final FlightService flightService = new FlightService();
     private final CheckoutService checkoutService = new CheckoutService();
@@ -68,8 +78,10 @@ public class UserDashboardController {
     private void loadAvailableFlights() {
         flightGrid.getChildren().clear();
         List<Flight> flights = flightService.getAvailableFlights();
-        
-        String rawFilter = (searchField != null && searchField.getText() != null) ? searchField.getText().toLowerCase().trim() : "";
+
+        String rawFilter = (searchField != null && searchField.getText() != null)
+                ? searchField.getText().toLowerCase().trim()
+                : "";
         double maxPrice = (priceSlider != null) ? priceSlider.getValue() : Double.MAX_VALUE;
 
         for (Flight f : flights) {
@@ -78,7 +90,7 @@ public class UserDashboardController {
                     containsIgnoreCase(f.getAirline(), rawFilter) ||
                     containsIgnoreCase(f.getFlightId(), rawFilter) ||
                     containsIgnoreCase(f.getDepartureAirport(), rawFilter);
-            
+
             if (f.getPrix() <= maxPrice && matches) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-card.fxml"));
@@ -86,7 +98,9 @@ public class UserDashboardController {
                     FlightCardController ctrl = loader.getController();
                     ctrl.setData(f, false, this::handleBook, null, null, null);
                     flightGrid.getChildren().add(card);
-                } catch (Exception e) { e.printStackTrace(); }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -110,7 +124,9 @@ public class UserDashboardController {
                 CheckoutCardController ctrl = loader.getController();
                 ctrl.setData(c, false, null, null, this::handleCancel);
                 bookingGrid.getChildren().add(card);
-            } catch (Exception e) { e.printStackTrace(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -125,32 +141,66 @@ public class UserDashboardController {
             loadAvailableFlights();
         }
     }
-    
-    @FXML 
+
+    @FXML
     private void handleRefresh() {
         loadAvailableFlights();
         loadMyBookings();
     }
 
-    @FXML private void handleAdminSwap() { org.example.mains.MainApp.switchScene("/org/example/AdminDashboardView.fxml", "Admin Dashboard"); }
-    @FXML private void handleThemeToggle() { org.example.mains.MainApp.toggleTheme(); }
-    @FXML private void handleBookMenu() {
+    @FXML
+    private void handleAdminSwap() {
+        org.example.mains.MainApp.switchScene("/org/example/AdminDashboardView.fxml", "Admin Dashboard");
+    }
+
+    @FXML
+    private void handleThemeToggle() {
+        org.example.mains.MainApp.toggleTheme();
+    }
+
+    @FXML
+    private void handleBookMenu() {
         if (bookTab != null) {
             bookTab.setSelected(true);
         }
         showSection(true);
     }
-    @FXML private void handleBookingsMenu() {
+
+    @FXML
+    private void handleBookingsMenu() {
         if (bookingsTab != null) {
             bookingsTab.setSelected(true);
         }
         showSection(false);
     }
-    @FXML private void handleHome() { SceneNavigator.switchTo("/org/example/UserHomeView.fxml", contentRoot); }
-    @FXML private void handleLocations() { SceneNavigator.switchTo("/LocationListView.fxml", contentRoot); }
-    @FXML private void handleFlights() { handleBookMenu(); }
-    @FXML private void handleChambres() { org.example.mains.MainApp.switchScene("/views/room-booking.fxml", "Chambres Disponibles"); }
-    @FXML private void handleLogout() {
+
+    @FXML
+    private void handleHome() {
+        SceneNavigator.switchTo("/org/example/UserHomeView.fxml", contentRoot);
+    }
+
+    @FXML
+    private void handleLocations() {
+        SceneNavigator.switchTo("/LocationListView.fxml", contentRoot);
+    }
+
+    @FXML
+    private void handleFlights() {
+        handleBookMenu();
+    }
+
+    @FXML
+    private void handleActivities() {
+        SceneNavigator.switchTo("/UserHome.fxml", contentRoot);
+    }
+
+    @FXML
+    private void handleChambres() {
+        org.example.mains.MainApp.switchScene("/views/room-booking.fxml", "Chambres Disponibles");
+    }
+
+    @FXML
+    private void handleLogout() {
         SessionManager.clear();
         org.example.mains.MainApp.switchScene("/org/example/LoginView.fxml", "GoVibe Connexion");
     }

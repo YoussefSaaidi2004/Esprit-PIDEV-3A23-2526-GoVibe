@@ -1,3 +1,5 @@
+package com.myapp;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 

@@ -13,7 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.example.entites.Activite;
+import org.example.entities.Activite;
 import org.example.services.ServiceActivite;
 
 import java.math.BigDecimal;
@@ -152,10 +152,24 @@ public class DashboardActiviteController {
         safeSwitchTo("/DashboardSession.fxml");
     }
 
+    // ✅ Retour vers Dashboard Admin
+    @FXML
+    private void goBackToDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/AdminDashboardView.fxml"));
+            Parent p = loader.load();
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.setScene(new Scene(p));
+            stage.setMaximized(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // ✅ NOUVEAU : Déconnexion
     @FXML
     private void logout() {
-        safeSwitchTo("/RoleSelection.fxml");
+        safeSwitchTo("/org/example/LoginView.fxml");
     }
 
     private void safeSwitchTo(String fxml) {

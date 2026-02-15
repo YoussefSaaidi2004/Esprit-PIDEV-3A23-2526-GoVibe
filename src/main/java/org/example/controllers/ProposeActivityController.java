@@ -36,12 +36,12 @@ public class ProposeActivityController {
     public void initialize() {
         // ✅ Populate locations matching resources
         cmbLoc.getItems().addAll(
-                "Tunis (Médina)",
+                "Tunis (Medina)",
                 "Nabeul",
                 "Sidi Bou Said",
                 "Ghar El Melh",
                 "Cap Bon",
-                "Dégustation Huile d'Olive");
+                "Degustation Huile d'Olive");
     }
 
     @FXML

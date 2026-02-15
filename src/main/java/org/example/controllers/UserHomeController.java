@@ -127,12 +127,12 @@ public class UserHomeController {
             return "placeholder.png";
 
         return switch (location) {
-            case "Tunis (Médina)" -> "visite-medina-tunis.png";
+            case "Tunis (Medina)" -> "visite-medina-tunis.png";
             case "Nabeul" -> "atelier-poterie-nabeul.png";
             case "Sidi Bou Said" -> "balade-sidi-bou-said.png";
             case "Ghar El Melh" -> "kayak-ghar-el-melh.png";
             case "Cap Bon" -> "randonnee-cap-bon.png";
-            case "Dégustation Huile d'Olive" -> "degustation-huile-olive.png";
+            case "Degustation Huile d'Olive" -> "degustation-huile-olive.png";
             default -> "placeholder.png";
         };
     }

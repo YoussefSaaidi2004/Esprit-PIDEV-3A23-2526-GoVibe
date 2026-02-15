@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class MyDataBase {
 
-    private final String url = "jdbc:mysql://127.0.0.1:3306/projet?useSSL=false&serverTimezone=UTC";
+    private final String url = "jdbc:mysql://127.0.0.1:3306/govibe_project?useSSL=false&serverTimezone=UTC";
     private final String user = "root";
     private final String password = "";
 

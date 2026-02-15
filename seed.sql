@@ -1,5 +1,10 @@
 -- Disable foreign key checks temporarily to clear tables
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- Ensure schema matches expectation (add status if missing)
+ALTER TABLE activite ADD COLUMN status VARCHAR(20) DEFAULT 'Confirmed';
+ALTER TABLE reservation_session ADD COLUMN user_ref VARCHAR(255) DEFAULT 'guest';
+
 TRUNCATE TABLE reservation_session;
 TRUNCATE TABLE sessions;
 TRUNCATE TABLE activite;

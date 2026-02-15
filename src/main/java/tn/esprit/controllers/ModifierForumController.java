@@ -79,10 +79,46 @@ public class ModifierForumController {
         String image = imagePathField.getText();
         boolean isPrivate = privateToggle.isSelected();
 
-        if (name.trim().isEmpty() || description.trim().isEmpty()) {
+        boolean isValid = true;
+        StringBuilder errorMessage = new StringBuilder();
+
+        if (name == null || name.trim().isEmpty()) {
+            nameField.getStyleClass().add("error-border");
+            errorMessage.append("Le nom du forum ne peut pas être vide.\n");
+            isValid = false;
+        } else if (name.length() > 50) {
+            nameField.getStyleClass().add("error-border");
+            errorMessage.append("Le nom du forum ne peut pas dépasser 50 caractères.\n");
+            isValid = false;
+        } else {
+            nameField.getStyleClass().remove("error-border");
+        }
+
+        if (description == null || description.trim().isEmpty()) {
+            descriptionArea.getStyleClass().add("error-border");
+            errorMessage.append("La description ne peut pas être vide.\n");
+            isValid = false;
+        } else if (description.length() > 500) {
+            descriptionArea.getStyleClass().add("error-border");
+            errorMessage.append("La description ne peut pas dépasser 500 caractères.\n");
+            isValid = false;
+        } else {
+            descriptionArea.getStyleClass().remove("error-border");
+        }
+
+        if (image == null || image.trim().isEmpty()) {
+            imagePathField.getStyleClass().add("error-border");
+            errorMessage.append("L'image de couverture est obligatoire.\n");
+            isValid = false;
+        } else {
+            imagePathField.getStyleClass().remove("error-border");
+        }
+
+        if (!isValid) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Information manquante");
-            alert.setContentText("Veuillez remplir le nom et la description.");
+            alert.setTitle("Validation échouée");
+            alert.setHeaderText(null);
+            alert.setContentText(errorMessage.toString());
             alert.showAndWait();
             return;
         }

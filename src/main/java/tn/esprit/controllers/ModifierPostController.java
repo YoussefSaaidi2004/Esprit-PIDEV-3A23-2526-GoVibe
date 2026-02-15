@@ -76,6 +76,10 @@ public class ModifierPostController {
                 mediaToggle.setStyle("-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-text-fill: #084E36;");
                 statusToggle
                         .setStyle("-fx-background-color: white; -fx-border-color: #50C878; -fx-text-fill: #50C878;");
+
+                // Clear media info when switching to STATUS
+                urlField.setText("");
+                mediaPreview.setImage(null);
             }
         });
 
@@ -110,6 +114,11 @@ public class ModifierPostController {
             }
         } else {
             statusToggle.setSelected(true);
+            // Ensure media containers are hidden if it was initially STATUS
+            mediaUrlContainer.setVisible(false);
+            mediaUrlContainer.setManaged(false);
+            previewContainer.setVisible(false);
+            previewContainer.setManaged(false);
         }
     }
 
@@ -129,11 +138,34 @@ public class ModifierPostController {
     @FXML
     private void handleUpdate(ActionEvent event) {
         String contenu = contenuArea.getText();
-        String url = urlField.getText();
+        String url = mediaToggle.isSelected() ? urlField.getText() : null; // Clear URL if type is STATUS
         String type = mediaToggle.isSelected() ? "MEDIA" : "STATUS";
 
-        if (contenu.trim().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Champ vide", "Le contenu ne peut pas être vide.");
+        boolean isValid = true;
+        StringBuilder errorMessage = new StringBuilder();
+
+        if (contenu == null || contenu.trim().isEmpty()) {
+            contenuArea.getStyleClass().add("error-border");
+            errorMessage.append("Le contenu ne peut pas être vide.\n");
+            isValid = false;
+        } else if (contenu.length() > 500) {
+            contenuArea.getStyleClass().add("error-border");
+            errorMessage.append("Le contenu ne peut pas dépasser 500 caractères.\n");
+            isValid = false;
+        } else {
+            contenuArea.getStyleClass().remove("error-border");
+        }
+
+        if (mediaToggle.isSelected() && (url == null || url.trim().isEmpty())) {
+            urlField.getStyleClass().add("error-border");
+            errorMessage.append("Vous devez sélectionner un média (photo/vidéo) pour ce type de publication.\n");
+            isValid = false;
+        } else {
+            urlField.getStyleClass().remove("error-border");
+        }
+
+        if (!isValid) {
+            showAlert(Alert.AlertType.WARNING, "Validation échouée", errorMessage.toString());
             return;
         }
 

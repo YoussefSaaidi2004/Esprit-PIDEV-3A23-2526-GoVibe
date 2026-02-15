@@ -83,6 +83,10 @@ public class AjoutPostController {
                 mediaToggle.setStyle("-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-text-fill: #084E36;");
                 statusToggle
                         .setStyle("-fx-background-color: white; -fx-border-color: #50C878; -fx-text-fill: #50C878;");
+
+                // Clear media info when switching to STATUS for consistency
+                urlField.setText("");
+                mediaPreview.setImage(null);
             }
         });
 
@@ -145,6 +149,15 @@ public class AjoutPostController {
             isValid = false;
         } else {
             contenuArea.getStyleClass().remove("error-border");
+        }
+
+        // Validation for media
+        if (mediaToggle.isSelected() && (url == null || url.trim().isEmpty())) {
+            urlField.getStyleClass().add("error-border");
+            errorMessage.append("Vous devez sélectionner un média (photo/vidéo) pour ce type de publication.\n");
+            isValid = false;
+        } else {
+            urlField.getStyleClass().remove("error-border");
         }
 
         if (!isValid) {

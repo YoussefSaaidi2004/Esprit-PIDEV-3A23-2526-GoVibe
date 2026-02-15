@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ActiviteModifierController">
+
+    <!-- SIDEBAR -->
+    <left>
+        <VBox alignment="TOP_CENTER" prefWidth="280" spacing="18" style="-fx-background-color:#073B2A;">
+            <padding>
+                <Insets bottom="25" left="18" right="18" top="25" />
+            </padding>
+
+            <!-- GoVibe card -->
+            <VBox alignment="CENTER" spacing="8" style="-fx-background-color:#0A4A33; -fx-background-radius:18; -fx-padding:26;">
+                <Label style="-fx-text-fill:white; -fx-font-size:28px; -fx-font-weight:bold;" text="GoVibe" />
+                <Label style="-fx-text-fill:#8FE7C9; -fx-font-size:13px;" text="Administration" />
+                <Label style="-fx-text-fill:#8FE7C9; -fx-font-size:13px;" text="Dashboard Activités" />
+            </VBox>
+
+            <Region prefHeight="8" />
+
+            <!-- Dashboard -->
+            <Button maxWidth="Infinity" onAction="#openDashboard" style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;                            -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;                            -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="▣  Dashboard" />
+
+            <!-- Ajouter -->
+            <Button maxWidth="Infinity" onAction="#openAjout" style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;                            -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;                            -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="+  Ajouter Activité" />
+
+            <!-- Modifier (ACTIF) -->
+            <Button maxWidth="Infinity" onAction="#openModifier" style="-fx-background-color: rgba(80,200,120,0.22); -fx-text-fill: #E9FFF7;                            -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;                            -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-weight: bold;" text="✎  Modifier Activité" />
+
+            <!-- Suppression -->
+            <Button maxWidth="Infinity" onAction="#openSuppression" style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;                            -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;                            -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="🗑  Suppression Activité" />
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <Separator style="-fx-border-color: rgba(255,255,255,0.25);" />
+
+            <Label style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill:#50C878;                           -fx-padding:8 18; -fx-background-radius:20; -fx-font-size:12px; -fx-font-weight:bold;" text="● En ligne" />
+        </VBox>
+    </left>
+
+    <!-- TOP -->
+    <top>
+        <HBox alignment="CENTER_LEFT" style="-fx-background-color:#F5F3E7; -fx-border-color:#A0E0C9; -fx-border-width:0 0 1 0;">
+            <padding><Insets bottom="16" left="28" right="28" top="16" /></padding>
+
+            <VBox spacing="3" HBox.hgrow="ALWAYS">
+                <Label style="-fx-text-fill:#013220; -fx-font-size:22px; -fx-font-weight:bold;" text="Modifier une Activité" />
+                <Label style="-fx-text-fill:#084E36; -fx-font-size:13px;" text="Remplis le formulaire puis clique sur modifier" />
+            </VBox>
+        </HBox>
+    </top>
+
+    <!-- CENTER -->
+    <center>
+        <StackPane style="-fx-background-color:#D1F2EB; -fx-padding:22;">
+            <VBox maxWidth="780" spacing="16" style="-fx-background-color:#F5F3E7; -fx-background-radius:14; -fx-padding:26;                          -fx-effect:dropshadow(three-pass-box, rgba(1,50,32,0.12), 10, 0, 0, 4);">
+
+                <!-- Charger -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="ID :" />
+                    <TextField fx:id="tfId" prefWidth="160" promptText="Ex: 1" style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;                                       -fx-border-width:1; -fx-padding:10;" />
+                    <Button onAction="#charger" style="-fx-background-color:#084E36; -fx-text-fill:white; -fx-font-weight:bold;                                    -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;" text="Charger" />
+                </HBox>
+
+                <Separator />
+
+                <!-- Formulaire -->
+                <GridPane hgap="12" vgap="12">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="120" />
+                        <ColumnConstraints hgrow="ALWAYS" />
+                    </columnConstraints>
+
+                    <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Nom :" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <TextField fx:id="tfName" style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;                                       -fx-border-width:1; -fx-padding:10;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                    <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Description :" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <TextField fx:id="tfDescription" style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;                                       -fx-border-width:1; -fx-padding:10;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                    <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Type :" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <TextField fx:id="tfType" style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;                                       -fx-border-width:1; -fx-padding:10;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                    <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Localisation :" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <TextField fx:id="tfLocalisation" style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;                                       -fx-border-width:1; -fx-padding:10;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                    <Label style="-fx-text-fill:#084E36; -fx-font-weight:bold;" text="Prix :" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                    <TextField fx:id="tfPrix" promptText="Ex: 15.000" style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;                                       -fx-border-width:1; -fx-padding:10;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
+                </GridPane>
+
+                <!-- Actions -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Button onAction="#modifier" style="-fx-background-color:#50C878; -fx-text-fill:white; -fx-font-weight:bold;                                    -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;" text="Modifier" />
+
+                    <Button onAction="#vider" style="-fx-background-color: rgba(231,76,60,0.15); -fx-text-fill:#e74c3c; -fx-font-weight:bold;                                    -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;" text="Vider" />
+
+                    <Label fx:id="lblMsg" style="-fx-text-fill: green; -fx-font-weight: bold;" text="" />
+                </HBox>
+
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

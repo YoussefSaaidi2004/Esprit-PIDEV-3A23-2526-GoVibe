@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="1078.0" spacing="0" styleClass="content-card" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.ForumItemController">
+<VBox prefWidth="1078.0" spacing="0" styleClass="content-card" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ForumItemController">
     <padding><Insets bottom="20" left="0" right="0" top="0" /></padding>
     
     <HBox alignment="CENTER_LEFT" spacing="15">

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controllers.FlightFormController"
+            stylesheets="@../styles.css">
+
+    <center>
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 40;">
+            <VBox maxWidth="600" spacing="15" styleClass="form-container" style="-fx-padding: 30; -fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0); -fx-background-radius: 10;">
+                
+                <Text fx:id="formTitle" text="Add New Flight" styleClass="label-section" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+                
+                <Separator/>
+                
+                <GridPane vgap="15" hgap="20">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0"/>
+                    </columnConstraints>
+
+                    <!-- Row 0 -->
+                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Flight ID *" styleClass="label"/>
+                        <TextField fx:id="txtFlightId" promptText="e.g., GV001"/>
+                    </VBox>
+                    
+                    <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Airline *" styleClass="label"/>
+                        <TextField fx:id="txtAirline" promptText="e.g., Tunisair"/>
+                    </VBox>
+
+                    <!-- Row 1 -->
+                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="Departure Airport *" styleClass="label"/>
+                        <TextField fx:id="txtDepartureAirport" promptText="e.g., Tunis"/>
+                    </VBox>
+                    
+                    <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label text="Destination *" styleClass="label"/>
+                        <TextField fx:id="txtDestination" promptText="e.g., Paris"/>
+                    </VBox>
+
+                    <!-- Row 2 -->
+                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <Label text="Departure Time *" styleClass="label"/>
+                        <TextField fx:id="txtDepartureTime" promptText="HH:MM"/>
+                    </VBox>
+                    
+                    <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <Label text="Arrival Time *" styleClass="label"/>
+                        <TextField fx:id="txtArrivalTime" promptText="HH:MM"/>
+                    </VBox>
+
+                    <!-- Row 3 -->
+                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                        <Label text="Class *" styleClass="label"/>
+                        <ComboBox fx:id="cmbClass" maxWidth="Infinity" promptText="Select class">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Economy"/>
+                                    <String fx:value="Business"/>
+                                    <String fx:value="First Class"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+                    
+                    <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <Label text="Price (DT) *" styleClass="label"/>
+                        <TextField fx:id="txtPrice" promptText="0"/>
+                    </VBox>
+
+                    <!-- Row 4 -->
+                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                        <Label text="Seats *" styleClass="label"/>
+                        <TextField fx:id="txtSeats" promptText="0"/>
+                    </VBox>
+                </GridPane>
+
+                <VBox spacing="5">
+                    <Label text="Description" styleClass="label"/>
+                    <TextArea fx:id="txtDescription" promptText="Flight description..." prefRowCount="3"/>
+                </VBox>
+                
+                <Separator/>
+                
+                <HBox spacing="15" alignment="CENTER_RIGHT">
+                    <Button fx:id="btnCancel" text="❌ Cancel" styleClass="button, btn-cancel" 
+                            onAction="#handleCancel"/>
+                    <Button fx:id="btnSave" text="✅ Save" styleClass="button, btn-save" 
+                            onAction="#handleSave"/>
+                </HBox>
+                
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

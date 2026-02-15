@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="root"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.SessionModifierController">
+
+    <!-- SIDEBAR (SESSIONS ONLY) -->
+    <left>
+        <VBox alignment="TOP_CENTER" prefWidth="280" spacing="18"
+              style="-fx-background-color:#073B2A;">
+            <padding>
+                <Insets bottom="25" left="18" right="18" top="25"/>
+            </padding>
+
+            <!-- GoVibe card -->
+            <VBox alignment="CENTER" spacing="8"
+                  style="-fx-background-color:#0A4A33; -fx-background-radius:18; -fx-padding:26;">
+                <Label text="GoVibe"
+                       style="-fx-text-fill:white; -fx-font-size:28px; -fx-font-weight:bold;"/>
+                <Label text="Administration"
+                       style="-fx-text-fill:#8FE7C9; -fx-font-size:13px;"/>
+                <Label text="Dashboard Sessions"
+                       style="-fx-text-fill:#8FE7C9; -fx-font-size:13px;"/>
+            </VBox>
+
+            <Region prefHeight="8"/>
+
+            <!-- Dashboard Sessions -->
+            <Button text="▣  Dashboard Sessions" maxWidth="Infinity"
+                    onAction="#openDashboardSessions"
+                    style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+            <!-- Ajouter Session -->
+            <Button text="+  Ajouter Session" maxWidth="Infinity"
+                    onAction="#openAjoutSession"
+                    style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+            <!-- Modifier Session (ACTIF) -->
+            <Button text="✎  Modifier Session" maxWidth="Infinity"
+                    onAction="#openModifierSession"
+                    style="-fx-background-color: rgba(80,200,120,0.22); -fx-text-fill: #E9FFF7;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-weight: bold;"/>
+
+            <!-- Supprimer Session -->
+            <Button text="🗑  Supprimer Session" maxWidth="Infinity"
+                    onAction="#openSuppressionSession"
+                    style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Separator style="-fx-border-color: rgba(255,255,255,0.25);"/>
+
+            <Label text="● En ligne"
+                   style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill:#50C878;
+                          -fx-padding:8 18; -fx-background-radius:20;
+                          -fx-font-size:12px; -fx-font-weight:bold;"/>
+        </VBox>
+    </left>
+
+    <!-- TOP -->
+    <top>
+        <HBox alignment="CENTER_LEFT"
+              style="-fx-background-color:#F5F3E7; -fx-border-color:#A0E0C9; -fx-border-width:0 0 1 0;">
+            <padding><Insets bottom="16" left="28" right="28" top="16"/></padding>
+
+            <VBox spacing="3" HBox.hgrow="ALWAYS">
+                <Label text="Modifier une Session"
+                       style="-fx-text-fill:#013220; -fx-font-size:22px; -fx-font-weight:bold;"/>
+                <Label text="Charge une session par ID puis modifie les champs"
+                       style="-fx-text-fill:#084E36; -fx-font-size:13px;"/>
+            </VBox>
+        </HBox>
+    </top>
+
+    <!-- CENTER -->
+    <center>
+        <StackPane style="-fx-background-color:#D1F2EB; -fx-padding:22;">
+            <VBox maxWidth="820" spacing="16"
+                  style="-fx-background-color:#F5F3E7; -fx-background-radius:14; -fx-padding:26;
+                         -fx-effect:dropshadow(three-pass-box, rgba(1,50,32,0.12), 10, 0, 0, 4);">
+
+                <!-- Charger -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="ID Session :"
+                           style="-fx-text-fill:#084E36; -fx-font-weight:bold;"/>
+                    <TextField fx:id="tfId" prefWidth="160" promptText="Ex: 1"
+                               style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;
+                                      -fx-border-width:1; -fx-padding:10;"/>
+                    <Button text="Charger" onAction="#charger"
+                            style="-fx-background-color:#084E36; -fx-text-fill:white; -fx-font-weight:bold;
+                                   -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;"/>
+                </HBox>
+
+                <Separator/>
+
+                <!-- Formulaire -->
+                <GridPane hgap="12" vgap="12">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="170"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+
+                    <Label text="Activité :" GridPane.columnIndex="0" GridPane.rowIndex="0"
+                           style="-fx-text-fill:#084E36; -fx-font-weight:bold;"/>
+                    <ComboBox fx:id="cbActivite" promptText="Choisir une activité..."
+                              GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                    <Label text="Date (yyyy-mm-dd) :" GridPane.columnIndex="0" GridPane.rowIndex="1"
+                           style="-fx-text-fill:#084E36; -fx-font-weight:bold;"/>
+                    <TextField fx:id="tfDate" promptText="2026-02-11"
+                               GridPane.columnIndex="1" GridPane.rowIndex="1"
+                               style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;
+                                      -fx-border-width:1; -fx-padding:10;"/>
+
+                    <Label text="Heure (HH:mm) :" GridPane.columnIndex="0" GridPane.rowIndex="2"
+                           style="-fx-text-fill:#084E36; -fx-font-weight:bold;"/>
+                    <TextField fx:id="tfHeure" promptText="14:30"
+                               GridPane.columnIndex="1" GridPane.rowIndex="2"
+                               style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;
+                                      -fx-border-width:1; -fx-padding:10;"/>
+
+                    <Label text="Capacité :" GridPane.columnIndex="0" GridPane.rowIndex="3"
+                           style="-fx-text-fill:#084E36; -fx-font-weight:bold;"/>
+                    <TextField fx:id="tfCapacite" promptText="Ex: 20"
+                               GridPane.columnIndex="1" GridPane.rowIndex="3"
+                               style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;
+                                      -fx-border-width:1; -fx-padding:10;"/>
+
+                    <Label text="Places restantes :" GridPane.columnIndex="0" GridPane.rowIndex="4"
+                           style="-fx-text-fill:#084E36; -fx-font-weight:bold;"/>
+                    <TextField fx:id="tfRestant" promptText="Ex: 20"
+                               GridPane.columnIndex="1" GridPane.rowIndex="4"
+                               style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#A0E0C9;
+                                      -fx-border-width:1; -fx-padding:10;"/>
+                </GridPane>
+
+                <!-- Actions -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Button text="Modifier" onAction="#modifier"
+                            style="-fx-background-color:#50C878; -fx-text-fill:white; -fx-font-weight:bold;
+                                   -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;"/>
+
+                    <Button text="Vider" onAction="#vider"
+                            style="-fx-background-color: rgba(231,76,60,0.15); -fx-text-fill:#e74c3c; -fx-font-weight:bold;
+                                   -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;"/>
+
+                    <Label fx:id="lblMsg" text=""
+                           style="-fx-text-fill: green; -fx-font-weight: bold;"/>
+                </HBox>
+
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

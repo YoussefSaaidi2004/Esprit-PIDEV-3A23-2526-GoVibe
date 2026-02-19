@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controllers.NouveauMessageController"
+      style="-fx-background-color: linear-gradient(to bottom, #013220, #0B4F35);" 
+      prefWidth="600" prefHeight="500" spacing="20" alignment="CENTER">
+
+    <padding>
+        <Insets top="30" right="40" bottom="30" left="40"/>
+    </padding>
+
+    <!-- Titre -->
+    <Label text="✉️ Nouveau Message" 
+           style="-fx-text-fill: white; -fx-font-size: 26px; -fx-font-weight: bold;"/>
+
+    <Label text="Contactez l'administrateur" 
+           style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 14px;"/>
+
+    <Region prefHeight="10"/>
+
+    <!-- Formulaire -->
+    <VBox spacing="15" style="-fx-background-color: rgba(255,255,255,0.95); -fx-padding: 30; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 30, 0, 0, 10);">
+
+        <!-- Sujet -->
+        <VBox spacing="5">
+            <Label text="Sujet *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
+            <TextField fx:id="txtSujet" promptText="Ex: Problème avec ma réservation"
+                      style="-fx-font-size: 14px; -fx-padding: 12; -fx-background-radius: 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10;"/>
+        </VBox>
+
+        <!-- Message -->
+        <VBox spacing="5">
+            <Label text="Message *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #333;"/>
+            <TextArea fx:id="txtMessage" promptText="Décrivez votre problème ou votre question en détail..."
+                     style="-fx-font-size: 14px; -fx-padding: 12; -fx-background-radius: 10; -fx-border-color: #e0e0e0; -fx-border-radius: 10;"
+                     prefRowCount="6" wrapText="true"/>
+        </VBox>
+
+        <!-- Boutons -->
+        <HBox spacing="15" alignment="CENTER" style="-fx-padding: 15 0 0 0;">
+            <Button fx:id="btnEnvoyer" onAction="#envoyerMessage"
+                   style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 15px; -fx-padding: 12 35; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-weight: bold; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.4), 15, 0, 0, 5);"
+                   text="📤 Envoyer"/>
+            <Button fx:id="btnAnnuler" onAction="#annuler"
+                   style="-fx-background-color: transparent; -fx-text-fill: #666; -fx-font-size: 15px; -fx-padding: 12 35; -fx-background-radius: 25; -fx-cursor: hand; -fx-border-color: #999; -fx-border-radius: 25;"
+                   text="❌ Annuler"/>
+        </HBox>
+    </VBox>
+
+</VBox>

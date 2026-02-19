@@ -3,111 +3,191 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.SVGPath?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<!-- 
+  PAGE HÔTELS PROFESSIONNELLE
+  Design moderne avec navigation commune et réservation de chambres
+-->
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.controllers.RoomBookingController"
-            stylesheets="@../styles.css">
+            style="-fx-background-color: #F5F3E7;"
+            prefHeight="900" prefWidth="1400">
 
-    <left>
-        <VBox prefWidth="240" spacing="10" alignment="TOP_CENTER"
-              style="-fx-background-color: #013220; -fx-padding: 24 16;">
-            <VBox alignment="CENTER" spacing="6">
-                <SVGPath content="M4 6h16v12H4zM6 8v8h2V8H6zm4 0v8h4V8h-4zm6 0v8h2V8h-2z"
-                         style="-fx-fill: #A0E0C9;" scaleX="1.1" scaleY="1.1"/>
-                <Text text="GoVibe" style="-fx-fill: #D1F2EB; -fx-font-size: 18; -fx-font-weight: bold;"/>
-                <Text text="Espace client" style="-fx-fill: #A0E0C9; -fx-font-size: 10;"/>
-            </VBox>
-
-            <Region prefHeight="8"/>
-
-            <Button onAction="#handleHome" maxWidth="Infinity"
-                    style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <SVGPath content="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
-                                 style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
-                        <Text text="Accueil" style="-fx-fill: #A0E0C9;"/>
-                    </HBox>
-                </graphic>
-            </Button>
-
-            <Button onAction="#handleFlights" maxWidth="Infinity"
-                    style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
-                                 style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
-                        <Text text="Vols" style="-fx-fill: #A0E0C9;"/>
-                    </HBox>
-                </graphic>
-            </Button>
-
-            <Button onAction="#handleLocations" maxWidth="Infinity"
-                    style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <SVGPath content="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"
-                                 style="-fx-fill: #A0E0C9;" scaleX="0.9" scaleY="0.9"/>
-                        <Text text="Locations" style="-fx-fill: #A0E0C9;"/>
-                    </HBox>
-                </graphic>
-            </Button>
-
-            <Button onAction="#handleChambres" maxWidth="Infinity"
-                    style="-fx-background-color: rgba(80,200,120,0.2); -fx-text-fill: #D1F2EB; -fx-font-size: 14px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <SVGPath content="M3 10h18v8H3zM5 6h14v4H5z"
-                                 style="-fx-fill: #D1F2EB;" scaleX="0.9" scaleY="0.9"/>
-                        <Text text="Chambres" style="-fx-fill: #D1F2EB;"/>
-                    </HBox>
-                </graphic>
-            </Button>
-
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <Button onAction="#handleLogout" maxWidth="Infinity"
-                    style="-fx-background-color: rgba(231,76,60,0.15); -fx-text-fill: #e74c3c; -fx-font-size: 13px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;">
-                <graphic>
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <SVGPath content="M16 13v-2H7V8l-5 4 5 4v-3zM20 3H9c-1.1 0-2 .9-2 2v3h2V5h11v14H9v-3H7v3c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
-                                 style="-fx-fill: #e74c3c;" scaleX="0.9" scaleY="0.9"/>
-                        <Text text="Deconnexion" style="-fx-fill: #e74c3c;"/>
-                    </HBox>
-                </graphic>
-            </Button>
-        </VBox>
-    </left>
-
-    <center>
-        <VBox spacing="0" style="-fx-background-color: #F5F3E7;">
-            <HBox alignment="CENTER_LEFT" spacing="15"
-                  style="-fx-background-color: linear-gradient(to right, #F5F3E7, #D1F2EB); -fx-padding: 25 40;">
-                <Label text="Chambres disponibles"
-                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #013220;"/>
-
-                <Region HBox.hgrow="ALWAYS"/>
-
-                <ComboBox fx:id="filterHotelCombo" promptText="Filtrer par hotel"
+    <!-- ==================== TOP NAVIGATION BAR (COMMUNE À TOUTES LES PAGES) ==================== -->
+    <top>
+        <VBox spacing="0">
+            <!-- Barre de Navigation Principale -->
+            <!-- Header Commun -->
+            <fx:include source="../components/UserHeader.fxml"/>
+            
+            <!-- Sous-barre: Filtres et Recherche -->
+            <HBox alignment="CENTER" spacing="15" 
+                  style="-fx-background-color: white; -fx-padding: 18 40;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 3);">
+                
+                <!-- Recherche -->
+                <HBox alignment="CENTER_LEFT" spacing="10" 
+                      style="-fx-background-color: #F5F3E7; -fx-padding: 10 18;
+                             -fx-background-radius: 25; -fx-pref-width: 350;">
+                    <Label text="🔍" style="-fx-font-size: 16;"/>
+                    <TextField fx:id="searchField" promptText="Rechercher une chambre, hôtel..."
+                               onKeyReleased="#searchChambres"
+                               HBox.hgrow="ALWAYS"
+                               style="-fx-background-color: transparent; -fx-font-size: 14;
+                                      -fx-prompt-text-fill: #888; -fx-border-color: transparent;"/>
+                </HBox>
+                
+                <Separator orientation="VERTICAL" style="-fx-padding: 0 10;"/>
+                
+                <!-- Filtre Hôtel -->
+                <ComboBox fx:id="filterHotelCombo" promptText="🏨 Filtrer par hôtel"
                           onAction="#filterByHotel"
-                          prefWidth="220"/>
-
-                <TextField fx:id="searchField" promptText="Rechercher..."
-                           onKeyReleased="#searchChambres"
-                           prefWidth="260"/>
+                          style="-fx-background-color: #F5F3E7; -fx-font-size: 13;
+                                 -fx-background-radius: 8;"/>
+                
+                <!-- Filtre Type -->
+                <ComboBox promptText="🛏️ Type de chambre"
+                          style="-fx-background-color: #F5F3E7; -fx-font-size: 13;
+                                 -fx-background-radius: 8;"/>
+                
+                <!-- Filtre Prix -->
+                <ComboBox promptText="💰 Fourchette de prix"
+                          style="-fx-background-color: #F5F3E7; -fx-font-size: 13;
+                                 -fx-background-radius: 8;"/>
+                
+                <Separator orientation="VERTICAL" style="-fx-padding: 0 10;"/>
+                
+                <!-- Date arrivée -->
+                <DatePicker promptText="📅 Arrivée"
+                            style="-fx-background-color: #F5F3E7; -fx-font-size: 13;
+                                   -fx-background-radius: 8;"/>
+                
+                <!-- Date départ -->
+                <DatePicker promptText="📅 Départ"
+                            style="-fx-background-color: #F5F3E7; -fx-font-size: 13;
+                                   -fx-background-radius: 8;"/>
             </HBox>
-
-            <ScrollPane fitToWidth="true" style="-fx-background: #F5F3E7; -fx-background-color: #F5F3E7;"
-                        VBox.vgrow="ALWAYS">
-                <VBox style="-fx-background-color: #F5F3E7;">
-                    <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
-                    <FlowPane fx:id="chambreCardsContainer" hgap="25" vgap="25"
-                              style="-fx-background-color: transparent;"/>
-                </VBox>
-            </ScrollPane>
         </VBox>
+    </top>
+
+    <!-- ==================== CONTENU CENTRAL ==================== -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;"
+                    VBox.vgrow="ALWAYS" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+            <content>
+                <VBox spacing="0" style="-fx-background-color: #F5F3E7;">
+                    
+                    <!-- Header Section -->
+                    <VBox spacing="8" style="-fx-padding: 35 50 25 50;">
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <StackPane>
+                                <Circle radius="35" fill="#D1F2EB"/>
+                                <Label text="🏨" style="-fx-font-size: 32;"/>
+                            </StackPane>
+                            <VBox spacing="4">
+                                <Label text="Réservation d'Hôtels" 
+                                       style="-fx-font-size: 32; -fx-font-weight: 700; -fx-text-fill: #013220;"/>
+                                <Label text="Trouvez et réservez la chambre parfaite pour votre séjour" 
+                                       style="-fx-font-size: 15; -fx-text-fill: #5a7d6e;"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            
+                            <!-- Statistiques -->
+                            <HBox spacing="25" alignment="CENTER">
+                                <VBox alignment="CENTER" spacing="2">
+                                    <Label text="80+" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #50C878;"/>
+                                    <Label text="Hôtels" style="-fx-font-size: 12; -fx-text-fill: #5a7d6e;"/>
+                                </VBox>
+                                <Separator orientation="VERTICAL" style="-fx-padding: 0;"/>
+                                <VBox alignment="CENTER" spacing="2">
+                                    <Label text="500+" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #50C878;"/>
+                                    <Label text="Chambres" style="-fx-font-size: 12; -fx-text-fill: #5a7d6e;"/>
+                                </VBox>
+                                <Separator orientation="VERTICAL" style="-fx-padding: 0;"/>
+                                <VBox alignment="CENTER" spacing="2">
+                                    <Label text="4.7" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #50C878;"/>
+                                    <Label text="Note moyenne" style="-fx-font-size: 12; -fx-text-fill: #5a7d6e;"/>
+                                </VBox>
+                            </HBox>
+                        </HBox>
+                    </VBox>
+                    
+                    <!-- Section Chambres Disponibles -->
+                    <VBox spacing="20" style="-fx-padding: 0 50 50 50;">
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <Label text="Chambres disponibles" 
+                                   style="-fx-font-size: 22; -fx-font-weight: 600; -fx-text-fill: #013220;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            
+                            <!-- Options d'affichage -->
+                            <HBox spacing="8" alignment="CENTER">
+                                <ToggleButton text="🔲 Grille" selected="true"
+                                              style="-fx-background-color: #013220; -fx-text-fill: white;
+                                                     -fx-font-size: 12; -fx-padding: 8 15;
+                                                     -fx-background-radius: 8; -fx-cursor: hand;"/>
+                                <ToggleButton text="☰ Liste"
+                                              style="-fx-background-color: #F5F3E7; -fx-text-fill: #013220;
+                                                     -fx-font-size: 12; -fx-padding: 8 15;
+                                                     -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            </HBox>
+                            
+                            <Separator orientation="VERTICAL"/>
+                            
+                            <!-- Tri -->
+                            <ComboBox promptText="Trier par : Recommandé" 
+                                      style="-fx-background-color: white; -fx-font-size: 12;
+                                             -fx-background-radius: 8;"/>
+                        </HBox>
+                        
+                        <!-- Grille de Chambres -->
+                        <FlowPane fx:id="chambreCardsContainer" 
+                                  hgap="25" vgap="25"
+                                  style="-fx-background-color: transparent;"/>
+                        
+                        <!-- État Vide -->
+                        <VBox fx:id="emptyState" alignment="CENTER" spacing="15" 
+                              style="-fx-padding: 80;" visible="false">
+                            <Label text="🏨" style="-fx-font-size: 72; -fx-opacity: 0.5;"/>
+                            <Label text="Aucune chambre disponible" 
+                                   style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #013220;"/>
+                            <Label text="Essayez de modifier vos dates ou vos critères de recherche" 
+                                   style="-fx-font-size: 14; -fx-text-fill: #5a7d6e;"/>
+                            <Button text="↺ Réinitialiser les filtres" onAction="#handleResetFilters"
+                                    style="-fx-background-color: #50C878; -fx-text-fill: white;
+                                           -fx-font-size: 14; -fx-padding: 10 25;
+                                           -fx-background-radius: 20; -fx-cursor: hand;"/>
+                        </VBox>
+                    </VBox>
+                    
+                    <!-- Footer -->
+                    <VBox alignment="CENTER" spacing="20" 
+                          style="-fx-background-color: linear-gradient(to bottom, #013220, #0B4F35); 
+                                 -fx-padding: 50;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, -5);">
+                        <HBox alignment="CENTER" spacing="12">
+                            <StackPane>
+                                <Circle radius="25" fill="#50C878" opacity="0.2"/>
+                                <Label text="G" style="-fx-font-size: 20; -fx-font-weight: 900; -fx-text-fill: #50C878;"/>
+                            </StackPane>
+                            <Label text="Go" style="-fx-font-size: 26; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                            <Label text="Vibe" style="-fx-font-size: 26; -fx-font-weight: 300; -fx-text-fill: #50C878;"/>
+                        </HBox>
+                        <Label text="© 2024 GoVibe. Tous droits réservés." 
+                               style="-fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.6);"/>
+                        <HBox alignment="CENTER" spacing="25">
+                            <Hyperlink text="À propos" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
+                            <Hyperlink text="Confidentialité" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
+                            <Hyperlink text="Conditions" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
+                            <Hyperlink text="Contact" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
+                        </HBox>
+                    </VBox>
+                    
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
 
 </BorderPane>

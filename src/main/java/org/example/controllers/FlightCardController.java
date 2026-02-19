@@ -94,22 +94,17 @@ public class FlightCardController {
             
             actionBox.getChildren().addAll(btnEdit, btnDelete);
         } else {
-            javafx.scene.control.Button btnBook = new javafx.scene.control.Button();
-            javafx.scene.shape.SVGPath addIcon = new javafx.scene.shape.SVGPath();
-            addIcon.setContent("M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z");
-            addIcon.setStyle("-fx-fill: white;");
-            
-            btnBook.setPrefHeight(40);
-            btnBook.setPrefWidth(40);
-            btnBook.setTooltip(new javafx.scene.control.Tooltip("Book This Flight"));
+            javafx.scene.control.Button btnBook = new javafx.scene.control.Button("✈ Réserver");
+            btnBook.setPrefHeight(38);
+            btnBook.setMaxWidth(Double.MAX_VALUE);
+            btnBook.setTooltip(new javafx.scene.control.Tooltip("Réserver ce vol"));
             
             if (available == 0) {
                 btnBook.setDisable(true);
-                btnBook.setText("FULL");
-                btnBook.setStyle("-fx-background-color: #8D99AE; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 10;");
+                btnBook.setText("COMPLET");
+                btnBook.setStyle("-fx-background-color: #8D99AE; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 12; -fx-cursor: default;");
             } else {
-                btnBook.setGraphic(addIcon);
-                btnBook.setStyle("-fx-background-color: #50C878; -fx-background-radius: 50; -fx-cursor: hand;");
+                btnBook.setStyle("-fx-background-color: linear-gradient(to bottom, #50C878, #3DAF62); -fx-text-fill: white; -fx-background-radius: 20; -fx-font-weight: bold; -fx-font-size: 13; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.3), 6, 0, 0, 2);");
                 btnBook.setOnAction(e -> onBook.accept(flight));
             }
             

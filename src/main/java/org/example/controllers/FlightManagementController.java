@@ -230,6 +230,43 @@ public class FlightManagementController {
     }
 
     @FXML
+    public void handleHotels() {
+        try {
+            Stage currentStage = (Stage) flightGrid.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/main-layout.fxml"));
+            Parent root = loader.load();
+            org.example.controllers.MainLayoutController controller = loader.getController();
+            if (controller != null) {
+                controller.loadHotels();
+            }
+            currentStage.setScene(new Scene(root));
+            currentStage.setMaximized(true);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    @FXML
+    public void handleActivites() {
+        try {
+            Stage currentStage = (Stage) flightGrid.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Dashboard.fxml"));
+            Parent root = loader.load();
+            currentStage.setScene(new Scene(root));
+            currentStage.setMaximized(true);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    @FXML
+    public void handleForums() {
+        try {
+            Stage currentStage = (Stage) flightGrid.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/ListForum.fxml"));
+            Parent root = loader.load();
+            currentStage.setScene(new Scene(root));
+            currentStage.setMaximized(true);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    @FXML
     public void handleLogout() {
         try {
             Stage currentStage = (Stage) flightGrid.getScene().getWindow();

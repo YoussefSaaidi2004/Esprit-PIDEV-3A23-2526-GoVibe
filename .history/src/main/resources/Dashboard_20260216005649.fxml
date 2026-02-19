@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="root"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.DashboardActiviteController">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <left>
+        <VBox prefWidth="280" spacing="18" alignment="TOP_CENTER"
+              style="-fx-background-color:#073B2A;">
+            <padding>
+                <Insets top="25" right="18" bottom="25" left="18"/>
+            </padding>
+
+            <!-- GoVibe card -->
+            <VBox alignment="CENTER" spacing="8"
+                  style="-fx-background-color:#0A4A33; -fx-background-radius:18; -fx-padding:26;">
+                <Label text="GoVibe"
+                       style="-fx-text-fill:white; -fx-font-size:28px; -fx-font-weight:bold;"/>
+                <Label text="Administration"
+                       style="-fx-text-fill:#8FE7C9; -fx-font-size:13px;"/>
+                <Label text="Dashboard Activités"
+                       style="-fx-text-fill:#8FE7C9; -fx-font-size:13px;"/>
+            </VBox>
+
+            <Region prefHeight="8"/>
+
+            <!-- Dashboard (actif) -->
+            <Button text="▣  Dashboard" maxWidth="Infinity"
+                    onAction="#openDashboard"
+                    style="-fx-background-color: rgba(80,200,120,0.22); -fx-text-fill: #E9FFF7;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-font-weight: bold;"/>
+
+            <!-- Ajouter -->
+            <Button text="+  Ajouter Activité" maxWidth="Infinity"
+                    onAction="#openAjout"
+                    style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+            <!-- Modifier -->
+            <Button text="✎  Modifier Activité" maxWidth="Infinity"
+                    onAction="#openModifier"
+                    style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+            <!-- Suppression -->
+            <Button text="🗑  Suppression Activité" maxWidth="Infinity"
+                    onAction="#openSuppression"
+                    style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+            <!-- Valider -->
+            <Button text="✅  Valider &amp; Session" maxWidth="Infinity"
+                    onAction="#validerActivite"
+                    style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+            <!-- ✅ NOUVEAU : bouton Sessions -->
+            <Button text="📅  Sessions" maxWidth="Infinity"
+                    onAction="#openSessionsDashboard"
+                    style="-fx-background-color: transparent; -fx-text-fill: #CFF6E8;
+                           -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Retour Dashboard Admin -->
+            <Button text="⬅  Retour Dashboard" maxWidth="Infinity"
+                    onAction="#goBackToDashboard"
+                    style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #8FE7C9;
+                           -fx-font-size: 13px; -fx-padding: 12 16; -fx-background-radius: 12;
+                           -fx-alignment: CENTER_LEFT; -fx-cursor: hand;"/>
+
+
+
+            <Separator style="-fx-border-color: rgba(255,255,255,0.25);"/>
+
+            <Label text="● En ligne"
+                   style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill:#50C878;
+                          -fx-padding:8 18; -fx-background-radius:20; -fx-font-size:12px; -fx-font-weight:bold;"/>
+        </VBox>
+    </left>
+
+    <!-- ==================== TOP ==================== -->
+    <top>
+        <HBox alignment="CENTER_LEFT"
+              style="-fx-background-color:#F5F3E7; -fx-border-color:#A0E0C9; -fx-border-width:0 0 1 0;">
+            <padding><Insets top="16" right="28" bottom="16" left="28"/></padding>
+
+            <VBox spacing="3" HBox.hgrow="ALWAYS">
+                <Label text="Dashboard - Activités"
+                       style="-fx-text-fill:#013220; -fx-font-size:22px; -fx-font-weight:bold;"/>
+                <Label text="Affichage de la liste des activités"
+                       style="-fx-text-fill:#084E36; -fx-font-size:13px;"/>
+            </VBox>
+
+            <Button text="Rafraîchir" onAction="#rafraichir"
+                    style="-fx-background-color:#084E36; -fx-text-fill:white; -fx-font-weight:bold;
+                           -fx-padding:10 18; -fx-background-radius:10; -fx-cursor: hand;"/>
+        </HBox>
+    </top>
+
+    <!-- ==================== CENTER ==================== -->
+    <center>
+        <StackPane style="-fx-background-color:#D1F2EB; -fx-padding:22;">
+            <VBox spacing="12"
+                  style="-fx-background-color:#F5F3E7; -fx-background-radius:14; -fx-padding:22;
+                         -fx-effect:dropshadow(three-pass-box, rgba(1,50,32,0.12), 10, 0, 0, 4);"
+                  maxWidth="900">
+
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Liste des Activités"
+                           style="-fx-text-fill:#013220; -fx-font-size:18px; -fx-font-weight:bold;"/>
+                    <Label fx:id="lblCount" text=""
+                           style="-fx-text-fill:#084E36; -fx-font-weight:bold;"/>
+                </HBox>
+
+                <TableView fx:id="tableActivite" prefHeight="520">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="70"/>
+                        <TableColumn fx:id="colName" text="Nom" prefWidth="160"/>
+                        <TableColumn fx:id="colDesc" text="Description" prefWidth="240"/>
+                        <TableColumn fx:id="colType" text="Type" prefWidth="120"/>
+                        <TableColumn fx:id="colLoc" text="Localisation" prefWidth="140"/>
+                        <TableColumn fx:id="colPrix" text="Prix" prefWidth="80"/>
+                        <TableColumn fx:id="colStatus" text="Statut" prefWidth="100"/>
+                    </columns>
+                </TableView>
+
+                <Label fx:id="lblMsg" text=""
+                       style="-fx-text-fill:#084E36; -fx-font-size:12px;"/>
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

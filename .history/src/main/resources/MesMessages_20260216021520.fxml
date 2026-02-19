@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controllers.MesMessagesController"
+            style="-fx-background-color: #F5F3E7;" prefWidth="1100" prefHeight="700">
+
+    <!-- TOP: Header avec titre et bouton nouveau message -->
+    <top>
+        <VBox style="-fx-background-color: linear-gradient(to right, #013220, #0B4F35); -fx-padding: 25;" spacing="10">
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Button fx:id="btnRetour" onAction="#retourProfil" 
+                        style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 8 16; -fx-background-radius: 20; -fx-cursor: hand;"
+                        text="← Retour au Profil"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="📨 Mes Messages" style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <Label text="Contactez l'admin et suivez vos conversations" 
+                   style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 14px;" alignment="CENTER"/>
+        </VBox>
+    </top>
+
+    <!-- CENTER: Liste des messages -->
+    <center>
+        <VBox spacing="15" style="-fx-padding: 20;">
+            <!-- Bouton Nouveau Message -->
+            <HBox alignment="CENTER_RIGHT">
+                <Button fx:id="btnNouveauMessage" onAction="#nouveauMessage"
+                        style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 24; -fx-background-radius: 25; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.4), 10, 0, 0, 4); -fx-font-weight: bold;"
+                        text="✉️ Nouveau Message"/>
+            </HBox>
+
+            <!-- Table des messages -->
+            <TableView fx:id="tableMessages" VBox.vgrow="ALWAYS" 
+                       style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0, 0, 5);">
+                <columns>
+                    <TableColumn fx:id="colSujet" text="Sujet" prefWidth="250" 
+                                 style="-fx-font-size: 13px; -fx-font-weight: bold;"/>
+                    <TableColumn fx:id="colMessage" text="Message" prefWidth="300" 
+                                 style="-fx-font-size: 13px;"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="120" 
+                                 style="-fx-font-size: 13px; -fx-alignment: CENTER;"/>
+                    <TableColumn fx:id="colDate" text="Date d'envoi" prefWidth="150" 
+                                 style="-fx-font-size: 13px;"/>
+                    <TableColumn fx:id="colReponse" text="Réponse Admin" prefWidth="200" 
+                                 style="-fx-font-size: 13px;"/>
+                </columns>
+                <placeholder>
+                    <Label text="Aucun message. Envoyez votre premier message à l'admin! 📭" 
+                           style="-fx-font-size: 14px; -fx-text-fill: #888;"/>
+                </placeholder>
+            </TableView>
+
+            <!-- Boutons d'action -->
+            <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10 0;">
+                <Button fx:id="btnVoirDetails" onAction="#voirDetails" 
+                        style="-fx-background-color: #013220; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;"
+                        text="👁️ Voir Détails"/>
+                <Button fx:id="btnModifier" onAction="#modifierMessage" 
+                        style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;"
+                        text="✏️ Modifier"/>
+                <Button fx:id="btnSupprimer" onAction="#supprimerMessage" 
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;"
+                        text="🗑️ Supprimer"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

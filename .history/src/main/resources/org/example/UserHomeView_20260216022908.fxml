@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.UserHomeController"
+            style="-fx-background-color: #F5F3E7;"
+            prefHeight="900" prefWidth="1400">
+
+    <!-- ==================== TOP NAVIGATION BAR ==================== -->
+    <top>
+        <VBox spacing="0">
+            <!-- Main Navigation Bar -->
+            <HBox alignment="CENTER_LEFT" spacing="0" 
+                  style="-fx-background-color: linear-gradient(to right, #013220, #0B4F35);
+                         -fx-padding: 0 40 0 40;
+                         -fx-pref-height: 70;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 4);">
+                
+                <!-- Logo Section -->
+                <HBox alignment="CENTER_LEFT" spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Go" style="-fx-font-size: 28; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                    <Label text="Vibe" style="-fx-font-size: 28; -fx-font-weight: 300; -fx-text-fill: #50C878;"/>
+                    <Region prefWidth="50"/>
+                    
+                    <!-- Navigation Menu Items -->
+                    <HBox alignment="CENTER_LEFT" spacing="5" style="-fx-padding: 0 0 0 20;">
+                        <!-- Accueil -->
+                        <Button fx:id="navHome" text="Accueil" onAction="#handleHome"
+                                style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; 
+                                       -fx-font-size: 14; -fx-font-weight: 600; -fx-padding: 10 20;
+                                       -fx-cursor: hand; -fx-background-radius: 8;"/>
+                        
+                        <!-- Activités -->
+                        <Button fx:id="navActivities" text="Activités" onAction="#handleActivities"
+                                style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.85); 
+                                       -fx-font-size: 14; -fx-font-weight: 500; -fx-padding: 10 20;
+                                       -fx-cursor: hand; -fx-background-radius: 8;"/>
+                        
+                        <!-- Voitures -->
+                        <Button fx:id="navVoitures" text="Voitures" onAction="#handleLocations"
+                                style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.85); 
+                                       -fx-font-size: 14; -fx-font-weight: 500; -fx-padding: 10 20;
+                                       -fx-cursor: hand; -fx-background-radius: 8;"/>
+                        
+                        <!-- Vols -->
+                        <Button fx:id="navVols" text="Vols" onAction="#handleFlights"
+                                style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.85); 
+                                       -fx-font-size: 14; -fx-font-weight: 500; -fx-padding: 10 20;
+                                       -fx-cursor: hand; -fx-background-radius: 8;"/>
+                        
+                        <!-- Hôtels -->
+                        <Button fx:id="navHotels" text="Hôtels" onAction="#handleChambres"
+                                style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.85); 
+                                       -fx-font-size: 14; -fx-font-weight: 500; -fx-padding: 10 20;
+                                       -fx-cursor: hand; -fx-background-radius: 8;"/>
+                        
+                        <!-- Forums -->
+                        <Button fx:id="navForums" text="Forums" onAction="#handleForums"
+                                style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.85); 
+                                       -fx-font-size: 14; -fx-font-weight: 500; -fx-padding: 10 20;
+                                       -fx-cursor: hand; -fx-background-radius: 8;"/>
+                        
+                        <!-- Contact -->
+                        <Button fx:id="navContact" text="Contact" onAction="#handleContact"
+                                style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.85); 
+                                       -fx-font-size: 14; -fx-font-weight: 500; -fx-padding: 10 20;
+                                       -fx-cursor: hand; -fx-background-radius: 8;"/>
+                    </HBox>
+                </HBox>
+                
+                <!-- Right Section: Profile & Actions -->
+                <HBox alignment="CENTER_RIGHT" spacing="15">
+                    <!-- Propose Activity Button -->
+                    <Button text="+ Proposer" onAction="#openProposeActivity"
+                            style="-fx-background-color: #50C878; -fx-text-fill: white;
+                                   -fx-font-size: 13; -fx-font-weight: 600; -fx-padding: 10 18;
+                                   -fx-background-radius: 20; -fx-cursor: hand;
+                                   -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.4), 8, 0, 0, 2);">
+                        <tooltip>
+                            <Tooltip text="Proposer une nouvelle activité"/>
+                        </tooltip>
+                    </Button>
+                    
+                    <!-- Profile Menu Button -->
+                    <MenuButton fx:id="profileMenu" 
+                                style="-fx-background-color: transparent; -fx-cursor: hand;
+                                       -fx-padding: 4; -fx-background-radius: 25;">
+                        <graphic>
+                            <StackPane>
+                                <!-- Profile Circle -->
+                                <Circle radius="24" fill="white" 
+                                        style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 2);"/>
+                                <Label fx:id="profileInitials" text="U" 
+                                       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #013220;"/>
+                            </StackPane>
+                        </graphic>
+                        
+                        <!-- Menu Items -->
+                        <items>
+                            <MenuItem text="👤 Mon Profil" onAction="#handleProfile"/>
+                            <MenuItem text="📋 Mes Réservations" onAction="#handleMyReservations"/>
+                            <MenuItem text="🚗 Mes Locations" onAction="#handleMyLocations"/>
+                            <MenuItem text="✈️ Mes Vols" onAction="#handleMyFlights"/>
+                            <SeparatorMenuItem/>
+                            <MenuItem text="⚙️ Paramètres" onAction="#handleSettings"/>
+                            <MenuItem text="❓ Aide" onAction="#handleHelp"/>
+                            <SeparatorMenuItem/>
+                            <MenuItem text="🚪 Déconnexion" onAction="#handleLogout"/>
+                        </items>
+                        
+                        <tooltip>
+                            <Tooltip text="Menu profil"/>
+                        </tooltip>
+                    </MenuButton>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ==================== CENTER CONTENT ==================== -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;"
+                    VBox.vgrow="ALWAYS" hbarPolicy="NEVER">
+            <content>
+                <VBox spacing="0" style="-fx-background-color: #F5F3E7;">
+                    
+                    <!-- Hero Section -->
+                    <VBox alignment="CENTER" spacing="20" 
+                          style="-fx-background-color: linear-gradient(to bottom, #013220, #0B4F35, #F5F3E7);
+                                 -fx-padding: 60 30 100 30;">
+                        
+                        <Label fx:id="welcomeLabel" text="Bonjour !"
+                               style="-fx-font-size: 44; -fx-font-weight: 300; -fx-text-fill: white;
+                                      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 3, 0, 0, 2);"/>
+                        
+                        <Label text="Prêt pour votre prochaine aventure ?"
+                               style="-fx-font-size: 18; -fx-text-fill: rgba(255,255,255,0.9);
+                                      -fx-font-weight: 300;"/>
+                        
+                        <!-- Search/Filter Bar -->
+                        <HBox alignment="CENTER" spacing="15" 
+                              style="-fx-background-color: white; -fx-padding: 12 25;
+                                     -fx-background-radius: 50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 15, 0, 0, 5);">
+                            <TextField fx:id="searchField" promptText="🔍 Rechercher une activité, un vol, un hôtel..."
+                                       prefWidth="380"
+                                       style="-fx-background-color: transparent; -fx-font-size: 14;
+                                              -fx-prompt-text-fill: #888; -fx-border-color: transparent;"/>
+                            <Separator orientation="VERTICAL" style="-fx-padding: 0 10;"/>
+                            <ComboBox fx:id="destinationCombo" promptText="📍 Destination" prefWidth="150"
+                                      style="-fx-background-color: transparent; -fx-font-size: 13;"/>
+                            <Separator orientation="VERTICAL" style="-fx-padding: 0 10;"/>
+                            <DatePicker fx:id="datePicker" promptText="📅 Date" style="-fx-font-size: 13;"/>
+                            <Button text="Rechercher" onAction="#handleSearch"
+                                    style="-fx-background-color: #50C878; -fx-text-fill: white;
+                                           -fx-font-size: 14; -fx-font-weight: bold; -fx-padding: 12 28;
+                                           -fx-background-radius: 25; -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.4), 8, 0, 0, 2);"/>
+                        </HBox>
+                    </VBox>
+                    
+                    <!-- Featured Categories -->
+                    <VBox spacing="30" style="-fx-padding: 40 60;">
+                        
+                        <!-- Section Title -->
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <Label text="Explorer par catégorie" 
+                                   style="-fx-font-size: 26; -fx-font-weight: 600; -fx-text-fill: #013220;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="Voir tout →" onAction="#handleViewAllCategories"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #50C878;
+                                           -fx-font-size: 14; -fx-font-weight: 500; -fx-cursor: hand;"/>
+                        </HBox>
+                        
+                        <!-- Category Cards -->
+                        <HBox spacing="20" alignment="CENTER">
+                            <!-- Activités -->
+                            <VBox alignment="CENTER" spacing="12" onMouseClicked="#handleActivities"
+                                  style="-fx-background-color: white; -fx-padding: 30 40;
+                                         -fx-background-radius: 16; -fx-cursor: hand;
+                                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 4);">
+                                <StackPane>
+                                    <Circle radius="38" fill="#D1F2EB"/>
+                                    <Label text="🏃" style="-fx-font-size: 30;"/>
+                                </StackPane>
+                                <Label text="Activités" style="-fx-font-size: 15; -fx-font-weight: 600; -fx-text-fill: #013220;"/>
+                                <Label text="Découvrir" style="-fx-font-size: 12; -fx-text-fill: #888;"/>
+                            </VBox>
+                            
+                            <!-- Voitures -->
+                            <VBox alignment="CENTER" spacing="12" onMouseClicked="#handleLocations"
+                                  style="-fx-background-color: white; -fx-padding: 30 40;
+                                         -fx-background-radius: 16; -fx-cursor: hand;
+                                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 4);">
+                                <StackPane>
+                                    <Circle radius="38" fill="#D1F2EB"/>
+                                    <Label text="🚗" style="-fx-font-size: 30;"/>
+                                </StackPane>
+                                <Label text="Voitures" style="-fx-font-size: 15; -fx-font-weight: 600; -fx-text-fill: #013220;"/>
+                                <Label text="Louer" style="-fx-font-size: 12; -fx-text-fill: #888;"/>
+                            </VBox>
+                            
+                            <!-- Vols -->
+                            <VBox alignment="CENTER" spacing="12" onMouseClicked="#handleFlights"
+                                  style="-fx-background-color: white; -fx-padding: 30 40;
+                                         -fx-background-radius: 16; -fx-cursor: hand;
+                                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 4);">
+                                <StackPane>
+                                    <Circle radius="38" fill="#D1F2EB"/>
+                                    <Label text="✈️" style="-fx-font-size: 30;"/>
+                                </StackPane>
+                                <Label text="Vols" style="-fx-font-size: 15; -fx-font-weight: 600; -fx-text-fill: #013220;"/>
+                                <Label text="Réserver" style="-fx-font-size: 12; -fx-text-fill: #888;"/>
+                            </VBox>
+                            
+                            <!-- Hôtels -->
+                            <VBox alignment="CENTER" spacing="12" onMouseClicked="#handleChambres"
+                                  style="-fx-background-color: white; -fx-padding: 30 40;
+                                         -fx-background-radius: 16; -fx-cursor: hand;
+                                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 4);">
+                                <StackPane>
+                                    <Circle radius="38" fill="#D1F2EB"/>
+                                    <Label text="🏨" style="-fx-font-size: 30;"/>
+                                </StackPane>
+                                <Label text="Hôtels" style="-fx-font-size: 15; -fx-font-weight: 600; -fx-text-fill: #013220;"/>
+                                <Label text="Séjourner" style="-fx-font-size: 12; -fx-text-fill: #888;"/>
+                            </VBox>
+                            
+                            <!-- Forums -->
+                            <VBox alignment="CENTER" spacing="12" onMouseClicked="#handleForums"
+                                  style="-fx-background-color: white; -fx-padding: 30 40;
+                                         -fx-background-radius: 16; -fx-cursor: hand;
+                                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 4);">
+                                <StackPane>
+                                    <Circle radius="38" fill="#D1F2EB"/>
+                                    <Label text="💬" style="-fx-font-size: 30;"/>
+                                </StackPane>
+                                <Label text="Forums" style="-fx-font-size: 15; -fx-font-weight: 600; -fx-text-fill: #013220;"/>
+                                <Label text="Discuter" style="-fx-font-size: 12; -fx-text-fill: #888;"/>
+                            </VBox>
+                        </HBox>
+                        
+                    </VBox>
+                    
+                    <!-- Featured Activities Section -->
+                    <VBox spacing="25" style="-fx-padding: 20 60 60 60;">
+                        
+                        <!-- Section Header -->
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <VBox spacing="5">
+                                <Label text="Activités populaires" 
+                                       style="-fx-font-size: 26; -fx-font-weight: 600; -fx-text-fill: #013220;"/>
+                                <Label text="Découvrez les expériences les plus réservées" 
+                                       style="-fx-font-size: 14; -fx-text-fill: #5a7d6e;"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="←" onAction="#handlePrevActivities"
+                                    style="-fx-background-color: white; -fx-text-fill: #013220;
+                                           -fx-font-size: 16; -fx-pref-width: 45; -fx-pref-height: 45;
+                                           -fx-background-radius: 22; -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);"/>
+                            <Button text="→" onAction="#handleNextActivities"
+                                    style="-fx-background-color: #50C878; -fx-text-fill: white;
+                                           -fx-font-size: 16; -fx-pref-width: 45; -fx-pref-height: 45;
+                                           -fx-background-radius: 22; -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.4), 8, 0, 0, 2);"/>
+                        </HBox>
+                        
+                        <!-- Activities Grid -->
+                        <TilePane fx:id="activitiesPane" 
+                                  style="-fx-background-color: transparent;"
+                                  hgap="25" vgap="25" prefColumns="3">
+                            <!-- Activities will be loaded dynamically -->
+                        </TilePane>
+                        
+                    </VBox>
+                    
+                    <!-- Empty State (shown when no activities) -->
+                    <VBox fx:id="emptyState" alignment="CENTER" spacing="15" 
+                          style="-fx-padding: 80;" visible="false">
+                        <Label text="🌿" style="-fx-font-size: 72;"/>
+                        <Label text="Aucune activité disponible" 
+                               style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #013220;"/>
+                        <Label text="Revenez plus tard pour découvrir de nouvelles expériences" 
+                               style="-fx-font-size: 14; -fx-text-fill: #5a7d6e;"/>
+                    </VBox>
+                    
+                    <!-- Footer -->
+                    <VBox alignment="CENTER" spacing="15" 
+                          style="-fx-background-color: #013220; -fx-padding: 40 60;">
+                        <HBox alignment="CENTER" spacing="8">
+                            <Label text="Go" style="-fx-font-size: 24; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                            <Label text="Vibe" style="-fx-font-size: 24; -fx-font-weight: 300; -fx-text-fill: #50C878;"/>
+                        </HBox>
+                        <Label text="© 2024 GoVibe. Tous droits réservés." 
+                               style="-fx-font-size: 12; -fx-text-fill: rgba(255,255,255,0.7);"/>
+                    </VBox>
+                    
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

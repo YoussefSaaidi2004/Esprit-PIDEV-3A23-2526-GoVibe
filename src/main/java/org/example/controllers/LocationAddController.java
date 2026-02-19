@@ -113,7 +113,7 @@ public class LocationAddController {
 
     @FXML
     private void handleGoHome() {
-        SceneNavigator.switchTo("/org/example/UserHomeView.fxml", backButton);
+        SceneNavigator.switchTo("/UserHome.fxml", backButton);
     }
 
     @FXML

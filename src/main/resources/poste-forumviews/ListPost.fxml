@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ListPostController">
+
+    <left>
+        <VBox styleClass="sidebar">
+            <!-- Logo Area -->
+            <VBox styleClass="sidebar-logo-box">
+                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="@images/logo.png" /></image>
+                </ImageView>
+                <Label style="-fx-text-fill: #D1F2EB; -fx-font-size: 20px; -fx-font-weight: bold;" text="GoVibe" />
+                <Label fx:id="roleLabel" style="-fx-text-fill: #A0E0C9; -fx-font-size: 11px;" text="Espace client" />
+            </VBox>
+
+            <!-- Navigation Area -->
+            <VBox styleClass="sidebar-nav-container">
+                <Button onAction="#handleGoToPosts" styleClass="nav-button, nav-button-active" text="🏠  Publications" />
+                <Button onAction="#handleGoToForums" styleClass="nav-button" text="💬  Forums" />
+                <Button styleClass="nav-button" text="📅  Événements" />
+                <Button styleClass="nav-button" text="ℹ️  À propos" />
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <!-- Footer Area -->
+            <VBox alignment="CENTER" spacing="8">
+                <Separator styleClass="sidebar-separator" />
+                <Button onAction="#handleLogout" styleClass="logout-sidebar-btn" text="🚪  Déconnexion" />
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="0" style="-fx-background-color: #D1F2EB;">
+
+            <!-- Dashboard Content Container -->
+            <VBox prefHeight="790.0" prefWidth="1229.0" spacing="20" VBox.vgrow="ALWAYS">
+                <padding><Insets bottom="25" left="40" right="40" top="25" /></padding>
+
+                <!-- Header Actions -->
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label style="-fx-text-fill: #013220; -fx-font-size: 24px; -fx-font-weight: bold;" text="Publications" />
+                        <Label style="-fx-text-fill: #084E36; -fx-font-size: 14px; -fx-opacity: 0.8;" text="Consultez, modifiez ou supprimez les publications " />
+                    </VBox>
+                    <HBox alignment="CENTER_RIGHT" spacing="10">
+                        <TextField promptText="Rechercher une publication..." style="-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 15; -fx-pref-width: 250;" />
+                        <Button onAction="#handleAjoutPost" style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand;" text="+ Nouvelle Publication" />
+                    </HBox>
+                </HBox>
+
+                <!-- Scrollable List of Posts -->
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox fx:id="postsContainer" spacing="15">
+                            <padding><Insets bottom="20" right="10" /></padding>
+                            
+                            <!-- Dynamic posts will be loaded here -->
+
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

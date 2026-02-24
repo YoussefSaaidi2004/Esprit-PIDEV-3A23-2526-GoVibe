@@ -6,7 +6,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.gestionvol.controller.user.CheckoutController"
+            fx:controller="org.example.controllers.CheckoutController"
             stylesheets="@../styles.css">
 
     <!-- Top Toolbar -->
@@ -16,12 +16,12 @@
                 <Insets top="15" right="15" bottom="15" left="15"/>
             </padding>
 
-            <Button fx:id="btnAddCheckout" text="➕" styleClass="button, btn-add" onAction="#handleAddCheckout"/>
-            <Button fx:id="btnRefreshCheckout" text="🔄" styleClass="button, btn-refresh" onAction="#handleRefresh"/>
+            <Button fx:id="btnAddCheckout" text="Add" styleClass="button, btn-add" onAction="#handleAddCheckout"/>
+            <Button fx:id="btnRefreshCheckout" text="Refresh" styleClass="button, btn-refresh" onAction="#handleRefresh"/>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <TextField fx:id="searchField" promptText="🔍 Search checkouts..." prefWidth="250" styleClass="text-field"/>
+            <TextField fx:id="searchField" promptText="Search checkouts..." prefWidth="250" styleClass="text-field"/>
         </HBox>
     </top>
 
@@ -41,3 +41,4 @@
     </center>
 
 </BorderPane>
+

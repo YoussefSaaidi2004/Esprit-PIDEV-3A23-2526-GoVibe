@@ -1,0 +1,123 @@
+[
+  {
+    "idVoiture": 1001,
+    "marque": "Tesla",
+    "modele": "Model 3",
+    "annee": 2023,
+    "prixJour": 120.0,
+    "adresseAgence": "Tunis Center",
+    "latitude": 36.8065,
+    "longitude": 10.1815,
+    "description": "Premium electric sedan found on WebDealCar."
+  },
+  {
+    "idVoiture": 1002,
+    "marque": "Mercedes",
+    "modele": "Classe A",
+    "annee": 2022,
+    "prixJour": 95.0,
+    "adresseAgence": "Gammarth",
+    "latitude": 36.9161,
+    "longitude": 10.2989,
+    "description": "Compact luxury car with advanced features."
+  },
+  {
+    "idVoiture": 0,
+    "marque": "Audi",
+    "modele": "Q5",
+    "annee": 0,
+    "prixJour": 110.0,
+    "adresseAgence": "Lac 2, Tunis",
+    "latitude": 36.8333,
+    "longitude": 10.2333,
+    "description": "Expertly maintained SUV from WebRental.tn"
+  },
+  {
+    "idVoiture": 0,
+    "marque": "Audi",
+    "modele": "Q5",
+    "annee": 0,
+    "prixJour": 110.0,
+    "adresseAgence": "Lac 2, Tunis",
+    "latitude": 36.8333,
+    "longitude": 10.2333,
+    "description": "Expertly maintained SUV from WebRental.tn"
+  },
+  {
+    "idVoiture": 0,
+    "marque": "Audi",
+    "modele": "Q5",
+    "annee": 0,
+    "prixJour": 110.0,
+    "adresseAgence": "Lac 2, Tunis",
+    "latitude": 36.8333,
+    "longitude": 10.2333,
+    "description": "Expertly maintained SUV from WebRental.tn"
+  },
+  {
+    "idVoiture": 0,
+    "marque": "Audi",
+    "modele": "Q5",
+    "annee": 0,
+    "prixJour": 110.0,
+    "adresseAgence": "Lac 2, Tunis",
+    "latitude": 36.8333,
+    "longitude": 10.2333,
+    "description": "Expertly maintained SUV from WebRental.tn"
+  },
+  {
+    "idVoiture": 0,
+    "marque": "Audi",
+    "modele": "Q5",
+    "annee": 0,
+    "prixJour": 110.0,
+    "adresseAgence": "Lac 2, Tunis",
+    "latitude": 36.8333,
+    "longitude": 10.2333,
+    "description": "Expertly maintained SUV from WebRental.tn"
+  },
+  {
+    "idVoiture": 0,
+    "marque": "Audi",
+    "modele": "Q5",
+    "annee": 0,
+    "prixJour": 110.0,
+    "adresseAgence": "Lac 2, Tunis",
+    "latitude": 36.8333,
+    "longitude": 10.2333,
+    "description": "Expertly maintained SUV from WebRental.tn"
+  },
+  {
+    "idVoiture": 0,
+    "marque": "Audi",
+    "modele": "Q5",
+    "annee": 0,
+    "prixJour": 110.0,
+    "adresseAgence": "Lac 2, Tunis",
+    "latitude": 36.8333,
+    "longitude": 10.2333,
+    "description": "Expertly maintained SUV from WebRental.tn"
+  },
+  {
+    "idVoiture": 0,
+    "marque": "Audi",
+    "modele": "Q5",
+    "annee": 0,
+    "prixJour": 110.0,
+    "adresseAgence": "Lac 2, Tunis",
+    "latitude": 36.8333,
+    "longitude": 10.2333,
+    "description": "Expertly maintained SUV from WebRental.tn"
+  },
+  {
+    "idVoiture": 0,
+    "marque": "Audi",
+    "modele": "Q5",
+    "annee": 0,
+    "prixJour": 110.0,
+    "adresseAgence": "Lac 2, Tunis",
+    "latitude": 36.8333,
+    "longitude": 10.2333,
+    "description": "Expertly maintained SUV from WebRental.tn"
+  }
+]

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<!-- 
+  PAGE LOCATIONS/VOITURES PROFESSIONNELLE
+  Design moderne avec navigation commune et gestion avancée des locations
+-->
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="root"
+            fx:controller="org.example.controllers.LocationListController"
+            style="-fx-background-color: #F5F3E7;"
+            prefHeight="900" prefWidth="1400">
+
+    <!-- ==================== TOP NAVIGATION BAR (COMMUNE À TOUTES LES PAGES) ==================== -->
+    <top>
+        <VBox spacing="0">
+            <!-- Barre de Navigation Principale -->
+            <!-- Header Commun -->
+            <fx:include source="components/UserHeader.fxml"/>
+            
+            <!-- Sous-barre: Filtres et Recherche -->
+            <HBox alignment="CENTER" spacing="15" 
+                  style="-fx-background-color: white; -fx-padding: 18 40;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 3);">
+                
+                <!-- Recherche -->
+                <HBox alignment="CENTER_LEFT" spacing="10" 
+                      style="-fx-background-color: #F5F3E7; -fx-padding: 10 18;
+                             -fx-background-radius: 25; -fx-pref-width: 300;">
+                    <Label text="🔍" style="-fx-font-size: 16;"/>
+                    <TextField fx:id="searchField" promptText="Rechercher une location..."
+                               HBox.hgrow="ALWAYS"
+                               style="-fx-background-color: transparent; -fx-font-size: 14;
+                                      -fx-prompt-text-fill: #888; -fx-border-color: transparent;"/>
+                </HBox>
+                
+                <Separator orientation="VERTICAL" style="-fx-padding: 0 10;"/>
+                
+                <!-- Filtre Voiture -->
+                <ComboBox fx:id="voitureFilter" promptText="🚗 Voiture"
+                          style="-fx-background-color: #F5F3E7; -fx-font-size: 13;
+                                 -fx-background-radius: 8;"/>
+                
+                <!-- Filtre Statut -->
+                <ComboBox promptText="📊 Statut"
+                          style="-fx-background-color: #F5F3E7; -fx-font-size: 13;
+                                 -fx-background-radius: 8;"/>
+                
+                <!-- Filtre Période -->
+                <ComboBox promptText="📅 Période"
+                          style="-fx-background-color: #F5F3E7; -fx-font-size: 13;
+                                 -fx-background-radius: 8;"/>
+                
+                <Separator orientation="VERTICAL" style="-fx-padding: 0 10;"/>
+                
+                <!-- Tri -->
+                <ComboBox fx:id="sortChoice" promptText="📊 Trier par"
+                          style="-fx-background-color: #F5F3E7; -fx-font-size: 13;
+                                 -fx-background-radius: 8;"/>
+                
+                <Separator orientation="VERTICAL" style="-fx-padding: 0 10;"/>
+                
+                <!-- Bouton Rechercher -->
+                <Button text="Rechercher" onAction="#handleSearch"
+                        style="-fx-background-color: #013220; -fx-text-fill: white;
+                               -fx-font-size: 13; -fx-font-weight: bold; -fx-padding: 10 25;
+                               -fx-background-radius: 20; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(1,50,32,0.3), 8, 0, 0, 2);"/>
+                
+                <!-- Bouton Réinitialiser -->
+                <Button text="↺" onAction="#handleResetFilters"
+                        style="-fx-background-color: transparent; -fx-text-fill: #084E36;
+                               -fx-font-size: 18; -fx-pref-width: 40; -fx-pref-height: 40;
+                               -fx-background-radius: 20; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- ==================== CONTENU CENTRAL ==================== -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;"
+                    VBox.vgrow="ALWAYS" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+            <content>
+                <VBox spacing="0" style="-fx-background-color: #F5F3E7;">
+                    
+                    <!-- Header Section -->
+                    <VBox spacing="8" style="-fx-padding: 35 50 25 50;">
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <StackPane>
+                                <Circle radius="35" fill="#D1F2EB"/>
+                                <Label text="🚗" style="-fx-font-size: 32;"/>
+                            </StackPane>
+                            <VBox spacing="4">
+                                <Label text="Locations &amp; Réservations" 
+                                       style="-fx-font-size: 32; -fx-font-weight: 700; -fx-text-fill: #013220;"/>
+                                <Label text="Gérez vos locations de véhicules et suivez vos réservations" 
+                                       style="-fx-font-size: 15; -fx-text-fill: #5a7d6e;"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            
+                            <!-- Statistiques -->
+                            <HBox spacing="25" alignment="CENTER">
+                                <VBox alignment="CENTER" spacing="2">
+                                    <Label fx:id="totalCountLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #50C878;"/>
+                                    <Label text="Locations" style="-fx-font-size: 12; -fx-text-fill: #5a7d6e;"/>
+                                </VBox>
+                                <Separator orientation="VERTICAL" style="-fx-padding: 0;"/>
+                                <VBox alignment="CENTER" spacing="2">
+                                    <Label fx:id="confirmedCountLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #50C878;"/>
+                                    <Label text="Confirmées" style="-fx-font-size: 12; -fx-text-fill: #5a7d6e;"/>
+                                </VBox>
+                                <Separator orientation="VERTICAL" style="-fx-padding: 0;"/>
+                                <VBox alignment="CENTER" spacing="2">
+                                    <Label fx:id="totalRevenueLabel" text="0 DT" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #50C878;"/>
+                                    <Label text="Revenus" style="-fx-font-size: 12; -fx-text-fill: #5a7d6e;"/>
+                                </VBox>
+                            </HBox>
+                        </HBox>
+                    </VBox>
+                    
+                    <!-- Section Liste des Locations -->
+                    <VBox spacing="20" style="-fx-padding: 0 50 50 50;">
+                        
+                        <!-- Barre d'outils -->
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label text="Liste des locations" 
+                                   style="-fx-font-size: 22; -fx-font-weight: 600; -fx-text-fill: #013220;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            
+                            <!-- Boutons d'export -->
+                            <Button text="📄 PDF" onAction="#handleExportPdf"
+                                    style="-fx-background-color: white; -fx-text-fill: #E74C3C;
+                                           -fx-font-size: 12; -fx-font-weight: 600; -fx-padding: 8 16;
+                                           -fx-background-radius: 8; -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);">
+                                <tooltip>
+                                    <Tooltip text="Exporter en PDF"/>
+                                </tooltip>
+                            </Button>
+                            <Button text="📊 Excel" onAction="#handleExportExcel"
+                                    style="-fx-background-color: white; -fx-text-fill: #27AE60;
+                                           -fx-font-size: 12; -fx-font-weight: 600; -fx-padding: 8 16;
+                                           -fx-background-radius: 8; -fx-cursor: hand;
+                                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);">
+                                <tooltip>
+                                    <Tooltip text="Exporter en Excel"/>
+                                </tooltip>
+                            </Button>
+                            <Button text="🌙" onAction="#handleToggleTheme"
+                                    style="-fx-background-color: #2C3E50; -fx-text-fill: white;
+                                           -fx-font-size: 14; -fx-pref-width: 40; -fx-pref-height: 40;
+                                           -fx-background-radius: 20; -fx-cursor: hand;">
+                                <tooltip>
+                                    <Tooltip text="Mode sombre"/>
+                                </tooltip>
+                            </Button>
+                        </HBox>
+                        
+                        <!-- Grille des locations -->
+                        <TilePane fx:id="locationsGrid" hgap="25" vgap="25" 
+                                  style="-fx-background-color: transparent;" prefColumns="3">
+                             <!-- Les locations seront chargées dynamiquement -->
+                        </TilePane>
+                        
+                        <!-- Pagination Controls -->
+                        <HBox alignment="CENTER" spacing="15" style="-fx-padding: 20 0;">
+                            <Button fx:id="prevPageButton" text="← Précédent" onAction="#handlePrevPage"
+                                    style="-fx-background-color: #013220; -fx-text-fill: white;
+                                           -fx-font-size: 12; -fx-font-weight: 600; -fx-padding: 8 16;
+                                           -fx-background-radius: 8; -fx-cursor: hand;"/>
+                            <Label fx:id="pageInfoLabel" text="Page 1 / 1" 
+                                   style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #013220;"/>
+                            <Button fx:id="nextPageButton" text="Suivant →" onAction="#handleNextPage"
+                                    style="-fx-background-color: #013220; -fx-text-fill: white;
+                                           -fx-font-size: 12; -fx-font-weight: 600; -fx-padding: 8 16;
+                                           -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        </HBox>
+                        
+                        <!-- État Vide -->
+                        <VBox fx:id="emptyState" alignment="CENTER" spacing="15" 
+                               style="-fx-padding: 80;" visible="false">
+                             <Label text="🚗" style="-fx-font-size: 72; -fx-opacity: 0.5;"/>
+                             <Label text="Aucune location trouvée" 
+                                    style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #013220;"/>
+                             <Label text="Créez votre première location en cliquant sur 'Nouvelle location'" 
+                                    style="-fx-font-size: 14; -fx-text-fill: #5a7d6e;"/>
+                             <Button text="➕ Créer une location" onAction="#handleOpenAdd"
+                                     style="-fx-background-color: #50C878; -fx-text-fill: white;
+                                            -fx-font-size: 14; -fx-padding: 12 30;
+                                            -fx-background-radius: 25; -fx-cursor: hand;"/>
+                        </VBox>
+                    </VBox>
+                    
+                    <!-- Footer -->
+                    <VBox alignment="CENTER" spacing="20" 
+                          style="-fx-background-color: linear-gradient(to bottom, #013220, #0B4F35); 
+                                 -fx-padding: 50;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, -5);">
+                        <HBox alignment="CENTER" spacing="12">
+                            <StackPane>
+                                <Circle radius="25" fill="#50C878" opacity="0.2"/>
+                                <Label text="G" style="-fx-font-size: 20; -fx-font-weight: 900; -fx-text-fill: #50C878;"/>
+                            </StackPane>
+                            <Label text="Go" style="-fx-font-size: 26; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                            <Label text="Vibe" style="-fx-font-size: 26; -fx-font-weight: 300; -fx-text-fill: #50C878;"/>
+                        </HBox>
+                        <Label text="© 2024 GoVibe. Tous droits réservés." 
+                               style="-fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.6);"/>
+                        <HBox alignment="CENTER" spacing="25">
+                            <Hyperlink text="À propos" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
+                            <Hyperlink text="Confidentialité" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
+                            <Hyperlink text="Conditions" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
+                            <Hyperlink text="Contact" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
+                        </HBox>
+                    </VBox>
+                    
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

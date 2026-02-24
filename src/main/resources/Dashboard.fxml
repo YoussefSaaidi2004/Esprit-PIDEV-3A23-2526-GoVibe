@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.SVGPath?>
+
+<StackPane fx:id="mainStack" prefHeight="900" prefWidth="1400" stylesheets="@styles/unified-styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.DashboardActiviteController">
+    <!-- Premium Hero Background -->
+    <ImageView fx:id="bgImageView" fitHeight="900" fitWidth="1400" pickOnBounds="true" preserveRatio="false" />
+    
+    <!-- Sophisticated Overlay Layer -->
+    <Region styleClass="premium-bg-overlay" />
+
+    <VBox fx:id="contentRoot" spacing="0">
+        <!-- Main Application Header -->
+        <VBox spacing="0">
+            <fx:include source="components/UserHeader.fxml" />
+            
+            <!-- Glassmorphism Hero Section -->
+            <VBox spacing="10" styleClass="header-glass" style="-fx-padding: 40 60;">
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <StackPane styleClass="icon-circle-emerald" prefWidth="60" prefHeight="60">
+                        <Label text="🎒" style="-fx-font-size: 32;" />
+                    </StackPane>
+                    <VBox spacing="5">
+                        <Label text="Gestion des Activités" style="-fx-font-size: 36; -fx-font-weight: 900; -fx-text-fill: white;" />
+                        <Label text="Supervisez et validez les meilleures expériences GoVibe" style="-fx-font-size: 16; -fx-text-fill: rgba(255,255,255,0.7);" />
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS" />
+                    <!-- Sub-Navigation: Activités -->
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Button onAction="#rafraichir" styleClass="icon-btn-ghost" text="🔄" />
+                        <Button onAction="#goBackToDashboard" styleClass="btn-outline-white-mini" text="Retour Admin" />
+                    </HBox>
+                </HBox>
+            </VBox>
+
+            <!-- Sophisticated Action Bar -->
+            <HBox alignment="CENTER_LEFT" spacing="15" styleClass="glass-panel" style="-fx-padding: 15 60; -fx-background-radius: 0;">
+                <HBox alignment="CENTER_LEFT" spacing="10" styleClass="search-box-glass" HBox.hgrow="ALWAYS" maxWidth="450">
+                    <Label text="🔍" style="-fx-padding: 0 0 0 10;" />
+                    <TextField fx:id="searchField" promptText="Filtrer par nom ou localisation..." styleClass="transparent-field" HBox.hgrow="ALWAYS" />
+                </HBox>
+                
+                <Region HBox.hgrow="ALWAYS" />
+                
+                <HBox spacing="10">
+                    <Button onAction="#openAjout" styleClass="btn-primary-emerald" text="➕ Nouvelle Activité" />
+                    <Button onAction="#validerActivite" styleClass="btn-outline-white-mini" text="✅ Valider Sélection" />
+                    <Button onAction="#openModifier" styleClass="btn-outline-white-mini" text="✏️ Modifier" />
+                    <Button onAction="#openSuppression" styleClass="btn-outline-white-mini" text="🗑️ Supprimer" />
+                </HBox>
+            </HBox>
+        </VBox>
+
+        <!-- Main Content Area -->
+        <VBox VBox.vgrow="ALWAYS" style="-fx-padding: 30 60;">
+            <VBox spacing="20" styleClass="glass-panel" style="-fx-padding: 25;" VBox.vgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="15">
+                    <Label text="Liste Active" style="-fx-font-size: 20; -fx-font-weight: 800; -fx-text-fill: white;" />
+                    <Label fx:id="lblCount" styleClass="tile-value-emerald" style="-fx-font-size: 18;" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Button onAction="#openSessionsDashboard" styleClass="btn-pagination-premium" text="📅 Gérer les Sessions" />
+                </HBox>
+
+                <TableView fx:id="tableActivite" prefHeight="500" VBox.vgrow="ALWAYS" styleClass="transparent-listview">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="60" />
+                        <TableColumn fx:id="colName" text="Nom de l'Activité" prefWidth="200" />
+                        <TableColumn fx:id="colDesc" text="Description" prefWidth="300" />
+                        <TableColumn fx:id="colType" text="Type" prefWidth="120" />
+                        <TableColumn fx:id="colLoc" text="Localisation" prefWidth="150" />
+                        <TableColumn fx:id="colPrix" text="Prix (TND)" prefWidth="100" />
+                        <TableColumn fx:id="colStatus" text="Statut" prefWidth="120" />
+                    </columns>
+                </TableView>
+
+                <Label fx:id="lblMsg" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 12;" />
+            </VBox>
+        </VBox>
+    </VBox>
+
+    <!-- Modal Overlay Layer -->
+    <StackPane fx:id="modalOverlay" style="-fx-background-color: rgba(0,0,0,0.6);" visible="false">
+        <VBox fx:id="modalContent" alignment="CENTER" maxWidth="800" maxHeight="750" />
+    </StackPane>
+</StackPane>

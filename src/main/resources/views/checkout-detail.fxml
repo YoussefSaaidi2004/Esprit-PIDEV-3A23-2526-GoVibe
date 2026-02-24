@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.image.ImageView?>
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:id="rootPane"
+           fx:controller="org.example.controllers.CheckoutDetailController"
+           stylesheets="@../styles/unified-styles.css"
+           styleClass="main-bg">
+    
+    <!-- Background Hero Image -->
+    <StackPane fx:id="rootStackPane">
+        <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" />
+        <Region style="-fx-background-color: rgba(245, 243, 231, 0.7);" />
+    </StackPane>
+    
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;">
+        <VBox spacing="0" alignment="TOP_CENTER" style="-fx-padding: 40 0;">
+            <VBox styleClass="glass-card" spacing="35" maxWidth="750">
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT">
+                    <VBox spacing="10" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <SVGPath content="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" style="-fx-fill: #50C878;" scaleX="1.5" scaleY="1.5"/>
+                            <Text text="Booking Details" styleClass="title" style="-fx-font-size: 28;"/>
+                        </HBox>
+                        <Text text="View and manage your flight reservation" styleClass="subtitle" style="-fx-font-size: 15;"/>
+                    </VBox>
+                    <Label fx:id="statusBadge" text="PENDING" styleClass="badge, badge-pending" style="-fx-font-size: 13; -fx-padding: 10 22; -fx-background-radius: 20;"/>
+                </HBox>
+
+                <Separator style="-fx-opacity: 0.3;"/>
+
+                <!-- Flight Information -->
+                <VBox spacing="15">
+                    <Text text="FLIGHT INFORMATION" style="-fx-font-weight: bold; -fx-fill: #013220; -fx-font-size: 13; -fx-opacity: 0.6;"/>
+                    <VBox spacing="12" style="-fx-background-color: rgba(80, 200, 120, 0.1); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: rgba(80, 200, 120, 0.2); -fx-border-width: 1;">
+                        <HBox alignment="CENTER_LEFT" spacing="20">
+                            <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" style="-fx-fill: #50C878;" scaleX="1.3" scaleY="1.3"/>
+                            <VBox spacing="5">
+                                <Text fx:id="flightRoute" style="-fx-font-weight: 800; -fx-font-size: 22; -fx-fill: #013220;" text="Route"/>
+                                <Text fx:id="flightDetails" style="-fx-fill: #5a7d6e; -fx-font-size: 14;" text="Flight details"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <Separator style="-fx-opacity: 0.3;"/>
+
+                <!-- Passenger Details (Editable) -->
+                <VBox spacing="20">
+                    <HBox alignment="CENTER_LEFT">
+                        <Text text="PASSENGER DETAILS" style="-fx-font-weight: bold; -fx-fill: #013220; -fx-font-size: 13; -fx-opacity: 0.6;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="editBtn" onAction="#toggleEditMode" styleClass="btn-primary" prefHeight="42" style="-fx-background-radius: 25; -fx-padding: 0 25;">
+                            <graphic>
+                                <HBox alignment="CENTER" spacing="10">
+                                    <SVGPath content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" style="-fx-fill: white;" scaleX="0.8" scaleY="0.8"/>
+                                    <Text fx:id="editBtnText" text="Edit" style="-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 13;"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
+
+                    <GridPane hgap="25" vgap="25">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
+                        </columnConstraints>
+
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="FULL NAME" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
+                            <TextField fx:id="nameField" styleClass="text-field" prefHeight="48" disable="true" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12;"/>
+                        </VBox>
+
+                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="EMAIL ADDRESS" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
+                            <TextField fx:id="emailField" styleClass="text-field" prefHeight="48" disable="true" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12;"/>
+                        </VBox>
+
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label text="PHONE NUMBER" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
+                            <TextField fx:id="phoneField" styleClass="text-field" prefHeight="48" disable="true" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12;"/>
+                        </VBox>
+
+                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="PASSENGERS" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
+                            <Spinner fx:id="passengerSpinner" prefWidth="Infinity" prefHeight="48" disable="true" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12;"/>
+                        </VBox>
+                    </GridPane>
+                </VBox>
+
+                <Separator style="-fx-opacity: 0.3;"/>
+
+                <!-- Preferences -->
+                <VBox spacing="20">
+                    <Text text="BOOKING PREFERENCES" style="-fx-font-weight: bold; -fx-fill: #013220; -fx-font-size: 13; -fx-opacity: 0.6;"/>
+                    
+                    <GridPane hgap="25" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="33" />
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="33" />
+                            <ColumnConstraints hgrow="SOMETIMES" percentWidth="34" />
+                        </columnConstraints>
+
+                        <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="Travel Class" styleClass="subtitle" style="-fx-font-size: 11;"/>
+                            <Text fx:id="travelClassText" style="-fx-font-size: 15; -fx-font-weight: 800; -fx-fill: #013220;" text="Economy"/>
+                        </VBox>
+
+                        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="Seat Preference" styleClass="subtitle" style="-fx-font-size: 11;"/>
+                            <Text fx:id="seatPrefText" style="-fx-font-size: 15; -fx-font-weight: 800; -fx-fill: #013220;" text="Window"/>
+                        </VBox>
+
+                        <VBox spacing="5" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                            <Label text="Payment Method" styleClass="subtitle" style="-fx-font-size: 11;"/>
+                            <Text fx:id="paymentText" style="-fx-font-size: 15; -fx-font-weight: 800; -fx-fill: #013220;" text="Credit Card"/>
+                        </VBox>
+                    </GridPane>
+                </VBox>
+
+                <Separator style="-fx-opacity: 0.3;"/>
+
+                <!-- Price -->
+                <HBox alignment="CENTER" style="-fx-background-color: rgba(80, 200, 120, 0.08); -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: rgba(80, 200, 120, 0.15); -fx-border-width: 1;">
+                    <VBox spacing="4">
+                        <Text text="Total Amount" styleClass="subtitle" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+                        <Text text="Including all taxes and fees" style="-fx-font-size: 11; -fx-fill: #8D99AE;"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Text fx:id="totalPrice" style="-fx-font-size: 32; -fx-font-weight: 900; -fx-fill: #50C878;" text="0 DT"/>
+                </HBox>
+
+                <!-- Action Buttons -->
+                <VBox spacing="20" alignment="CENTER">
+                    <HBox spacing="15" alignment="CENTER" fx:id="editModeButtons" visible="false" managed="false">
+                        <Button onAction="#handleUpdate" styleClass="btn-success" prefHeight="50" style="-fx-background-radius: 25; -fx-padding: 0 40;">
+                            <graphic>
+                                <HBox alignment="CENTER" spacing="12">
+                                    <SVGPath content="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" style="-fx-fill: #013220;" scaleX="1.2" scaleY="1.2"/>
+                                    <Text text="SAVE UPDATES" style="-fx-fill: #013220; -fx-font-weight: bold;"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                        <Button onAction="#toggleEditMode" style="-fx-background-color: #F1F5F9; -fx-text-fill: #64748B;" prefHeight="50" style="-fx-background-radius: 25; -fx-padding: 0 40;">
+                            <graphic>
+                                <HBox alignment="CENTER" spacing="12">
+                                    <SVGPath content="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" style="-fx-fill: #64748B;" scaleX="1.2" scaleY="1.2"/>
+                                    <Text text="CANCEL" style="-fx-fill: #64748B; -fx-font-weight: bold;"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
+
+                    <HBox spacing="20" alignment="CENTER">
+                        <Button fx:id="payBtn" onAction="#handlePayment" style="-fx-background-color: linear-gradient(to bottom, #50C878, #3DAF62); -fx-text-fill: white;" prefHeight="50" prefWidth="280" styleClass="btn-primary" style="-fx-background-radius: 25; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.4), 10, 0, 0, 5);">
+                            <graphic>
+                                <HBox alignment="CENTER" spacing="12">
+                                    <SVGPath content="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" style="-fx-fill: white;" scaleX="1.2" scaleY="1.2"/>
+                                    <Text text="PAY NOW" style="-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 14;"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+
+                        <Button fx:id="cancelBtn" onAction="#handleDelete" style="-fx-background-color: #EF476F; -fx-text-fill: white;" prefHeight="50" prefWidth="280" style="-fx-background-radius: 25; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(239, 71, 111, 0.2), 10, 0, 0, 5);">
+                            <graphic>
+                                <HBox alignment="CENTER" spacing="12">
+                                    <SVGPath content="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" style="-fx-fill: white;" scaleX="1.2" scaleY="1.2"/>
+                                    <Text text="CANCEL BOOKING" style="-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 14;"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                        
+                        <Button onAction="#handleBack" style="-fx-background-color: transparent; -fx-border-color: #CBD5E1; -fx-border-radius: 25; -fx-border-width: 1.5;" prefWidth="120" prefHeight="50" styleClass="icon-btn">
+                            <graphic>
+                                <HBox alignment="CENTER" spacing="10">
+                                    <SVGPath content="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" style="-fx-fill: #64748B;" scaleX="1.2" scaleY="1.2"/>
+                                    <Text text="Back" style="-fx-fill: #64748B; -fx-font-weight: bold;"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+    
+    <!-- Payment WebView Overlay -->
+    <StackPane fx:id="paymentOverlay" visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.7);">
+        <VBox alignment="CENTER" spacing="15" maxWidth="1000" maxHeight="800" styleClass="glass-card" style="-fx-padding: 20;">
+            <HBox alignment="CENTER_RIGHT">
+                <Button onAction="#handleClosePayment" style="-fx-background-color: #EF476F; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;">
+                    <graphic>
+                        <HBox spacing="8" alignment="CENTER">
+                            <SVGPath content="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" style="-fx-fill: white;" scaleX="0.8" scaleY="0.8"/>
+                            <Text text="CLOSE PAYMENT" style="-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 11;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </HBox>
+            <javafx.scene.web.WebView fx:id="paymentWebView" VBox.vgrow="ALWAYS" />
+        </VBox>
+    </StackPane>
+
+    <!-- Loading Overlay -->
+    <StackPane fx:id="loadingOverlay" visible="false" style="-fx-background-color: rgba(1, 50, 32, 0.4);">
+        <VBox alignment="CENTER" spacing="25" styleClass="glass-card" style="-fx-padding: 50; -fx-background-radius: 25;">
+            <ProgressIndicator prefWidth="65" prefHeight="65"/>
+            <Text text="Processing Reservation..." style="-fx-font-size: 18; -fx-font-weight: bold; -fx-fill: #013220;"/>
+        </VBox>
+    </StackPane>
+</StackPane>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import java.net.URL?>
+ 
+<StackPane fx:id="rootStackPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.example.controllers.UserHomeController">
+    <!-- Premium Image Background -->
+    <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" styleClass="premium-bg" />
+    
+    <BorderPane fx:id="mainBorderPane" style="-fx-background-color: transparent;"
+                prefHeight="900" prefWidth="1400">
+    <stylesheets>
+        <URL value="@styles.css" />
+    </stylesheets>
+ 
+    <top>
+        <VBox spacing="0">
+            <fx:include source="components/UserHeader.fxml"/>
+            <HBox alignment="CENTER" spacing="15" 
+                  style="-fx-background-color: white; -fx-padding: 15 40;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 3);">
+                <HBox alignment="CENTER_LEFT" spacing="10" 
+                      style="-fx-background-color: transparent; -fx-padding: 10 18;
+                             -fx-background-radius: 25; -fx-pref-width: 400;">
+                    <Label text="🔍" style="-fx-font-size: 16;"/>
+                    <TextField fx:id="searchField" promptText="Rechercher une destination ou une activité..."
+                               HBox.hgrow="ALWAYS"
+                               style="-fx-background-color: transparent; -fx-font-size: 14;"/>
+                </HBox>
+                <ComboBox fx:id="filterType" promptText="🎯 Type" styleClass="glass-panel" style="-fx-background-color: transparent;"/>
+                <ComboBox fx:id="filterLocation" promptText="📍 Localisation" style="-fx-background-color: transparent;"/>
+                <Button text="Rechercher" onAction="#handleSearch" styleClass="btn-accent" style="-fx-padding: 10 30;"/>
+            </HBox>
+        </VBox>
+    </top>
+ 
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" hbarPolicy="NEVER">
+            <content>
+                <StackPane styleClass="activities-banner">
+                    
+                    <VBox spacing="0" styleClass="dark-overlay">
+                        <VBox spacing="40" style="-fx-padding: 60 80;">
+                            <!-- Activity Page Header -->
+                            <HBox alignment="CENTER_LEFT" spacing="25" styleClass="glass-panel" style="-fx-padding: 40;">
+                                <StackPane>
+                                    <Circle radius="40" fill="rgba(80,200,120,0.3)"/>
+                                    <Label text="✨" style="-fx-font-size: 40;"/>
+                                </StackPane>
+                                <VBox spacing="10">
+                                    <Label text="Découvrez nos Activités" style="-fx-font-size: 42; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                                    <Label text="Des moments inoubliables vous attendent" style="-fx-font-size: 18; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <HBox spacing="40">
+                                    <VBox alignment="CENTER"><Label text="150+" style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: #50C878;"/><Label text="Activités" style="-fx-text-fill: white;"/></VBox>
+                                    <VBox alignment="CENTER"><Label text="4.9" style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: #50C878;"/><Label text="Note Moyenne" style="-fx-text-fill: white;"/></VBox>
+                                </HBox>
+                            </HBox>
+ 
+                            <TilePane fx:id="activitiesPane" hgap="30" vgap="30" prefColumns="3" alignment="CENTER"/>
+                        </VBox>
+                    </VBox>
+                </StackPane>
+            </content>
+        </ScrollPane>
+    </center>
+    </BorderPane>
+</StackPane>

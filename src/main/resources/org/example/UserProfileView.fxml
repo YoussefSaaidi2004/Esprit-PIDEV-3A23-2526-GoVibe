@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<StackPane prefHeight="900.0" prefWidth="1400.0" style="-fx-background-color: #F5F3E7;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.UserProfileController">
+    
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;" vbarPolicy="AS_NEEDED">
+        <content>
+            <VBox spacing="0" style="-fx-background-color: #F5F3E7;">
+                
+                <!-- HEADER SECTION -->
+                <StackPane alignment="CENTER" minHeight="200.0" prefHeight="220.0" style="-fx-background-color: #013220;">
+                   <VBox alignment="CENTER" spacing="15.0" style="-fx-padding: 40 20 20 20;">
+                       <!-- Avatar -->
+                       <StackPane fx:id="avatarContainer">
+                           <Circle fill="#50C878" radius="50.0" />
+                           <Label fx:id="profileInitials" style="-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: white;" text="U" />
+                       </StackPane>
+                       
+                       <!-- User Name -->
+                       <Label fx:id="welcomeLabel" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: white;" text="Mon Profil" />
+                       
+                       <!-- Role & Join Date -->
+                       <HBox alignment="CENTER" spacing="20">
+                           <Label fx:id="roleLabel" style="-fx-font-size: 14; -fx-text-fill: #50C878;" text="Rôle: Utilisateur" />
+                           <Separator orientation="VERTICAL" style="-fx-opacity: 0.3;" />
+                           <Label fx:id="createdAtLabel" style="-fx-font-size: 14; -fx-text-fill: rgba(255,255,255,0.8);" text="Membre depuis: Inconnu" />
+                       </HBox>
+                   </VBox>
+                </StackPane>
+
+                <!-- MAIN CONTENT -->
+                <VBox spacing="30.0" style="-fx-padding: 50;">
+                    
+                    <!-- Error/Success Messages -->
+                    <Label fx:id="errorLabel" style="-fx-background-color: #ffebee; -fx-text-fill: #c62828; -fx-padding: 15; -fx-background-radius: 8; -fx-font-size: 14;" visible="false" wrapText="true" />
+                    <Label fx:id="successLabel" style="-fx-background-color: #e8f5e9; -fx-text-fill: #2e7d32; -fx-padding: 15; -fx-background-radius: 8; -fx-font-size: 14;" visible="false" wrapText="true" />
+                    
+                    <!-- Profile Information Section -->
+                    <VBox spacing="20.0" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 5);">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #013220;" text="Informations personnelles" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Label style="-fx-font-size: 12; -fx-text-fill: #7f8c8d;" text="* Champs obligatoires" />
+                        </HBox>
+                        
+                        <Separator />
+                        
+                        <HBox spacing="30">
+                            <!-- Left Column -->
+                            <VBox spacing="20" HBox.hgrow="ALWAYS" prefWidth="400">
+                                <VBox spacing="8">
+                                    <Label style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #013220;" text="Nom *" />
+                                    <TextField fx:id="nomField" promptText="Votre nom" style="-fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12; -fx-font-size: 14;" />
+                                </VBox>
+                                
+                                <VBox spacing="8">
+                                    <Label style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #013220;" text="Email *" />
+                                    <TextField fx:id="emailField" promptText="votre@email.com" style="-fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12; -fx-font-size: 14;" />
+                                </VBox>
+                            </VBox>
+                            
+                            <!-- Right Column -->
+                            <VBox spacing="20" HBox.hgrow="ALWAYS" prefWidth="400">
+                                <VBox spacing="8">
+                                    <Label style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #013220;" text="Prénom *" />
+                                    <TextField fx:id="prenomField" promptText="Votre prénom" style="-fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12; -fx-font-size: 14;" />
+                                </VBox>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                    
+                    <!-- Password Change Section -->
+                    <VBox spacing="20.0" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 5);">
+                        <Label style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #013220;" text="Modifier le mot de passe" />
+                        <Separator />
+                        <Label style="-fx-font-size: 13; -fx-text-fill: #7f8c8d;" text="Laissez ces champs vides si vous ne souhaitez pas changer votre mot de passe." wrapText="true" />
+                        
+                        <HBox spacing="30">
+                            <!-- Left Column -->
+                            <VBox spacing="20" HBox.hgrow="ALWAYS" prefWidth="400">
+                                <VBox spacing="8">
+                                    <Label style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #013220;" text="Mot de passe actuel" />
+                                    <PasswordField fx:id="currentPasswordField" promptText="••••••••" style="-fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12; -fx-font-size: 14;" />
+                                </VBox>
+                                
+                                <VBox spacing="8">
+                                    <Label style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #013220;" text="Confirmer le nouveau mot de passe" />
+                                    <PasswordField fx:id="confirmPasswordField" promptText="••••••••" style="-fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12; -fx-font-size: 14;" />
+                                </VBox>
+                            </VBox>
+                            
+                            <!-- Right Column -->
+                            <VBox spacing="20" HBox.hgrow="ALWAYS" prefWidth="400">
+                                <VBox spacing="8">
+                                    <Label style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #013220;" text="Nouveau mot de passe" />
+                                    <PasswordField fx:id="newPasswordField" promptText="••••••••" style="-fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12; -fx-font-size: 14;" />
+                                </VBox>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                    
+                    <!-- Action Buttons -->
+                    <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20 0;">
+                        <Button onAction="#handleCancel" style="-fx-background-color: transparent; -fx-border-color: #013220; -fx-border-radius: 8; -fx-text-fill: #013220; -fx-font-size: 16; -fx-font-weight: bold; -fx-padding: 12 30; -fx-cursor: hand;" text="Annuler" />
+                        <Button onAction="#handleSaveProfile" style="-fx-background-color: #013220; -fx-text-fill: white; -fx-font-size: 16; -fx-font-weight: bold; -fx-padding: 12 40; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(1,50,32,0.3), 10, 0, 0, 3);" text="Enregistrer les modifications" />
+                    </HBox>
+                    
+                </VBox>
+
+                <!-- FOOTER -->
+                <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #002211; -fx-padding: 50;">
+                    <HBox alignment="CENTER" spacing="10">
+                        <Label style="-fx-font-size: 24; -fx-font-weight: 900; -fx-text-fill: white;" text="Go" />
+                        <Label style="-fx-font-size: 24; -fx-font-weight: 300; -fx-text-fill: #50C878;" text="Vibe" />
+                    </HBox>
+                    <Label style="-fx-text-fill: rgba(255,255,255,0.6);" text="© 2024 GoVibe - Tous droits réservés" />
+                </VBox>
+
+            </VBox>
+        </content>
+    </ScrollPane>
+
+    <!-- FLOATING NAVIGATION BAR (Fixed at Top) -->
+    <HBox alignment="CENTER_LEFT" maxHeight="80.0" minHeight="80.0" spacing="20.0" style="-fx-padding: 0 50; -fx-background-color: transparent;" StackPane.alignment="TOP_CENTER">
+        
+        <!-- Logo -->
+        <HBox alignment="CENTER_LEFT" spacing="5">
+             <Circle fill="#50C878" radius="20.0" style="-fx-effect: dropshadow(gaussian, rgba(80,200,120,0.4), 10, 0, 0, 2);" />
+             <Label style="-fx-font-size: 24; -fx-font-weight: 900; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 1);" text="Go" />
+             <Label style="-fx-font-size: 24; -fx-font-weight: 300; -fx-text-fill: #50C878; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 0, 1);" text="Vibe" />
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- Navigation Links -->
+        <HBox alignment="CENTER" spacing="30.0">
+            <Button onAction="#handleHome" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: 500; -fx-font-size: 14; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 1);" text="Accueil" />
+            <Button onAction="#handleActivities" style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.9); -fx-font-weight: 500; -fx-font-size: 14; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 1);" text="Activités" />
+            <Button onAction="#handleLocations" style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.9); -fx-font-weight: 500; -fx-font-size: 14; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 1);" text="Voitures" />
+            <Button onAction="#handleFlights" style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.9); -fx-font-weight: 500; -fx-font-size: 14; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 1);" text="Vols" />
+            <Button onAction="#handleChambres" style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.9); -fx-font-weight: 500; -fx-font-size: 14; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 1);" text="Hôtels" />
+            <Button onAction="#handleForums" style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.9); -fx-font-weight: 500; -fx-font-size: 14; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 1);" text="Forums" />
+            <Button onAction="#handleReclamation" style="-fx-background-color: transparent; -fx-text-fill: rgba(255,255,255,0.9); -fx-font-weight: 500; -fx-font-size: 14; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 1);" text="Réclamation" />
+        </HBox>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- User Profile -->
+        <HBox alignment="CENTER" spacing="15">
+            <MenuButton fx:id="profileMenu" style="-fx-background-color: transparent; -fx-cursor: hand;">
+                <graphic>
+                    <StackPane>
+                         <Circle fill="white" radius="20.0" />
+                         <Label fx:id="profileInitialsSmall" style="-fx-font-weight: bold; -fx-text-fill: #013220;" text="U" />
+                    </StackPane>
+                </graphic>
+                <items>
+                    <MenuItem onAction="#handleProfile" text="Mon Profil" />
+                    <MenuItem onAction="#handleMyReservations" text="Mes Réservations" />
+                    <MenuItem onAction="#handleMyLocations" text="Mes Locations" />
+                    <MenuItem onAction="#handleMyFlights" text="Mes Vols" />
+                    <MenuItem onAction="#handleSettings" text="Paramètres" />
+                    <MenuItem onAction="#handleHelp" text="Aide" />
+                    <MenuItem onAction="#handleLogout" style="-fx-text-fill: red;" text="Déconnexion" />
+                </items>
+            </MenuButton>
+        </HBox>
+    </HBox>
+
+</StackPane>

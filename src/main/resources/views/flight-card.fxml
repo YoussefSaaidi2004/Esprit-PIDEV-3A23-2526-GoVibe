@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.SVGPath?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="org.example.controllers.FlightCardController"
+      styleClass="interactive-card, glass-pane-premium" spacing="15" prefWidth="340" 
+      style="-fx-padding: 22; -fx-background-color: rgba(255,255,255,0.85); -fx-background-radius: 20; -fx-border-radius: 20;">
+    
+    <!-- Header with Status Badge -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <StackPane style="-fx-background-color: rgba(80, 200, 120, 0.1); -fx-background-radius: 12; -fx-padding: 8;">
+            <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" 
+                     styleClass="svg-icon-emerald" scaleX="1.1" scaleY="1.1"/>
+        </StackPane>
+        <VBox HBox.hgrow="ALWAYS">
+            <Text fx:id="routeText" style="-fx-font-weight: 900; -fx-font-size: 17; -fx-fill: #013220;" text="TUNIS → DUBAI"/>
+            <Text fx:id="airlineText" styleClass="subtitle" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-fill: #5a7d6e;" text="GoVibe Air"/>
+        </VBox>
+        <HBox fx:id="statusBadge" alignment="CENTER" style="-fx-padding: 6 12; -fx-background-radius: 20; -fx-background-color: #013220;">
+            <Text fx:id="statusText" style="-fx-font-size: 9; -fx-font-weight: 900; -fx-fill: white;" text="ON TIME"/>
+        </HBox>
+    </HBox>
+
+    <Separator style="-fx-opacity: 0.15;"/>
+
+    <!-- Flight Details -->
+    <VBox spacing="12">
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <SVGPath content="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" 
+                     styleClass="svg-icon-muted" scaleX="0.9" scaleY="0.9"/>
+            <Text fx:id="timeText" styleClass="subtitle" style="-fx-font-weight: bold;" text="10:30 - 20:30"/>
+        </HBox>
+        
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <SVGPath content="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" 
+                     styleClass="svg-icon-muted" scaleX="0.9" scaleY="0.9"/>
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Text fx:id="seatsText" styleClass="subtitle" style="-fx-font-size: 12; -fx-font-weight: bold;" text="45/180 seats"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Text fx:id="occupancyText" style="-fx-font-size: 11; -fx-font-weight: 900; -fx-fill: #50C878;" text="75%"/>
+                </HBox>
+                <ProgressBar fx:id="occupancyBar" prefWidth="240" prefHeight="6" progress="0.75" 
+                             style="-fx-accent: #50C878; -fx-control-inner-background: rgba(80,200,120,0.1); -fx-background-radius: 10;"/>
+            </VBox>
+        </HBox>
+        
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <SVGPath content="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" 
+                     style="-fx-fill: #FFD700;" scaleX="0.9" scaleY="0.9"/>
+            <Text fx:id="classText" styleClass="subtitle" style="-fx-font-weight: 900; -fx-text-fill: #013220;" text="Economy"/>
+        </HBox>
+    </VBox>
+
+    <Separator style="-fx-opacity: 0.15;"/>
+
+    <!-- Revenue/Price Section -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Text text="PRIX DU BILLET" style="-fx-font-size: 9; -fx-font-weight: 900; -fx-fill: #8D99AE; -fx-letter-spacing: 0.5;"/>
+            <HBox spacing="6" alignment="BASELINE_LEFT">
+                <Text fx:id="priceText" style="-fx-font-weight: 900; -fx-font-size: 22; -fx-fill: #50C878;" text="1,000"/>
+                <Text text="DT" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-fill: #013220;"/>
+            </HBox>
+        </VBox>
+        
+        <VBox fx:id="revenueBox" spacing="4" alignment="TOP_RIGHT" visible="false" managed="false" 
+              style="-fx-background-color: rgba(1, 50, 32, 0.05); -fx-padding: 8; -fx-background-radius: 10;">
+            <Text text="REVENUE EST." style="-fx-font-size: 8; -fx-font-weight: 900; -fx-fill: #5a7d6e;"/>
+            <Text fx:id="revenueText" style="-fx-font-weight: 900; -fx-font-size: 14; -fx-fill: #013220;" text="135,000 DT"/>
+        </VBox>
+    </HBox>
+
+    <!-- Action Buttons -->
+    <HBox fx:id="actionBox" alignment="CENTER" spacing="12" style="-fx-padding: 5 0 0 0;">
+        <!-- Buttons will be injected here dynamically -->
+    </HBox>
+</VBox>

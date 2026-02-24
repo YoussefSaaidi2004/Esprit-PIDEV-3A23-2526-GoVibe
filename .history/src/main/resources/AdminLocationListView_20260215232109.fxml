@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<BorderPane xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="root"
+            fx:controller="org.example.controllers.AdminLocationListController"
+            stylesheets="@voiture.css"
+            styleClass="app-root">
+
+    <left>
+        <fx:include source="org/example/AdminSidebar.fxml"/>
+    </left>
+
+    <center>
+        <VBox spacing="18.0">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <children>
+                <Label text="Admin - Gestion des Locations" styleClass="page-title"/>
+                <HBox spacing="12.0" styleClass="toolbar">
+                    <children>
+                        <TextField fx:id="searchField" promptText="Rechercher..."
+                                   styleClass="input-field search-field"/>
+                        <ComboBox fx:id="voitureFilter" promptText="Voiture"
+                                  styleClass="input-field filter-combo"/>
+                        <ComboBox fx:id="sortChoice" promptText="Tri"
+                                  styleClass="input-field filter-combo"/>
+                        <ComboBox fx:id="pageSizeBox" promptText="Page"
+                                  styleClass="input-field page-size"/>
+                        <Button fx:id="exportPdfButton" text="Exporter PDF" onAction="#handleExportPdf"
+                                styleClass="btn btn-primary"/>
+                        <Button fx:id="exportExcelButton" text="Exporter Excel" onAction="#handleExportExcel"
+                                styleClass="btn btn-primary"/>
+                        <Button fx:id="themeToggleButton" text="Mode sombre" onAction="#handleToggleTheme"
+                                styleClass="btn"/>
+                    </children>
+                </HBox>
+                <HBox spacing="12.0" styleClass="stats-row">
+                    <children>
+                        <VBox styleClass="stat-card">
+                            <children>
+                                <Label text="Total" styleClass="stat-label"/>
+                                <Label fx:id="totalCountLabel" text="0" styleClass="stat-value"/>
+                            </children>
+                        </VBox>
+                        <VBox styleClass="stat-card">
+                            <children>
+                                <Label text="Confirmees" styleClass="stat-label"/>
+                                <Label fx:id="confirmedCountLabel" text="0" styleClass="stat-value"/>
+                            </children>
+                        </VBox>
+                        <VBox styleClass="stat-card">
+                            <children>
+                                <Label text="Montant total" styleClass="stat-label"/>
+                                <Label fx:id="totalRevenueLabel" text="0" styleClass="stat-value"/>
+                            </children>
+                        </VBox>
+                        <VBox styleClass="stat-card">
+                            <children>
+                                <Label text="Top voiture" styleClass="stat-label"/>
+                                <Label fx:id="topVoitureLabel" text="-" styleClass="stat-value"/>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+                <VBox spacing="12.0">
+                    <children>
+                        <Label text="Liste des locations" styleClass="section-title"/>
+                        <ListView fx:id="locationList" prefHeight="560.0" styleClass="voiture-list"/>
+                        <HBox spacing="10.0" styleClass="pagination-bar">
+                            <children>
+                                <Button fx:id="prevPageButton" text="Precedent" onAction="#handlePrevPage"
+                                        styleClass="btn btn-primary"/>
+                                <Label fx:id="pageInfoLabel" text="Page 0 / 0" styleClass="page-info"/>
+                                <Button fx:id="nextPageButton" text="Suivant" onAction="#handleNextPage"
+                                        styleClass="btn btn-primary"/>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </center>
+
+</BorderPane>

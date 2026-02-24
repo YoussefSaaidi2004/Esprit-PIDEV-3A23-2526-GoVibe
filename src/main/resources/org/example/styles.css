@@ -1,0 +1,200 @@
+/* ============================================================
+   GoVibe — Premium Glassmorphism Auth Theme
+   ============================================================ */
+
+/* ---------- ROOT & GLOBALS ---------- */
+.root {
+    -fx-font-family: "Segoe UI", "Inter", system;
+}
+
+* {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* ---------- BACKGROUND IMAGE LAYER ---------- */
+.auth-bg {
+    -fx-background-image: url("images/go_vibe.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}
+
+/* Semi-transparent dark overlay on top of the background */
+.auth-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- TEXT STYLES ---------- */
+.title-text {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-fill: white;
+}
+
+.subtitle-text {
+    -fx-font-size: 15px;
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+    -fx-fill: rgba(255, 255, 255, 0.85);
+}
+
+.label-text {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(255, 255, 255, 0.95);
+}
+
+/* ---------- GLASSMORPHISM AUTH CARD ---------- */
+.auth-container {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 40, 0, 0, 12);
+    -fx-padding: 40 45;
+}
+
+/* ---------- FORM FIELDS — Frosted Look ---------- */
+.text-field,
+.password-field,
+.combo-box {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.50);
+    -fx-padding: 13 16;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.30);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused,
+.password-field:focused,
+.combo-box:focused {
+    -fx-border-color: rgba(80, 200, 120, 0.85);
+    -fx-background-color: rgba(255, 255, 255, 0.22);
+    -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.35), 12, 0, 0, 0);
+}
+
+/* ---------- PRIMARY BUTTON — Emerald Gradient ---------- */
+.btn-primary {
+    -fx-background-color: linear-gradient(to right, #50C878, #2ecc71);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 14 28;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(46, 204, 113, 0.50), 16, 0, 0, 5);
+}
+
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to right, #3dbd6b, #27ae60);
+    -fx-effect: dropshadow(gaussian, rgba(46, 204, 113, 0.70), 20, 0, 0, 6);
+}
+
+.btn-primary:pressed {
+    -fx-background-color: linear-gradient(to right, #27ae60, #1e8c4e);
+    -fx-effect: dropshadow(gaussian, rgba(46, 204, 113, 0.30), 8, 0, 0, 2);
+}
+
+/* ---------- SECONDARY BUTTON ---------- */
+.btn-secondary {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 12 20;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.35);
+    -fx-border-radius: 12;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ---------- LINKS ---------- */
+.link-text {
+    -fx-text-fill: rgba(255, 255, 255, 0.90);
+    -fx-underline: false;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.link-text:hover {
+    -fx-text-fill: #50C878;
+    -fx-underline: true;
+}
+
+.link-text:visited {
+    -fx-text-fill: rgba(255, 255, 255, 0.90);
+}
+
+/* ---------- RADIO BUTTONS ---------- */
+.radio-button {
+    -fx-text-fill: rgba(255, 255, 255, 0.90);
+    -fx-font-size: 14px;
+}
+
+.radio-button .radio {
+    -fx-background-color: rgba(255, 255, 255, 0.20);
+    -fx-border-color: rgba(255, 255, 255, 0.50);
+    -fx-border-radius: 10px;
+}
+
+.radio-button:selected .radio .dot {
+    -fx-background-color: #50C878;
+    -fx-background-insets: 0;
+}
+
+/* ---------- MAIN APP HEADER ---------- */
+.header-bar {
+    -fx-background-color: #013220;
+}
+
+.header-title {
+    -fx-text-fill: #D1F2EB;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- ALERTS / NOTIFICATIONS ---------- */
+.error-label {
+    -fx-text-fill: #ff6b6b;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.success-label {
+    -fx-text-fill: #50C878;
+    -fx-font-weight: bold;
+}
+
+/* ---------- LOADING / SPLASH SCREEN ---------- */
+.splash-bg {
+    -fx-background-color: linear-gradient(to bottom right, #013220, #084E36, #0d6b48);
+}
+
+.splash-text {
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-fill: white;
+}
+
+.splash-subtitle {
+    -fx-font-size: 16px;
+    -fx-fill: rgba(255, 255, 255, 0.70);
+}
+
+/* ---------- SCROLL PANE TRANSPARENT ---------- */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}

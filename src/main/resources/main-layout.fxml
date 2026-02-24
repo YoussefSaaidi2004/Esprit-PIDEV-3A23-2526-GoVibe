@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.MainLayoutController"
+            fx:id="mainContent"
+            prefWidth="1400" prefHeight="800"
+            stylesheets="@styles.css"
+            style="-fx-background-color: #D1F2EB;">
+
+    <!-- ==================== LEFT SIDEBAR (Menu Admin Commun) ==================== -->
+    <left>
+        <fx:include source="org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
+    </left>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <center>
+        <!-- Content will be dynamically loaded here -->
+    </center>
+
+</BorderPane>

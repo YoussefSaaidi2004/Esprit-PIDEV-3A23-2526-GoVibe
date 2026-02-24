@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.ChambreViewController"
+      spacing="0"
+      style="-fx-background-color: #F5F3E7;">
+
+    <!-- Sub-Navigation: Hotels | Chambres | Réservations -->
+    <HBox alignment="CENTER_LEFT" spacing="10"
+          style="-fx-background-color: #013220; -fx-padding: 12 40;">
+
+        <Button text="🏨 Hôtels" maxWidth="Infinity"
+                onAction="#goToHotels"
+                style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-padding: 10 20; -fx-background-radius: 8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand;"/>
+
+        <Button text="🛏️ Chambres" maxWidth="Infinity"
+                onAction="#goToChambres"
+                style="-fx-background-color: rgba(80,200,120,0.25); -fx-text-fill: #D1F2EB; -fx-padding: 10 20; -fx-background-radius: 8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand; -fx-border-color: #50C878; -fx-border-width: 1; -fx-border-radius: 8;"/>
+
+        <Button text="📅 Réservations Client" maxWidth="Infinity"
+                onAction="#goToReservations"
+                style="-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-padding: 10 20; -fx-background-radius: 8; -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand;"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button text="⬅ Retour Dashboard Admin"
+                onAction="#backToDashboard"
+                style="-fx-background-color: rgba(160,224,201,0.15); -fx-text-fill: #A0E0C9; -fx-padding: 8 16; -fx-background-radius: 6; -fx-font-size: 12px; -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15"
+          style="-fx-background-color: linear-gradient(to right, #F5F3E7, #D1F2EB); -fx-padding: 25 40;">
+
+        <Label text="🛏️ Gestion des Chambres"
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #013220; -fx-font-family: 'Segoe UI';"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <ComboBox fx:id="filterHotelCombo" promptText="Filtrer par hôtel"
+                  onAction="#filterByHotel"
+                  prefWidth="200"
+                  style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 8 15; -fx-font-size: 12px;"/>
+
+        <TextField fx:id="searchField" promptText="🔍 Rechercher..."
+                   onKeyReleased="#searchChambres"
+                   prefWidth="250"
+                   style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 10 20; -fx-font-size: 13px; -fx-border-color: #A0E0C9; -fx-border-radius: 20; -fx-border-width: 1;"/>
+
+        <Button text="➕ Ajouter Chambre"
+                onAction="#addChambre"
+                style="-fx-background-color: linear-gradient(to bottom, #50C878, #0B6E4F); -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 12 24; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(11,110,79,0.4), 10, 0, 0, 3);"/>
+    </HBox>
+
+    <!-- Cards Container -->
+    <ScrollPane fitToWidth="true" style="-fx-background: #F5F3E7; -fx-background-color: #F5F3E7;"
+                VBox.vgrow="ALWAYS">
+        <VBox style="-fx-background-color: #F5F3E7;">
+            <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+
+            <FlowPane fx:id="chambreCardsContainer"
+                      hgap="25" vgap="25"
+                      style="-fx-background-color: transparent;"/>
+        </VBox>
+    </ScrollPane>
+
+</VBox>

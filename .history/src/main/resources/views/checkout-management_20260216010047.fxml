@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controllers.CheckoutManagementController"
+            stylesheets="@../styles/unified-styles.css"
+            styleClass="main-bg">
+    
+    <left>
+        <fx:include source="../org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
+    </left>
+
+    <center>
+        <VBox spacing="30" style="-fx-padding: 40;">
+            <HBox alignment="CENTER_LEFT">
+                <VBox spacing="5">
+                    <Text text="Reservations Tracking" styleClass="title"/>
+                    <Text text="Monitor and moderate all passenger bookings" styleClass="subtitle"/>
+                </VBox>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <FlowPane fx:id="checkoutGrid" hgap="25" vgap="25" alignment="CENTER" style="-fx-padding: 20;"/>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>

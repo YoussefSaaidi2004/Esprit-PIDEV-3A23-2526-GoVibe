@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ModifierForumController">
+
+    <left>
+        <VBox styleClass="sidebar">
+            <!-- Logo Area -->
+            <VBox styleClass="sidebar-logo-box">
+                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
+                    <image><Image url="@images/logo.png" /></image>
+                </ImageView>
+                <Label style="-fx-text-fill: #D1F2EB; -fx-font-size: 20px; -fx-font-weight: bold;" text="GoVibe" />
+                <Label fx:id="roleLabel" style="-fx-text-fill: #A0E0C9; -fx-font-size: 11px;" text="Espace client" />
+            </VBox>
+
+            <!-- Navigation Area -->
+            <VBox styleClass="sidebar-nav-container">
+                <Button onAction="#handleGoToPosts" styleClass="nav-button" text="🏠  Accueil" />
+                <Button onAction="#handleGoToForums" styleClass="nav-button, nav-button-active" text="💬  Forums" />
+                <Button styleClass="nav-button" text="📅  Événements" />
+                <Button styleClass="nav-button" text="ℹ️  À propos" />
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <!-- Footer Area -->
+            <VBox spacing="8" alignment="CENTER">
+                <Separator styleClass="sidebar-separator" />
+                <Button onAction="#handleLogout" styleClass="logout-sidebar-btn" text="🚪  Déconnexion" />
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="0" style="-fx-background-color: -fx-light-green;">
+
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                <content>
+                    <VBox alignment="TOP_CENTER" spacing="30">
+                        <padding><Insets bottom="50" left="60" right="60" top="50" /></padding>
+
+                        <VBox maxWidth="750" spacing="25" styleClass="content-card">
+                            <padding><Insets bottom="40" left="40" right="40" top="40" /></padding>
+
+                            <VBox spacing="10">
+                                <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold;" text="NOM DU FORUM" />
+                                <TextField fx:id="nameField" promptText="Ex: Passion Java, Sorties Tunis..." styleClass="text-field" />
+                            </VBox>
+
+                            <VBox spacing="10">
+                                <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold;" text="DESCRIPTION" />
+                                <TextArea fx:id="descriptionArea" prefHeight="100" promptText="Décrivez le but de ce forum..." styleClass="text-area" wrapText="true" />
+                            </VBox>
+
+                            <HBox spacing="30">
+                                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold;" text="VISIBILITÉ" />
+                                    <ToggleButton fx:id="privateToggle" styleClass="toggle-button-modern" text="🔒 Rendre Privé" />
+                                </VBox>
+                                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold;" text="IMAGE DE COUVERTURE" />
+                                    <HBox spacing="10">
+                                        <TextField fx:id="imagePathField" editable="false" promptText="Aucune image..." styleClass="text-field" HBox.hgrow="ALWAYS" />
+                                        <Button onAction="#handleChooseImage" styleClass="media-upload-btn" text="Choisir..." />
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+
+                            <Separator opacity="0.3" />
+
+                            <HBox alignment="CENTER_RIGHT" spacing="20">
+                                <Button onAction="#handleCancel" styleClass="button-secondary" text="Annuler" />
+                                <Button onAction="#handleUpdate" styleClass="button-primary" text="Mettre à jour" />
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </content>
+            </ScrollPane>
+        </VBox>
+    </center>
+
+</BorderPane>

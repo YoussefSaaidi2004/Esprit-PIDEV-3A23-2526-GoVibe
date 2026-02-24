@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>fxml
+<?import javafx.geometry.*?>
+<?import javafx.scene.web.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controllers.MesMessagesController"
+            style="-fx-background-color: #F5F3E7;" prefWidth="1200" prefHeight="800">
+
+    <!-- TOP: Header -->
+    <top>
+        <HBox style="-fx-background-color: linear-gradient(to right, #013220, #0B4F35); -fx-padding: 20;" spacing="15" alignment="CENTER_LEFT">
+            <Button fx:id="btnRetour" onAction="#retourProfil" 
+                    style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 8 16; -fx-background-radius: 20; -fx-cursor: hand;"
+                    text="← Retour"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="💬 Mes Conversations" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnNouvelleConv" onAction="#nouvelleConversation"
+                    style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-weight: bold;"
+                    text="➕ Nouveau"/>
+        </HBox>
+    </top>
+
+    <!-- CENTER: Split pane avec liste des conversations et chat -->
+    <center>
+        <SplitPane dividerPositions="0.35" style="-fx-background-color: #F5F3E7;">
+            
+            <!-- LEFT: Liste des conversations (style WhatsApp sidebar) -->
+            <ScrollPane fitToWidth="true" style="-fx-background-color: #F5F3E7; -fx-padding: 0;">
+                <VBox fx:id="conversationsList" spacing="2" style="-fx-background-color: #F5F3E7; -fx-padding: 5;">
+                    <!-- Les conversations seront ajoutées dynamiquement -->
+                    <Label text="Chargement des conversations..." style="-fx-padding: 20; -fx-text-fill: #666;"/>
+                </VBox>
+            </ScrollPane>
+            
+            <!-- RIGHT: Zone de chat -->
+            <VBox style="-fx-background-color: white;">
+                <!-- Header conversation active -->
+                <HBox fx:id="chatHeader" style="-fx-background-color: #013220; -fx-padding: 15;" spacing="10" alignment="CENTER_LEFT">
+                    <Circle fx:id="avatarCircle" radius="20" style="-fx-fill: #50C878;"/>
+                    <VBox spacing="3">
+                        <Label fx:id="lblClientName" text="Admin GoVibe" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblStatus" text="En ligne" style="-fx-text-fill: #50C878; -fx-font-size: 12px;"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnFermerConv" onAction="#fermerConversation"
+                            style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 12px; -fx-cursor: hand;"
+                            text="✕ Fermer"/>
+                </HBox>
+                
+                <!-- Messages (ScrollPane avec cartes) -->
+                <ScrollPane fx:id="messagesScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS" 
+                           style="-fx-background-color: #e5ddd5; -fx-padding: 15;">
+                    <VBox fx:id="messagesContainer" spacing="10" style="-fx-background-color: #e5ddd5;">
+                        <Label text="Sélectionnez une conversation pour commencer" 
+                               style="-fx-text-fill: #666; -fx-font-size: 14px; -fx-alignment: CENTER;"/>
+                    </VBox>
+                </ScrollPane>
+                
+                <!-- Input zone -->
+                <HBox style="-fx-background-color: #f0f0f0; -fx-padding: 15;" spacing="10" alignment="CENTER">
+                    <TextField fx:id="txtMessageInput" HBox.hgrow="ALWAYS" 
+                              promptText="Écrivez votre message..."
+                              style="-fx-background-color: white; -fx-padding: 12 15; -fx-background-radius: 25; -fx-font-size: 14px;"/>
+                    <Button fx:id="btnEnvoyer" onAction="#envoyerMessage"
+                           style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-padding: 12 25; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-weight: bold;"
+                           text="📤"/>
+                </HBox>
+            </VBox>
+        </SplitPane>
+    </center>
+</BorderPane>

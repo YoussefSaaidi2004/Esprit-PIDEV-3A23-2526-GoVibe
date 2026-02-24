@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.SVGPath?>
+
+<VBox alignment="CENTER" spacing="30" styleClass="glass-panel" style="-fx-padding: 40; -fx-background-radius: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 40, 0, 0, 20);" stylesheets="@styles/unified-styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ActiviteAjoutController">
+    <children>
+        <!-- Modal Header -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <StackPane styleClass="icon-circle-emerald" prefWidth="50" prefHeight="50" minWidth="50" minHeight="50">
+                <Label text="✨" style="-fx-font-size: 24;"/>
+            </StackPane>
+            <VBox spacing="2">
+                <Label text="Nouvelle Activité" style="-fx-font-size: 24; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                <Label text="Créez une expérience mémorable pour vos clients" style="-fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.6);"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button onAction="#handleRetour" styleClass="icon-btn-ghost" text="✕" style="-fx-font-size: 18;"/>
+        </HBox>
+
+        <!-- Form Grid -->
+        <GridPane hgap="25" vgap="25" styleClass="premium-info-grid" style="-fx-padding: 30; -fx-background-radius: 20;">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="280" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="280" />
+            </columnConstraints>
+            
+            <children>
+                <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                    <Label text="NOM DE L'ACTIVITÉ" styleClass="tile-label-tiny" />
+                    <TextField fx:id="tfName" promptText="Ex: Randonnée en montagne" styleClass="transparent-field" style="-fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 0 0 1 0; -fx-padding: 8 0;"/>
+                </VBox>
+
+                <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                    <Label text="TYPE" styleClass="tile-label-tiny" />
+                    <TextField fx:id="tfType" promptText="Ex: Aventure, Culture..." styleClass="transparent-field" style="-fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 0 0 1 0; -fx-padding: 8 0;"/>
+                </VBox>
+
+                <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                    <Label text="DESCRIPTION" styleClass="tile-label-tiny" />
+                    <TextField fx:id="tfDescription" promptText="Une brève description captivante..." styleClass="transparent-field" style="-fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 0 0 1 0; -fx-padding: 8 0;"/>
+                </VBox>
+
+                <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                    <Label text="LOCALISATION" styleClass="tile-label-tiny" />
+                    <TextField fx:id="tfLocalisation" promptText="Ville ou région" styleClass="transparent-field" style="-fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 0 0 1 0; -fx-padding: 8 0;"/>
+                </VBox>
+
+                <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                    <Label text="PRIX (TND/PERSONNE)" styleClass="tile-label-tiny" />
+                    <TextField fx:id="tfPrix" promptText="0.00" styleClass="transparent-field" style="-fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 0 0 1 0; -fx-padding: 8 0; -fx-text-fill: #50C878; -fx-font-weight: 900; -fx-font-size: 18;"/>
+                </VBox>
+            </children>
+        </GridPane>
+
+        <!-- Actions -->
+        <HBox alignment="CENTER_RIGHT" spacing="15">
+            <Label fx:id="lblMsg" style="-fx-text-fill: #50C878; -fx-font-weight: bold;" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleRetour" text="Annuler" styleClass="btn-outline-white-mini" prefWidth="120" prefHeight="45"/>
+            <Button onAction="#ajouter" text="Publier l'Activité" styleClass="btn-primary-emerald" prefWidth="240" prefHeight="45"/>
+        </HBox>
+    </children>
+</VBox>

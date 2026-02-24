@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<!-- Splash / Loading Screen -->
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.example.controllers.SplashController"
+           stylesheets="@styles.css"
+           styleClass="splash-bg">
+
+    <VBox fx:id="splashContent" alignment="CENTER" spacing="25" opacity="0.0">
+
+        <!-- Animated GoVibe logo -->
+        <ImageView fx:id="logoImage" fitHeight="140.0" fitWidth="140.0"
+                   pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@images/logo.png"/>
+            </image>
+        </ImageView>
+
+        <Text fx:id="splashTitle" text="GoVibe" styleClass="splash-text"/>
+
+        <Label text="Preparing your adventure..." styleClass="splash-subtitle"/>
+
+        <!-- Spinning progress indicator -->
+        <ProgressIndicator fx:id="progressIndicator"
+                           maxWidth="50" maxHeight="50"
+                           style="-fx-progress-color: #50C878;"/>
+    </VBox>
+
+</StackPane>

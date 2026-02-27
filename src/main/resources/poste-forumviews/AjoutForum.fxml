@@ -16,22 +16,12 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.AjoutForumController">
+<VBox alignment="CENTER" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.AjoutForumController">
+    <!-- Pop-up isolated card for Forum Creation -->
+    <VBox maxWidth="750" spacing="25" styleClass="glass-panel-heavy">
+        <padding><Insets bottom="40" left="40" right="40" top="40" /></padding>
 
-    <!-- Removed sidebar for professional look -->
-
-    <center>
-        <VBox spacing="0" styleClass="forum-card">
-
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
-                <content>
-                    <VBox alignment="TOP_CENTER" spacing="30">
-                        <padding><Insets bottom="50" left="60" right="60" top="50" /></padding>
-
-                        <VBox maxWidth="750" spacing="25" styleClass="content-card">
-                            <padding><Insets bottom="40" left="40" right="40" top="40" /></padding>
-
-                            <HBox spacing="18" alignment="CENTER_LEFT">
+        <HBox spacing="18" alignment="CENTER_LEFT">
                                 <!-- Avatar/Profile -->
                                 <VBox alignment="CENTER" style="-fx-background-color: #fff; -fx-background-radius: 50; -fx-min-width: 60; -fx-min-height: 60; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.12), 8, 0.2, 0, 2);">
                                     <ImageView fitHeight="48" fitWidth="48" pickOnBounds="true" preserveRatio="true">
@@ -69,12 +59,6 @@
                                         <Button onAction="#handleSave" styleClass="button-primary" text="Créer le Forum" />
                                     </HBox>
                                 </VBox>
-                            </HBox>
-                        </VBox>
-                    </VBox>
-                </content>
-            </ScrollPane>
-        </VBox>
-    </center>
-
-</BorderPane>
+        </HBox>
+    </VBox>
+</VBox>

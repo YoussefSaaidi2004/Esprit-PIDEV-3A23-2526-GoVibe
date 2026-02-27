@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="1078.0" spacing="0" styleClass="content-card" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ForumItemController">
+<VBox prefWidth="800.0" spacing="0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ForumItemController">
     <padding><Insets bottom="20" left="0" right="0" top="0" /></padding>
-    <HBox alignment="CENTER_LEFT" spacing="18" styleClass="forum-card">
+    <HBox alignment="CENTER_LEFT" spacing="18" styleClass="forum-card" style="-fx-background-color: rgba(255,255,255,0.85); -fx-background-radius: 18px; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.15), 20, 0, 0, 5);">
         <padding><Insets bottom="15" left="25" right="25" top="20" /></padding>
         <!-- Avatar/Profile -->
         <VBox alignment="CENTER" styleClass="avatar">
@@ -39,18 +39,6 @@
                 <Label fx:id="creatorLabel" style="-fx-text-fill: #084E36; -fx-font-size: 12px; -fx-font-weight: bold;" text="Par Admin" />
                 <Label style="-fx-text-fill: #A0E0C9;" text="•" />
                 <Label fx:id="dateLabel" style="-fx-text-fill: #A0E0C9; -fx-font-size: 12px;" text="Créé le 01/01/2024" />
-            </HBox>
-            <!-- Comment preview -->
-            <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 8 0 0 0;">
-                <Label style="-fx-text-fill: #888; -fx-font-size: 13px;" text="💬 Dernier commentaire: " />
-                <Label fx:id="lastCommentLabel" style="-fx-text-fill: #013220; -fx-font-size: 13px;" text="Aucun commentaire" />
-            </HBox>
-            <!-- Reactions -->
-            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 8 0 0 0;">
-                <Button styleClass="reaction-btn" text="👍" />
-                <Button styleClass="reaction-btn" text="❤️" />
-                <Button styleClass="reaction-btn" text="😂" />
-                <Button styleClass="reaction-btn" text="💡" />
             </HBox>
         </VBox>
         <!-- Actions -->

@@ -16,7 +16,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
+import javafx.animation.ParallelTransition;
+import javafx.scene.effect.BoxBlur;
 import org.example.entities.Forum;
 import org.example.entities.Membre;
 import org.example.entities.Poste;
@@ -62,6 +68,16 @@ public class DetailsForumController {
     private TextField memberEmailField;
     @FXML
     private Button leaveButton;
+
+    // Overlay Modal properties
+    @FXML
+    private StackPane formOverlay;
+    @FXML
+    private VBox formContainer;
+    
+    // To identify the root StackPane we might have to wrap DetailsForum or rely on parent
+    @FXML
+    private StackPane rootStackPane;
 
     public void initData(Forum forum) {
         syncSidebarRole();
@@ -140,7 +156,58 @@ public class DetailsForumController {
     @FXML
     private Label membersCountLabel;
 
-    private void loadForumPosts() {
+    // ==================== ANIMATION POPUP METHODS ====================
+
+    public void showFormOverlay(Parent formRoot) {
+        formContainer.getChildren().clear();
+        formContainer.getChildren().add(formRoot);
+        
+        formOverlay.setVisible(true);
+        formOverlay.setManaged(true);
+        
+        // Blur background (assumes rootStackPane exists and main content is at index 0 or similar)
+        BoxBlur blur = new BoxBlur(10, 10, 3);
+        if (rootStackPane != null && rootStackPane.getChildren().size() > 1) {
+            rootStackPane.getChildren().get(rootStackPane.getChildren().size() - 2).setEffect(blur);
+        }
+
+        // Fade In
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), formOverlay);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        // Slide Up slightly
+        TranslateTransition slideUp = new TranslateTransition(Duration.millis(300), formContainer);
+        slideUp.setFromY(50);
+        slideUp.setToY(0);
+
+        ParallelTransition pt = new ParallelTransition(fadeIn, slideUp);
+        pt.play();
+    }
+
+    public void hideFormOverlay() {
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), formOverlay);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        
+        TranslateTransition slideDown = new TranslateTransition(Duration.millis(250), formContainer);
+        slideDown.setFromY(0);
+        slideDown.setToY(50);
+
+        ParallelTransition pt = new ParallelTransition(fadeOut, slideDown);
+        pt.setOnFinished(e -> {
+            formOverlay.setVisible(false);
+            formOverlay.setManaged(false);
+            formContainer.getChildren().clear();
+            if (rootStackPane != null && rootStackPane.getChildren().size() > 1) {
+                rootStackPane.getChildren().get(rootStackPane.getChildren().size() - 2).setEffect(null);
+            }
+            loadForumPosts(); // reload in case we added/modified something
+        });
+        pt.play();
+    }
+
+    public void loadForumPosts() {
         postsContainer.getChildren().clear();
         try {
             List<Poste> list = servicePoste.afficherParForum(currentForum.getForum_id());
@@ -149,6 +216,7 @@ public class DetailsForumController {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/PostItem.fxml"));
                     Node node = loader.load();
                     PostItemController controller = loader.getController();
+                    controller.setParentDetailsController(this);
                     controller.setData(p);
                     postsContainer.getChildren().add(node);
                 } catch (IOException e) {
@@ -242,11 +310,10 @@ public class DetailsForumController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/AjoutPost.fxml"));
             Parent root = loader.load();
             AjoutPostController controller = loader.getController();
+            controller.setOverlayController(this); // Tell the form how to close itself
             controller.setForum(currentForum); // Pass the forum context
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
+            
+            showFormOverlay(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -16,22 +16,12 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ModifierForumController">
+<VBox alignment="CENTER" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ModifierForumController">
+    <!-- Pop-up isolated card for Forum Creation -->
+    <VBox maxWidth="750" spacing="25" styleClass="glass-panel-heavy">
+        <padding><Insets bottom="40" left="40" right="40" top="40" /></padding>
 
-    <!-- Removed sidebar for professional look -->
-
-    <center>
-        <VBox spacing="0" style="-fx-background-color: -fx-light-green;">
-
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
-                <content>
-                    <VBox alignment="TOP_CENTER" spacing="30">
-                        <padding><Insets bottom="50" left="60" right="60" top="50" /></padding>
-
-                        <VBox maxWidth="750" spacing="25" styleClass="content-card">
-                            <padding><Insets bottom="40" left="40" right="40" top="40" /></padding>
-
-                            <VBox spacing="10">
+        <VBox spacing="10">
                                 <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold;" text="NOM DU FORUM" />
                                 <TextField fx:id="nameField" promptText="Ex: Passion Java, Sorties Tunis..." styleClass="text-field" />
                             </VBox>
@@ -61,11 +51,5 @@
                                 <Button onAction="#handleCancel" styleClass="button-secondary" text="Annuler" />
                                 <Button onAction="#handleUpdate" styleClass="button-primary" text="Mettre à jour" />
                             </HBox>
-                        </VBox>
-                    </VBox>
-                </content>
-            </ScrollPane>
-        </VBox>
-    </center>
-
-</BorderPane>
+    </VBox>
+</VBox>

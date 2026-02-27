@@ -298,3 +298,37 @@
 .footer-vibe { -fx-font-size: 26; -fx-font-weight: 300; -fx-text-fill: -fx-primary-green; }
 .footer-copy { -fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.6); }
 .footer-links Hyperlink { -fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13; }
+
+/* Post card styles */
+.post-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 15, 0, 0, 8);
+    -fx-padding: 0;
+}
+
+.avatar-circle {
+    -fx-background-color: -fx-primary-green;
+    -fx-background-radius: 50;
+    -fx-min-width: 45;
+    -fx-min-height: 45;
+    -fx-alignment: center;
+}
+.avatar-initials {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.post-media {
+    -fx-background-color: transparent;
+    -fx-padding: 0 25 0 25;
+    -fx-alignment: center;
+}
+.post-image {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 10, 0, 0, 4);
+}
+.media-placeholder { -fx-background-color: rgba(0,0,0,0.02); }
+.media-placeholder-text { -fx-text-fill: #013220; -fx-font-size: 13px; -fx-opacity: 0.6; }
+
+.post-card .button { -fx-background-color: transparent; }

@@ -26,6 +26,12 @@ public class ModifierPostController {
 
     private final ServicePoste servicePoste = new ServicePoste();
     private Poste currentPost;
+    
+    // Popup integration
+    private DetailsForumController parentController;
+    public void setOverlayController(DetailsForumController parent) {
+        this.parentController = parent;
+    }
 
     @FXML
     private Label roleLabel;
@@ -188,6 +194,10 @@ public class ModifierPostController {
     }
 
     private void navigateBack(ActionEvent event) {
+        if (parentController != null) {
+            parentController.hideFormOverlay();
+            return;
+        }
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

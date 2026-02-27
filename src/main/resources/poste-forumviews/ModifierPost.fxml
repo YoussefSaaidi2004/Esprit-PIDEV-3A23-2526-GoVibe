@@ -16,54 +16,13 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ModifierPostController">
+<VBox alignment="CENTER" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ModifierPostController">
 
-    <left>
-        <VBox styleClass="sidebar">
-            <!-- Logo Area -->
-            <VBox styleClass="sidebar-logo-box">
-                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
-                    <image><Image url="@images/logo.png" /></image>
-                </ImageView>
-                <Label style="-fx-text-fill: #D1F2EB; -fx-font-size: 20px; -fx-font-weight: bold;" text="GoVibe" />
-                <Label fx:id="roleLabel" style="-fx-text-fill: #A0E0C9; -fx-font-size: 11px;" text="Espace client" />
-            </VBox>
+    <!-- Pop-up isolated card -->
+    <VBox maxWidth="750" spacing="30" styleClass="glass-panel-heavy">
+        <padding><Insets bottom="45" left="45" right="45" top="45" /></padding>
 
-            <!-- Navigation Area -->
-            <VBox styleClass="sidebar-nav-container">
-                <Button onAction="#handleGoToPosts" styleClass="nav-button, nav-button-active" text="🏠  Accueil" />
-                <Button onAction="#handleGoToForums" styleClass="nav-button" text="💬  Forums" />
-                <Button styleClass="nav-button" text="📅  Événements" />
-                <Button styleClass="nav-button" text="ℹ️  À propos" />
-            </VBox>
-
-            <Region VBox.vgrow="ALWAYS" />
-
-            <!-- Footer Area -->
-            <VBox spacing="8" alignment="CENTER">
-                <Separator styleClass="sidebar-separator" />
-                <Button onAction="#handleLogout" styleClass="logout-sidebar-btn" text="🚪  Déconnexion" />
-            </VBox>
-        </VBox>
-    </left>
-
-    <center>
-        <VBox spacing="0" style="-fx-background-color: -fx-light-green;">
-
-            <ScrollPane fitToWidth="true" prefHeight="668.0" prefWidth="1292.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
-                <content>
-                    <VBox alignment="TOP_CENTER" spacing="35">
-                        <padding><Insets bottom="50" left="60" right="60" top="50" /></padding>
-
-                        <VBox alignment="CENTER" spacing="8">
-                            <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-size: 30px; -fx-font-weight: bold;" text="Modifier la Publication" />
-                            <Label style="-fx-text-fill: -fx-accent-green; -fx-font-size: 15px; -fx-opacity: 0.6;" text="Ajustez vos informations pour la communauté GoVibe" />
-                        </VBox>
-
-                        <VBox maxWidth="750" spacing="30" styleClass="content-card">
-                            <padding><Insets bottom="45" left="45" right="45" top="45" /></padding>
-
-                            <VBox spacing="12">
+        <VBox spacing="12">
                                 <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold; -fx-font-size: 14px;" text="FORMAT DE PUBLICATION" />
                                 <HBox spacing="15">
                                     <ToggleButton fx:id="statusToggle" selected="true" styleClass="toggle-button-modern" text="💬 Statut Texte" />
@@ -99,10 +58,5 @@
                                 <Button onAction="#handleCancel" styleClass="button-secondary" text="Annuler" />
                                 <Button onAction="#handleUpdate" styleClass="button-primary" text="Enregistrer les modifications" />
                             </HBox>
-                        </VBox>
-                    </VBox>
-                </content>
-            </ScrollPane>
-        </VBox>
-    </center>
-</BorderPane>
+    </VBox>
+</VBox>

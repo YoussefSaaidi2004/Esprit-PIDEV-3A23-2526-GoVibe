@@ -16,23 +16,13 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.AjoutPostController">
+<VBox alignment="CENTER" stylesheets="@../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.AjoutPostController">
 
-    <center>
-        <ScrollPane fitToWidth="true">
-            <content>
-                <VBox alignment="TOP_CENTER" spacing="35" styleClass="page-container">
-                    <padding><Insets bottom="50" left="60" right="60" top="50" /></padding>
+    <!-- Pop-up isolated card -->
+    <VBox maxWidth="750" spacing="30" styleClass="glass-panel-heavy">
+        <padding><Insets bottom="45" left="45" right="45" top="45" /></padding>
 
-                    <VBox alignment="CENTER" spacing="8">
-                        <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-size: 30px; -fx-font-weight: bold;" text="Nouvelle Inspiration ?" />
-                        <Label style="-fx-text-fill: -fx-accent-green; -fx-font-size: 15px; -fx-opacity: 0.6;" text="Partagez votre message ou un média avec GoVibe" />
-                    </VBox>
-
-                    <VBox maxWidth="750" spacing="30" styleClass="content-card">
-                        <padding><Insets bottom="45" left="45" right="45" top="45" /></padding>
-
-                        <VBox spacing="12">
+        <VBox spacing="12">
                             <Label style="-fx-text-fill: -fx-secondary-green; -fx-font-weight: bold; -fx-font-size: 14px;" text="FORMAT DE PUBLICATION" />
                             <HBox spacing="15">
                                 <ToggleButton fx:id="statusToggle" selected="true" styleClass="toggle-button-modern" text="💬 Statut Texte" />
@@ -68,10 +58,5 @@
                             <Button onAction="#handleCancel" styleClass="button-secondary" text="Annuler" />
                             <Button onAction="#handlePublish" styleClass="button-primary" text="Publier maintenant" />
                         </HBox>
-                    </VBox>
-                </VBox>
-            </content>
-        </ScrollPane>
-    </center>
-
-</BorderPane>
+    </VBox>
+</VBox>

@@ -10,59 +10,27 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="750.0" spacing="0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 15, 0, 0, 8); -fx-overflow: hidden;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.PostItemController">
-    <padding><Insets bottom="20" left="0" right="0" top="0" /></padding>
+<VBox prefWidth="800.0" spacing="0" styleClass="post-card-premium" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 15, 0, 0, 4);" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.PostItemController">
     
     <!-- Header Section -->
-    <HBox alignment="CENTER_LEFT" spacing="15">
-        <padding><Insets bottom="15" left="25" right="25" top="20" /></padding>
-        <VBox alignment="CENTER" style="-fx-background-color: #50C878; -fx-background-radius: 50; -fx-min-width: 45; -fx-min-height: 45;">
-            <Label fx:id="initialsLabel" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;" text="YS" />
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets bottom="15" left="20" right="20" top="20" /></padding>
+        <VBox alignment="CENTER" minWidth="45" minHeight="45" style="-fx-background-color: #f0f2f5; -fx-background-radius: 50;">
+            <Label fx:id="initialsLabel" style="-fx-text-fill: #1c1e21; -fx-font-weight: bold; -fx-font-size: 16px;" text="YS" />
         </VBox>
         <VBox spacing="2" HBox.hgrow="ALWAYS">
-            <Label fx:id="userNameLabel" style="-fx-text-fill: #013220; -fx-font-size: 17px; -fx-font-weight: bold;" text="Youssef Saaidi" />
-            <HBox alignment="CENTER_LEFT" spacing="8">
-                <Label fx:id="userHandleLabel" style="-fx-text-fill: #084E36; -fx-font-size: 12px; -fx-opacity: 0.7;" text="YoussefSaaidi2004" />
-                <Label style="-fx-text-fill: #A0E0C9;" text="•" />
-                <Label fx:id="dateLabel" style="-fx-text-fill: #A0E0C9; -fx-font-size: 11px;" text="Il y a 10 minutes" />
+            <Label fx:id="userNameLabel" style="-fx-text-fill: #1c1e21; -fx-font-size: 15px; -fx-font-weight: bold;" text="Youssef Saaidi" />
+            <HBox alignment="CENTER_LEFT" spacing="5">
+                <Label fx:id="userHandleLabel" style="-fx-text-fill: #65676b; -fx-font-size: 13px;" text="@YoussefSaaidi2004" />
+                <Label style="-fx-text-fill: #65676b; -fx-font-size: 13px;" text="·" />
+                <Label fx:id="dateLabel" style="-fx-text-fill: #65676b; -fx-font-size: 13px;" text="Il y a 10 minutes" />
             </HBox>
         </VBox>
-        <Button style="-fx-background-color: transparent; -fx-text-fill: #084E36; -fx-font-size: 20px; -fx-cursor: hand;" text="⋮" />
-    </HBox>
-
-    <!-- Content Section (Text) -->
-    <VBox spacing="10">
-        <padding><Insets bottom="15" left="25" right="25" top="0" /></padding>
-        <Label fx:id="contentLabel" style="-fx-text-fill: #2C3E50; -fx-font-size: 15px; -fx-line-spacing: 5;" text="Contenu de la publication" wrapText="true" />
-    </VBox>
-
-    <!-- Media Section (Photo/Video) -->
-    <StackPane fx:id="mediaPane" prefHeight="400" style="-fx-background-color: #F8F9FA; -fx-border-color: #E9ECEF; -fx-border-width: 1 0 1 0;">
-        <ImageView fx:id="postImageView" fitHeight="400" fitWidth="800" pickOnBounds="true" preserveRatio="true" />
-        <VBox fx:id="mediaPlaceholder" alignment="CENTER" spacing="10" style="-fx-background-color: rgba(0,0,0,0.02);">
-             <Label style="-fx-text-fill: #013220; -fx-font-size: 13px; -fx-opacity: 0.6;" text="Pas de média" />
-        </VBox>
-    </StackPane>
-
-    <!-- Interaction Bar -->
-    <HBox alignment="CENTER_LEFT" spacing="25">
-        <padding><Insets bottom="15" left="25" right="25" top="15" /></padding>
-        <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-cursor: hand;">
-            <Label style="-fx-font-size: 18px;" text="❤️" />
-            <Label fx:id="likesLabel" style="-fx-text-fill: #013220; -fx-font-weight: bold; -fx-font-size: 13px;" text="0 Likes" />
-        </HBox>
-        <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-cursor: hand;">
-            <Label style="-fx-font-size: 18px;" text="💬" />
-            <Label style="-fx-text-fill: #013220; -fx-font-weight: bold; -fx-font-size: 13px;" text="0 Comm." />
-        </HBox>
-        <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-cursor: hand;">
-            <Label style="-fx-font-size: 18px;" text="✈️" />
-        </HBox>
-        <Region HBox.hgrow="ALWAYS" />
-        <HBox spacing="10">
+        
+        <HBox spacing="10" alignment="CENTER_RIGHT">
             <Button fx:id="editButton" onAction="#handleEditPost" style="-fx-background-color: transparent; -fx-cursor: hand;">
                 <graphic>
-                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                         <image>
                             <Image url="@images/write.png" />
                         </image>
@@ -71,7 +39,7 @@
             </Button>
             <Button fx:id="deleteButton" onAction="#handleDeletePost" style="-fx-background-color: transparent; -fx-cursor: hand;">
                 <graphic>
-                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                         <image>
                             <Image url="@images/delete.png" />
                         </image>
@@ -79,5 +47,34 @@
                 </graphic>
             </Button>
         </HBox>
+    </HBox>
+
+    <!-- Content Section (Text) -->
+    <VBox spacing="5" style="-fx-padding: 0 20 15 20;">
+        <Label fx:id="contentLabel" style="-fx-text-fill: #1c1e21; -fx-font-size: 15px; -fx-line-spacing: 4;" text="Contenu de la publication" wrapText="true" />
+    </VBox>
+
+    <!-- Media Section (Photo/Video) -->
+    <StackPane fx:id="mediaPane" style="-fx-background-color: #fafafa;">
+        <!-- The ImageView will be bound in the Controller to match width -->
+        <ImageView fx:id="postImageView" pickOnBounds="true" preserveRatio="true" />
+        <VBox fx:id="mediaPlaceholder" alignment="CENTER" spacing="10" styleClass="media-placeholder">
+             <Label style="-fx-text-fill: #65676b; -fx-font-size: 14px;" text="Pas de média" />
+        </VBox>
+    </StackPane>
+
+    <!-- Interaction Stats -->
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-border-width: 1 0 0 0; -fx-border-color: #f0f2f5;">
+        <padding><Insets bottom="12" left="20" right="20" top="12" /></padding>
+        <Label fx:id="likesLabel" style="-fx-text-fill: #65676b; -fx-font-size: 14px;" text="0 Likes" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Label style="-fx-text-fill: #65676b; -fx-font-size: 14px;" text="0 Commentaires" />
+    </HBox>
+
+    <!-- Interaction Bar (Like, Comment, Share) -->
+    <HBox alignment="CENTER" spacing="5" style="-fx-border-width: 1 0 0 0; -fx-border-color: #f0f2f5; -fx-padding: 5 15 5 15;">
+        <Button style="-fx-background-color: transparent; -fx-text-fill: #65676b; -fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 8 20; -fx-background-radius: 5;" text="👍 J'aime" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+        <Button style="-fx-background-color: transparent; -fx-text-fill: #65676b; -fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 8 20; -fx-background-radius: 5;" text="💬 Commenter" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+        <Button style="-fx-background-color: transparent; -fx-text-fill: #65676b; -fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 8 20; -fx-background-radius: 5;" text="🔗 Partager" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
     </HBox>
 </VBox>

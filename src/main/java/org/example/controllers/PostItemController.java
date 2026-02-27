@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert;
@@ -46,6 +47,9 @@ public class PostItemController {
     private ImageView postImageView;
 
     @FXML
+    private Rectangle imageClip;
+
+    @FXML
     private VBox mediaPlaceholder;
 
     @FXML
@@ -55,6 +59,24 @@ public class PostItemController {
     private StackPane mediaPane;
 
     private Poste currentPost;
+
+    // Reference to parent to trigger overlays
+    private DetailsForumController parentDetailsController;
+    public void setParentDetailsController(DetailsForumController parent) {
+        this.parentDetailsController = parent;
+    }
+
+    @FXML
+    private void initialize() {
+        // Make image responsive to the media pane width (subtract padding)
+        try {
+            postImageView.fitWidthProperty().bind(mediaPane.widthProperty().subtract(50));
+            imageClip.widthProperty().bind(mediaPane.widthProperty().subtract(50));
+            imageClip.heightProperty().bind(mediaPane.heightProperty().subtract(40));
+        } catch (Exception e) {
+            // fail silently if bindings cannot be established at load
+        }
+    }
 
     @FXML
     private javafx.scene.control.Button editButton;
@@ -122,14 +144,21 @@ public class PostItemController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/ModifierPost.fxml"));
             Parent root = loader.load();
-
             ModifierPostController controller = loader.getController();
-            controller.initData(currentPost);
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            if (parentDetailsController != null) {
+                // Modal mode
+                controller.setOverlayController(parentDetailsController);
+                controller.initData(currentPost);
+                parentDetailsController.showFormOverlay(root);
+            } else {
+                // Fallback scene mode
+                controller.initData(currentPost);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.show();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

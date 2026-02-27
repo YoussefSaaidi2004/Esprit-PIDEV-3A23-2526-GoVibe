@@ -54,6 +54,12 @@ public class ForumItemController {
     private final ServiceMembre serviceMembre = new ServiceMembre();
     private final ServicePersonne servicePersonne = new ServicePersonne();
 
+    // Reference to parent to trigger overlays
+    private ListForumController parentListController;
+    public void setParentListController(ListForumController parent) {
+        this.parentListController = parent;
+    }
+
     public void setData(Forum f) {
         this.currentForum = f;
         nameLabel.setText(f.getName());
@@ -159,16 +165,26 @@ public class ForumItemController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/ModifierForum.fxml"));
             Parent root = loader.load();
             ModifierForumController controller = loader.getController();
-            controller.initData(currentForum);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            root.setOpacity(0);
-            stage.setScene(scene);
-            stage.show();
-            javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
-            ft.setFromValue(0);
-            ft.setToValue(1);
-            ft.play();
+            
+            if (parentListController != null) {
+                // Pass overlay controller backward integration
+                controller.setOverlayController(parentListController);
+                controller.initData(currentForum);
+                // Trigger animation on parent
+                parentListController.showFormOverlay(root);
+            } else {
+                // Fallback Scene reload
+                controller.initData(currentForum);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Scene scene = new Scene(root);
+                root.setOpacity(0);
+                stage.setScene(scene);
+                stage.show();
+                javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
+                ft.setFromValue(0);
+                ft.setToValue(1);
+                ft.play();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

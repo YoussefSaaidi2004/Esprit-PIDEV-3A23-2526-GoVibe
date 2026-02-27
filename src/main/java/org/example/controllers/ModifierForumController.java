@@ -37,6 +37,12 @@ public class ModifierForumController {
 
     private Forum currentForum;
     private final ServiceForum serviceForum = new ServiceForum();
+    
+    // Popup integration
+    private ListForumController parentController;
+    public void setOverlayController(ListForumController parent) {
+        this.parentController = parent;
+    }
 
     public void initData(Forum f) {
         syncSidebarRole();
@@ -139,13 +145,17 @@ public class ModifierForumController {
 
     @FXML
     private void handleCancel(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (parentController != null) {
+            parentController.hideFormOverlay();
+        } else {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

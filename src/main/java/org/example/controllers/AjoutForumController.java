@@ -37,6 +37,12 @@ public class AjoutForumController {
     private TextField imagePathField;
 
     private final ServiceForum serviceForum = new ServiceForum();
+    
+    // Popup integration
+    private ListForumController parentController;
+    public void setOverlayController(ListForumController parent) {
+        this.parentController = parent;
+    }
 
     @FXML
     public void initialize() {
@@ -139,13 +145,19 @@ public class AjoutForumController {
 
     @FXML
     private void handleCancel(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (parentController != null) {
+            // We are running inside a popup overlay
+            parentController.hideFormOverlay();
+        } else {
+            // Fallback: full scene switch
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

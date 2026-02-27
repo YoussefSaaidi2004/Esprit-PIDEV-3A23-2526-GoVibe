@@ -25,6 +25,12 @@ public class AjoutPostController {
 
     private final ServicePoste servicePoste = new ServicePoste();
     private Forum currentForum;
+    
+    // Popup integration
+    private DetailsForumController parentController;
+    public void setOverlayController(DetailsForumController parent) {
+        this.parentController = parent;
+    }
 
     public void setForum(Forum forum) {
         this.currentForum = forum;
@@ -187,6 +193,10 @@ public class AjoutPostController {
 
     // Smooth navigation separated from handlePublish to avoid nested method declarations
     private void handleSmoothNavigationToForum(ActionEvent event) {
+        if (parentController != null) {
+            parentController.hideFormOverlay();
+            return;
+        }
         try {
             if (currentForum != null) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/DetailsForum.fxml"));
@@ -221,6 +231,10 @@ public class AjoutPostController {
     }
     @FXML
     private void handleCancel(ActionEvent event) {
+        if (parentController != null) {
+            parentController.hideFormOverlay();
+            return;
+        }
         try {
             if (currentForum != null) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/DetailsForum.fxml"));

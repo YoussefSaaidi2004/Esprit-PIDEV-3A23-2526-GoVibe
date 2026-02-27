@@ -13,16 +13,21 @@
 -->
 
 <StackPane fx:id="rootStackPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="org.example.controllers.ListForumController" stylesheets="../styles.css">
+           fx:controller="org.example.controllers.ListForumController" stylesheets="@../styles.css">
     <!-- Premium Image Background -->
     <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" styleClass="premium-bg" />
     
+    <!-- Neutral Dark Overlay for readability -->
+    <Pane styleClass="premium-bg-overlay" mouseTransparent="true" />
+    
     <BorderPane fx:id="mainBorderPane" style="-fx-background-color: transparent;"
-                prefHeight="900" prefWidth="1400" styleClass="glass-pane">
+                prefHeight="900" prefWidth="1400" >
 
     <!-- ==================== TOP HEADER (Commun) ==================== -->
     <top>
-        <fx:include source="../components/UserHeader.fxml"/>
+        <StackPane styleClass="header-glass">
+            <fx:include source="../components/UserHeader.fxml"/>
+        </StackPane>
     </top>
 
     <!-- ==================== CONTENU CENTRAL ==================== -->
@@ -32,54 +37,61 @@
             <content>
                 <VBox spacing="0" style="-fx-background-color: transparent;">
                     
-                    <!-- Header Section -->
-                    <VBox spacing="8" styleClass="page-header" >
-                        <HBox alignment="CENTER_LEFT" spacing="15">
-                            <StackPane styleClass="header-icon">
-                                <Circle radius="35" />
-                                <Label text="💬" />
-                            </StackPane>
-                            <VBox spacing="4">
-                                <Label text="Forums &amp; Discussions" styleClass="header-title" />
-                                <Label text="Rejoignez des communautés et participez aux discussions" styleClass="header-subtitle" />
+                    <!-- Header Section (Glass) -->
+                    <HBox alignment="CENTER_LEFT" spacing="25" styleClass="glass-panel" style="-fx-padding: 30; -fx-background-radius: 20;">
+                        <StackPane styleClass="icon-circle-emerald">
+                            <Label text="💬" style="-fx-font-size: 32;" />
+                        </StackPane>
+                        <VBox spacing="5">
+                            <Label text="Forums &amp; Discussions" style="-fx-font-size: 32; -fx-font-weight: 900; -fx-text-fill: white;" />
+                            <Label text="Rejoignez des communautés et participez aux discussions" style="-fx-font-size: 15; -fx-text-fill: rgba(255,255,255,0.7);" />
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        
+                        <!-- Statistiques -->
+                        <HBox spacing="15" alignment="CENTER">
+                            <VBox alignment="CENTER" spacing="5" styleClass="glass-tile-mini" prefWidth="100">
+                                <Label text="25+" styleClass="tile-value-emerald" style="-fx-font-size: 20;" />
+                                <Label text="FORUMS" styleClass="tile-label-tiny" style="-fx-font-size: 8;" />
                             </VBox>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            
-                            <!-- Statistiques -->
-                            <HBox spacing="25" alignment="CENTER">
-                                <VBox alignment="CENTER" spacing="2" styleClass="stat">
-                                    <Label text="25+" styleClass="stat-number" />
-                                    <Label text="Forums" styleClass="stat-label" />
-                                </VBox>
-                                <Separator orientation="VERTICAL" />
-                                <VBox alignment="CENTER" spacing="2" styleClass="stat">
-                                    <Label text="1.2K+" styleClass="stat-number" />
-                                    <Label text="Membres" styleClass="stat-label" />
-                                </VBox>
-                                <Separator orientation="VERTICAL" />
-                                <VBox alignment="CENTER" spacing="2" styleClass="stat">
-                                    <Label text="5K+" styleClass="stat-number" />
-                                    <Label text="Publications" styleClass="stat-label" />
-                                </VBox>
-                            </HBox>
+                            <VBox alignment="CENTER" spacing="5" styleClass="glass-tile-mini" prefWidth="100">
+                                <Label text="1.2K+" styleClass="tile-value-emerald" style="-fx-font-size: 20;" />
+                                <Label text="MEMBRES" styleClass="tile-label-tiny" style="-fx-font-size: 8;" />
+                            </VBox>
+                            <VBox alignment="CENTER" spacing="5" styleClass="glass-tile-mini" prefWidth="100">
+                                <Label text="5K+" styleClass="tile-value-emerald" style="-fx-font-size: 20;" />
+                                <Label text="PUBS" styleClass="tile-label-tiny" style="-fx-font-size: 8;" />
+                            </VBox>
                         </HBox>
-                    </VBox>
+                    </HBox>
                     
                     <!-- Section Forums -->
-                    <VBox spacing="20" style="-fx-padding: 0 50 50 50;">
-                        <HBox alignment="CENTER_LEFT" spacing="15">
-                            <Label text="Tous les forums" styleClass="section-title" />
-                            <Region HBox.hgrow="ALWAYS"/>
+                    <HBox alignment="TOP_CENTER" style="-fx-padding: 20 0 50 0;">
+                        <VBox spacing="20" maxWidth="850" prefWidth="850">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="Tous les forums" style="-fx-fill: #013220; -fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: white;" />
+                                <Region HBox.hgrow="ALWAYS"/>
                             
                             <!-- Onglets -->
-                            <HBox spacing="8" alignment="CENTER">
-                                <ToggleButton text="🔥 Populaires" selected="true" styleClass="tab-toggle" />
-                                <ToggleButton text="🆕 Récents" styleClass="tab-toggle" />
-                                <ToggleButton text="👤 Mes forums" styleClass="tab-toggle" />
+                            <HBox spacing="12" alignment="CENTER">
+                                <ToggleButton text="🔥 Populaires" selected="true" 
+                                              style="-fx-background-color: #013220; -fx-text-fill: white; 
+                                                     -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 10 20;" />
+                                <ToggleButton text="🆕 Récents" 
+                                              style="-fx-background-color: white; -fx-text-fill: #013220; 
+                                                     -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 10 20;
+                                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);" />
+                                <ToggleButton text="👤 Mes forums" 
+                                              style="-fx-background-color: white; -fx-text-fill: #013220; 
+                                                     -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 10 20;
+                                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);" />
                             </HBox>
                             
                             <!-- Action: Créer Forum -->
-                            <Button text="➕ Créer forum" onAction="#handleAjoutForum" styleClass="create-btn"/>
+                            <Button text="➕ Créer forum" onAction="#handleAjoutForum" 
+                                    style="-fx-background-color: #50C878; -fx-text-fill: white;
+                                           -fx-font-size: 14; -fx-font-weight: bold; -fx-padding: 10 24;
+                                           -fx-background-radius: 20; -fx-cursor: hand;" />
                         </HBox>
                         
                         <!-- Liste des Forums -->
@@ -93,9 +105,10 @@
                             <Label text="💬" styleClass="empty-state-icon" />
                             <Label text="Aucun forum trouvé" styleClass="empty-state-title" />
                             <Label text="Créez le premier forum ou modifiez vos critères de recherche" styleClass="empty-state-subtitle" />
-                            <Button text="➕ Créer un forum" onAction="#handleAjoutForum" styleClass="create-btn large" />
-                           </VBox>
-                    </VBox>
+                                <Button text="➕ Créer un forum" onAction="#handleAjoutForum" styleClass="create-btn large" />
+                            </VBox>
+                        </VBox>
+                    </HBox>
                     
                     <!-- Footer -->
                     <VBox alignment="CENTER" spacing="20" styleClass="page-footer">
@@ -122,4 +135,12 @@
     </center>
 
     </BorderPane>
+
+    <!-- Modal Form Overlay -->
+    <StackPane fx:id="formOverlay" managed="false" style="-fx-background-color: rgba(0,0,0,0.6);" visible="false">
+        <VBox fx:id="formContainer" alignment="CENTER" maxHeight="700" maxWidth="800" style="-fx-background-color: transparent;">
+            <!-- Modal forms injected here -->
+        </VBox>
+    </StackPane>
+
 </StackPane>

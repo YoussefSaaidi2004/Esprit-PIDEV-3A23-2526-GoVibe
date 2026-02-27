@@ -163,22 +163,75 @@ public class UserHomeController {
                         ? user.getPrenom() : "utilisateur";
                 return "GoVibe home screen. Welcome " + name + ". " +
                        "You can say Book to access flights, " +
-                       "My Bookings to view your bookings, " +
-                       "or Logout to sign out.";
+                       "Cars for car rentals, Activities to explore things to do, " +
+                       "Hotels for accommodation, Messages for your inbox, " +
+                       "Forum for the community, Profile for your account, " +
+                       "My Bookings to view your bookings, or Logout to sign out.";
+            }
+
+            // ── Section navigation — called by CommandRouter voice commands ──
+
+            @Override
+            public void showCarsSection() {
+                Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/VoitureView.fxml", "Location de voitures"));
+            }
+
+            @Override
+            public void showActivitiesSection() {
+                // Activities are displayed on the home page itself.
+                Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/UserHome.fxml", "Activit\u00e9s"));
+            }
+
+            @Override
+            public void showHotelsSection() {
+                Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/views/room-booking.fxml", "H\u00f4tels & Chambres"));
+            }
+
+            @Override
+            public void showSessionsSection() {
+                Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/DashboardSession.fxml", "Sessions"));
+            }
+
+            @Override
+            public void showMessagesSection() {
+                Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/MesMessages.fxml", "Messages"));
+            }
+
+            @Override
+            public void showForumSection() {
+                Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/poste-forumviews/ListForum.fxml", "Forum"));
+            }
+
+            @Override
+            public void showReclamationSection() {
+                Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/ReclamationView.fxml", "R\u00e9clamations"));
+            }
+
+            @Override
+            public void showProfileSection() {
+                Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/org/example/UserProfileView.fxml", "Mon Profil"));
+            }
+
+            @Override
+            public void showLocationsSection() {
+                Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/LocationListView.fxml", "Mes Locations"));
             }
         };
 
         MainApp.setVoiceProxy(homeProxy);
 
-        // Announce home screen
-        String firstName = (user != null && user.getPrenom() != null) ? user.getPrenom() : "";
-        Thread announcer = new Thread(() -> {
-            try { Thread.sleep(800); } catch (InterruptedException ignored) {}
-            vas.speak((firstName.isEmpty() ? "Welcome to GoVibe!" : "Welcome back, " + firstName + "!")
-                      + " Home screen is ready. Say Book for flights, or Help for all commands.");
-        });
-        announcer.setDaemon(true);
-        announcer.start();
+        // NOTE: The Python login greeting already delivers guidance to the user,
+        // so no extra TTS announcement is needed here. The 4-second delay was
+        // unreliable anyway — Vivian's Qwen3 synthesis may still be running.
     }
 
     @FXML

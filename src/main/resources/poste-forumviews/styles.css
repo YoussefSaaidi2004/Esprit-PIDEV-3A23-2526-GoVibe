@@ -167,3 +167,134 @@
     -fx-background-radius: 8;
     -fx-cursor: hand;
 }
+
+/* Forum card and avatar styles (glassmorphism) */
+.forum-card {
+    -fx-background-color: rgba(255,255,255,0.06);
+    -fx-background-radius: 14;
+    -fx-padding: 12 18;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 12, 0, 0, 6);
+    -fx-border-color: rgba(255,255,255,0.06);
+    -fx-border-width: 1;
+}
+
+.avatar {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 50;
+    -fx-min-width: 60;
+    -fx-min-height: 60;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 8, 0, 0, 2);
+}
+
+.avatar-image {
+    -fx-clip: null;
+}
+
+.reaction-btn {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 8 12;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.leave-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-error-red;
+    -fx-font-weight: bold;
+    -fx-border-color: -fx-error-red;
+    -fx-border-radius: 6;
+    -fx-padding: 6 12;
+}
+
+.action-btn {
+    -fx-padding: 8 15;
+    -fx-font-size: 13px;
+    -fx-background-color: -fx-accent-green;
+}
+
+.icon-btn {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.content-card {
+    -fx-background-color: rgba(255,255,255,0.06);
+    -fx-background-radius: 12;
+    -fx-padding: 14;
+}
+
+/* Page header */
+.page-header {
+    -fx-padding: 35 50 25 50;
+}
+
+.header-icon Circle { -fx-fill: #D1F2EB; }
+.header-title {
+    -fx-font-size: 32;
+    -fx-font-weight: 700;
+    -fx-text-fill: -fx-secondary-green;
+}
+.header-subtitle {
+    -fx-font-size: 15;
+    -fx-text-fill: #5a7d6e;
+}
+
+.stat-number {
+    -fx-font-size: 24;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-primary-green;
+}
+.stat-label { -fx-font-size: 12; -fx-text-fill: #5a7d6e; }
+
+.section-title {
+    -fx-font-size: 22;
+    -fx-font-weight: 600;
+    -fx-text-fill: -fx-secondary-green;
+}
+
+.tab-toggle {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-secondary-green;
+    -fx-font-size: 12;
+    -fx-padding: 8 15;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.tab-toggle:selected {
+    -fx-background-color: -fx-accent-green;
+    -fx-text-fill: white;
+}
+
+.create-btn {
+    -fx-background-color: -fx-primary-green;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 8 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(80,200,120,0.4), 8, 0, 0, 2);
+}
+.create-btn.large { -fx-padding: 12 30; -fx-font-size: 14px; -fx-background-radius: 25; }
+
+.forums-list { -fx-background-color: transparent; }
+
+.empty-state { -fx-padding: 80; }
+.empty-state-icon { -fx-font-size: 72; -fx-opacity: 0.5; }
+.empty-state-title { -fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: -fx-secondary-green; }
+.empty-state-subtitle { -fx-font-size: 14; -fx-text-fill: #5a7d6e; }
+
+.page-footer {
+    -fx-background-color: linear-gradient(to bottom, #013220, #0B4F35);
+    -fx-padding: 50;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.18), 10, 0, 0, -5);
+}
+.footer-logo-circle { -fx-fill: -fx-primary-green; -fx-opacity: 0.12; }
+.footer-logo-letter { -fx-font-size: 20; -fx-font-weight: 900; -fx-text-fill: -fx-primary-green; }
+.footer-go { -fx-font-size: 26; -fx-font-weight: 900; -fx-text-fill: white; }
+.footer-vibe { -fx-font-size: 26; -fx-font-weight: 300; -fx-text-fill: -fx-primary-green; }
+.footer-copy { -fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.6); }
+.footer-links Hyperlink { -fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13; }

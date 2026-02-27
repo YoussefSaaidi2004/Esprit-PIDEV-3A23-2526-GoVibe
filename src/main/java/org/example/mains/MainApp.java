@@ -72,8 +72,9 @@ public class MainApp extends Application {
             voiceAssistant.startListening();   // noop if model missing; TTS still works
             System.out.println("[VoiceAssistant] Global assistant ready. STT=" +
                     voiceAssistant.isSttAvailable());
-            // Welcome message — announce TTS is alive even without STT.
-            voiceAssistant.speak("GoVibe is alive. Let the adventure begin.");
+            // Welcome message — spoken by Vivian (queued if she isn't ready yet,
+            // delivered automatically once the Python TTS worker loads).
+            voiceAssistant.vivianSpeak("GoVibe is online! This is Echo speaking — Vivian is still warming up and will join us shortly. Say 'Hey Go' whenever you need us!");
         }, "VoiceAssistant-Init");
         t.setDaemon(true);
         t.start();

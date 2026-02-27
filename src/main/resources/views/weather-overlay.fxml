@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+
+<!-- Root is a transparent StackPane so the StageStyle.TRANSPARENT stage
+     shows only the rounded card below. -->
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="org.example.controllers.WeatherOverlayController"
+           style="-fx-background-color: transparent;"
+           prefWidth="430">
+
+    <!-- Drop-shadow container -->
+    <VBox fx:id="weatherCard"
+          prefWidth="420" minWidth="420" maxWidth="420"
+          spacing="0"
+          style="-fx-background-color: linear-gradient(to bottom, #0d1b2e, #0a2545);
+                 -fx-background-radius: 20;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 30, 0, 0, 8);
+                 -fx-border-color: rgba(74,158,255,0.35);
+                 -fx-border-width: 1;
+                 -fx-border-radius: 20;">
+
+        <!-- ── Header bar ──────────────────────────────────────────── -->
+        <HBox alignment="CENTER_LEFT" spacing="10"
+              style="-fx-background-color: rgba(74,158,255,0.15);
+                     -fx-padding: 14 18 14 18;
+                     -fx-background-radius: 20 20 0 0;">
+            <Label text="🌧  Real-Time Weather"
+                   style="-fx-text-fill: rgba(255,255,255,0.9);
+                          -fx-font-size: 15px; -fx-font-weight: 700;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="✕" onAction="#handleClose"
+                    style="-fx-background-color: rgba(255,255,255,0.12);
+                           -fx-text-fill: rgba(255,255,255,0.7);
+                           -fx-font-size: 13; -fx-font-weight: 700;
+                           -fx-background-radius: 50;
+                           -fx-min-width: 28; -fx-min-height: 28;
+                           -fx-max-width: 28; -fx-max-height: 28;
+                           -fx-cursor: hand;"/>
+        </HBox>
+
+        <!-- ── Main weather section ────────────────────────────────── -->
+        <VBox alignment="CENTER" spacing="4" style="-fx-padding: 28 24 20 24;">
+
+            <!-- City name -->
+            <Label fx:id="cityLabel" text="—"
+                   style="-fx-text-fill: rgba(255,255,255,0.6);
+                          -fx-font-size: 16px; -fx-font-weight: 600;
+                          -fx-letter-spacing: 2;"/>
+
+            <!-- Temperature + icon row -->
+            <HBox alignment="CENTER" spacing="16" style="-fx-padding: 6 0 2 0;">
+                <Label fx:id="conditionIconLabel" text="�"
+                       style="-fx-font-size: 52px;"/>
+                <Label fx:id="tempLabel" text="--"
+                       style="-fx-text-fill: #4A9EFF;
+                              -fx-font-size: 68px; -fx-font-weight: 900;
+                              -fx-effect: dropshadow(gaussian, rgba(74,158,255,0.5), 15, 0, 0, 0);"/>
+            </HBox>
+
+            <!-- Condition description -->
+            <Label fx:id="conditionLabel" text="—"
+                   style="-fx-text-fill: rgba(255,255,255,0.85);
+                          -fx-font-size: 20px; -fx-font-weight: 600;
+                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 1);"/>
+        </VBox>
+
+        <!-- Divider -->
+        <Rectangle height="1" fill="rgba(255,255,255,0.1)" prefWidth="420"/>
+
+        <!-- ── Detail cards row ─────────────────────────────────────── -->
+        <HBox spacing="0" style="-fx-padding: 0;">
+
+            <!-- Humidity card -->
+            <VBox alignment="CENTER" spacing="6" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: rgba(255,255,255,0.05);
+                         -fx-padding: 18 10 18 10;
+                         -fx-border-color: rgba(255,255,255,0.08);
+                         -fx-border-width: 0 1 0 0;">
+                <Label text="💧" style="-fx-font-size: 22px;"/>
+                <Label fx:id="humidityLabel" text="--"
+                       style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: 800;"/>
+                <Label text="HUMIDITY"
+                       style="-fx-text-fill: rgba(255,255,255,0.45);
+                              -fx-font-size: 10px; -fx-letter-spacing: 1;"/>
+            </VBox>
+
+            <!-- Wind card -->
+            <VBox alignment="CENTER" spacing="6" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: rgba(255,255,255,0.07);
+                         -fx-padding: 18 10 18 10;
+                         -fx-border-color: rgba(255,255,255,0.08);
+                         -fx-border-width: 0 1 0 0;">
+                <Label text="💨" style="-fx-font-size: 22px;"/>
+                <Label fx:id="windLabel" text="--"
+                       style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: 800;"/>
+                <Label text="WIND"
+                       style="-fx-text-fill: rgba(255,255,255,0.45);
+                              -fx-font-size: 10px; -fx-letter-spacing: 1;"/>
+            </VBox>
+
+            <!-- Feels Like card -->
+            <VBox alignment="CENTER" spacing="6" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: rgba(255,255,255,0.05);
+                         -fx-padding: 18 10 18 10;">
+                <Label text="🌡" style="-fx-font-size: 22px;"/>
+                <Label fx:id="feelLabel" text="--"
+                       style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: 800;"/>
+                <Label text="FEELS LIKE"
+                       style="-fx-text-fill: rgba(255,255,255,0.45);
+                              -fx-font-size: 10px; -fx-letter-spacing: 1;"/>
+            </VBox>
+
+        </HBox>
+
+        <!-- ── Footer ───────────────────────────────────────────────── -->
+        <HBox alignment="CENTER"
+              style="-fx-padding: 14 18 16 18;
+                     -fx-background-color: rgba(0,0,0,0.15);
+                     -fx-background-radius: 0 0 20 20;">
+            <Label text="Powered by wttr.in  ·  GoVibe Weather"
+                   style="-fx-text-fill: rgba(255,255,255,0.3);
+                          -fx-font-size: 10px;"/>
+        </HBox>
+
+    </VBox>
+</StackPane>

@@ -8,7 +8,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import org.example.entities.Voiture;
 import org.example.services.AiRecommendationService;
 import java.util.List;
@@ -125,6 +124,8 @@ public class AiAssistantForumController {
 
     @FXML
     private void handleClose() {
-        ((Stage) budgetField.getScene().getWindow()).close();
+        if (parentController != null) {
+            parentController.closeModal();
+        }
     }
 }

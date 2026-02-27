@@ -230,7 +230,7 @@ public class RapidApiCityService {
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Accept", "application/json")
-                .header("User-Agent", "GoVibe-App/1.0 (contact@example.com)")
+                .header("User-Agent", "GoVibe-App/1.0 (govibe.travel.app@gmail.com)")
                 .timeout(Duration.ofSeconds(10))
                 .GET()
                 .build();

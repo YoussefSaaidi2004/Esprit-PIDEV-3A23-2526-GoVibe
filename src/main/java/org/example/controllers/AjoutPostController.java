@@ -173,23 +173,52 @@ public class AjoutPostController {
 
         try {
             servicePoste.ajouter(p);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Succès");
-            alert.setHeaderText(null);
-            alert.setContentText("Publication ajoutée avec succès !");
-            alert.showAndWait();
-            handleCancel(event);
+            // Smooth transition to forum details
+            handleSmoothNavigationToForum(event);
         } catch (SQLException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur");
             alert.setHeaderText("Erreur lors de l'ajout");
-            alert.setContentText(
-                    "Une erreur est survenue lors de l'enregistrement dans la base de données : " + e.getMessage());
+            alert.setContentText("Une erreur est survenue lors de l'enregistrement dans la base de données : " + e.getMessage());
             alert.showAndWait();
             e.printStackTrace();
         }
     }
 
+    // Smooth navigation separated from handlePublish to avoid nested method declarations
+    private void handleSmoothNavigationToForum(ActionEvent event) {
+        try {
+            if (currentForum != null) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/DetailsForum.fxml"));
+                Parent root = loader.load();
+                org.example.controllers.DetailsForumController controller = loader.getController();
+                controller.initData(currentForum);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Scene scene = new Scene(root);
+                // Fade transition for smoothness
+                root.setOpacity(0);
+                stage.setScene(scene);
+                stage.show();
+                javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
+                ft.setFromValue(0);
+                ft.setToValue(1);
+                ft.play();
+            } else {
+                Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Scene scene = new Scene(root);
+                root.setOpacity(0);
+                stage.setScene(scene);
+                stage.show();
+                javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
+                ft.setFromValue(0);
+                ft.setToValue(1);
+                ft.play();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void handleCancel(ActionEvent event) {
         try {

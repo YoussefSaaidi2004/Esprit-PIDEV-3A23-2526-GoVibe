@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +58,11 @@ public class VoiceAssistantService {
 
     // SAPI fallback — always available on Windows 10+
     private boolean sapiAvailable = false;
+
+    // ── Vivian speak queue — messages to deliver once Python agent is ready ──────
+    // vivianSpeak() enqueues here when pythonAgent is null (still loading).
+    // initPythonAgent() drains this after pythonAgent is assigned.
+    private final ConcurrentLinkedQueue<String> pendingVivianSpeaks = new ConcurrentLinkedQueue<>();
 
     // ── TTS debounce — prevent duplicate speaks ────────────────────────────────
     // If speak() is called with the same text within DEBOUNCE_MS, the second
@@ -150,7 +156,103 @@ public class VoiceAssistantService {
     // ── Python ML agent (started in background, used when ready) ──────────────
     private volatile PythonVoiceAgent pythonAgent;
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // ── Wake-word mode ────────────────────────────────────────────────────────
+    // When wake-word mode is ON, Go listens silently in the background.
+    // Only when it hears "hi go" / "hey go" does it switch to full active mode
+    // (plays a greeting and routes commands) for WAKE_ACTIVE_WINDOW_MS.
+    // After the window expires it silently returns to wake-word-only mode.
+    //
+    // Wake-word mode is optional: callers that never call enableWakeWordMode()
+    // get the old always-active behaviour (push-to-talk or constant listening).
+    private final AtomicBoolean wakeWordModeEnabled = new AtomicBoolean(false);
+    private final AtomicBoolean wakeWordActive      = new AtomicBoolean(false);
+    /** How long (ms) Go stays in "active" mode after hearing the wake word. */
+    private static final long WAKE_ACTIVE_WINDOW_MS = 15_000;   // 15 seconds
+    private volatile long wakeActivatedAtMs = 0L;
+    /** Known wake-word phrases (lower-case, accent-stripped). */
+    private static final String[] WAKE_WORDS = {
+        "hi go", "hey go", "hello go", "go", "ok go", "govibe", "hi govibe",
+        "salut go", "bonjour go", "hey govibe",
+    };
+
+    /**
+     * Enables always-listening wake-word mode.
+     * Call this at startup to give Go a Siri-like always-on capability.
+     * STT must have been started first with {@link #startListening()}.
+     */
+    public void enableWakeWordMode() {
+        wakeWordModeEnabled.set(true);
+        wakeWordActive.set(false);
+        System.out.println("[VoiceAssistant] Wake-word mode ENABLED — say 'Hi Go' to activate.");
+    }
+
+    /** Disables wake-word mode — all speech is routed to commands (old behaviour). */
+    public void disableWakeWordMode() {
+        wakeWordModeEnabled.set(false);
+        wakeWordActive.set(true); // treat as always active
+        System.out.println("[VoiceAssistant] Wake-word mode DISABLED — always listening.");
+    }
+
+    /** Returns true if Go is currently awake and actively routing commands. */
+    public boolean isWakeWordActive() {
+        if (!wakeWordModeEnabled.get()) return true;  // not in wake-word mode → always active
+        return wakeWordActive.get();
+    }
+
+    /**
+     * Checks whether {@code text} contains a wake-word trigger.
+     * If so, activates the assistant and returns true.
+     * Must NOT speak (called from STT thread).
+     */
+    private boolean checkAndTriggerWakeWord(String text) {
+        if (!wakeWordModeEnabled.get()) return false;
+        String norm = java.text.Normalizer.normalize(text.toLowerCase(), java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}", "");
+        for (String ww : WAKE_WORDS) {
+            if (norm.contains(ww)) {
+                wakeWordActive.set(true);
+                wakeActivatedAtMs = System.currentTimeMillis();
+                System.out.println("[WakeWord] Triggered by: \"" + text + "\"");
+                // Notify Python agent — forward the full utterance so Python can
+                // detect embedded commands such as "hi go logout" in one breath.
+                PythonVoiceAgent agent = pythonAgent;
+                if (agent != null && agent.isReady()) {
+                    agent.signalWakeWord(text);
+                }
+                // Python (Qwen3-TTS) handles the wake greeting and all subsequent
+                // TTS playback.  The microphone discard window is driven by the
+                // ttsStatusCallback registered in initPythonAgent() — no Java TTS
+                // call is needed here.
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether the wake-word active window has expired and, if so,
+     * returns Go to dormant mode.  Called from STT loops.
+     */
+    private void checkWakeWordTimeout() {
+        if (wakeWordModeEnabled.get() && wakeWordActive.get()) {
+            long elapsed = System.currentTimeMillis() - wakeActivatedAtMs;
+            if (elapsed > WAKE_ACTIVE_WINDOW_MS) {
+                wakeWordActive.set(false);
+                System.out.println("[WakeWord] Active window expired — returning to wake-word mode. Say 'Hi Go' to wake me.");
+            }
+        }
+    }
+
+    /**
+     * Resets (extends) the wake-word active window whenever a command is successfully
+     * processed — so an ongoing conversation keeps Go awake.
+     */
+    public void extendWakeWordWindow() {
+        if (wakeWordModeEnabled.get() && wakeWordActive.get()) {
+            wakeActivatedAtMs = System.currentTimeMillis();
+        }
+    }
+
     private VoiceAssistantService() {
         initVosk();
         detectSapi();
@@ -177,7 +279,7 @@ public class VoiceAssistantService {
                 case NOISY     -> "It's a bit loud in here. Speak up, will you?";
                 case VERY_NOISY-> "Wow, it's basically a concert. Get closer to the mic, please.";
             };
-            if (msg != null) speak(msg);
+            if (msg != null) vivianSpeak(msg);
         });
 
         // Callback: SNR validator signals environment may have shifted — log it.
@@ -319,6 +421,72 @@ public class VoiceAssistantService {
                 pythonAgent = PythonVoiceAgent.getInstance();
                 System.out.println("[VoiceAssistant] Python ML agent ready. Engine: "
                         + pythonAgent.getEngineName());
+
+                // Drain any speak requests that arrived while pythonAgent was null.
+                String pendingText;
+                while ((pendingText = pendingVivianSpeaks.poll()) != null) {
+                    System.out.println("[VoiceAssistant-Vivian] Flushing queued speak: " + pendingText);
+                    pythonAgent.sendSpeakFast(pendingText);
+                }
+
+                // Wire Qwen3-TTS status events so the microphone discard window
+                // is controlled by Python's TTS lifecycle, not by Java timers.
+                pythonAgent.setTtsStatusListener(speaking -> {
+                    if (speaking) {
+                        // Python TTS started — mute the mic feed to Vosk.
+                        micDiscardUntilMs = Long.MAX_VALUE;
+                        ttsSpeaking.set(true);
+                    } else {
+                        // Python TTS finished — keep Vosk muted for TTS_MUTE_WINDOW_MS
+                        // so acoustic echo (speaker→room→mic path) cannot reach Vosk.
+                        // Without this grace window Vosk resumes immediately after
+                        // sd.wait() returns, picks up the trailing reverb, and dispatches
+                        // the TTS text itself as a fake user command (feedback loop).
+                        ttsFinishedAtMs   = System.currentTimeMillis();
+                        micDiscardUntilMs = ttsFinishedAtMs + TTS_MUTE_WINDOW_MS;
+                        ttsSpeaking.set(false);
+                    }
+                });
+
+                // Re-arm the wake-word detector after Python's post-logout
+                // personality sequence ends (Python sends resume_wake_word).
+                pythonAgent.setResumeWakeWordListener(() -> {
+                    System.out.println("[VoiceAssistant] Resuming wake-word mode after logout.");
+                    wakeWordActive.set(false);
+                    wakeWordModeEnabled.set(true);
+                });
+
+                // Wire real-time weather data so CommandRouter receives it
+                // before the WEATHER intent response arrives.
+                pythonAgent.setWeatherListener(data -> {
+                    VoiceCommandListener listener = commandListener;
+                    if (listener instanceof org.example.assistant.CommandRouter cr) {
+                        cr.setWeatherContext(data.city, data.temp, data.condition,
+                                             data.humidity, data.wind, data.feel);
+                    }
+                });
+
+                // Send current user context so the Python state machine can
+                // personalise wake responses from the very first interaction.
+                // At startup nobody is logged in, so we pass loggedIn=false.
+                pythonAgent.sendUserContext(false, null);
+
+                // Send GoVibe database snapshot (activities, cars, hotels) so
+                // the Python voice agent can answer data-driven questions and
+                // include real inventory in its DeepSeek / Ollama prompts.
+                // Run in a separate thread to avoid blocking initPythonAgent.
+                Thread dbCtxThread = new Thread(() -> {
+                    try {
+                        String dbJson = VoiceDataService.buildDbContextJson();
+                        pythonAgent.sendDbContext(dbJson);
+                        System.out.println("[VoiceAssistant] DB context dispatched to Python agent.");
+                    } catch (Exception ex) {
+                        System.err.println("[VoiceAssistant] DB context send failed: " + ex.getMessage());
+                    }
+                }, "VoiceAssistant-DBContext");
+                dbCtxThread.setDaemon(true);
+                dbCtxThread.start();
+
             } catch (Exception e) {
                 System.err.println("[VoiceAssistant] Python ML agent failed: " + e.getMessage()
                         + " — falling back to keyword routing.");
@@ -327,6 +495,60 @@ public class VoiceAssistantService {
         }, "VoiceAssistant-PythonInit");
         t.setDaemon(true);
         t.start();
+    }
+
+    /**
+     * Notify the Python voice agent that a user just logged in successfully.
+     * This triggers the Echo+Vivian post-login greeting sequence and updates
+     * the Python state machine's {@code logged_in} flag so it can personalise
+     * subsequent responses.
+     *
+     * <p>Call this from the login / splash controller immediately after the
+     * authenticated user's home screen is loaded.
+     *
+     * @param firstName the user's first name (may be null if unavailable)
+     */
+    public void notifyUserLoggedIn(String firstName) {
+        PythonVoiceAgent agent = pythonAgent;
+        if (agent != null) {
+            String name = (firstName != null && !firstName.isBlank()) ? firstName : null;
+            agent.sendUserContext(true, name);
+            System.out.println("[VoiceAssistant] Notified Python: user logged in" +
+                               (name != null ? " as " + name : "") + ".");
+        }
+    }
+
+    /**
+     * Notify the Python voice agent that the user has logged out.
+     * This completes Python's PROCESSING_LOGOUT state machine: Python is
+     * waiting for user_context(logged_in=false) before running the
+     * post-logout farewell + confused-yawn sequence and returning to SLEEPING.
+     * Without this call Python stays stuck in PROCESSING_LOGOUT and ignores
+     * all subsequent voice input.
+     *
+     * <p>Call this whenever the login screen is displayed (including on first
+     * app launch — sendUserContext is idempotent).
+     */
+    public void notifyUserLoggedOut() {
+        PythonVoiceAgent agent = pythonAgent;
+        if (agent != null) {
+            agent.sendUserContext(false, null);
+            System.out.println("[VoiceAssistant] Notified Python: user logged out.");
+        }
+    }
+
+    /**
+     * Forward a gesture event to the Python agent subprocess so it can respond
+     * contextually (e.g. speak "Hold it!" when THUMBS_UP is detected, or
+     * "Try thumbs up or open palm" for a FIST gesture during confirmation).
+     *
+     * @param gestureName the gesture name, e.g. "THUMBS_UP", "OPEN_PALM", "FIST"
+     */
+    public void sendGestureToAgent(String gestureName) {
+        PythonVoiceAgent agent = pythonAgent;
+        if (agent != null) {
+            agent.sendGestureEvent(gestureName);
+        }
     }
 
     private String resolveModelPath() {
@@ -406,6 +628,32 @@ public class VoiceAssistantService {
             sapiGrammarThread = null;
         }
         System.out.println("[VoiceAssistant] Listening stopped.");
+    }
+
+    /**
+     * Speaks {@code text} exclusively through Vivian (Python TTS worker).
+     * Never falls back to Java TTS — queues until Vivian is ready.
+     * Use this for ALL assistant speech to guarantee a single voice.
+     */
+    public void vivianSpeak(String text) {
+        // Route through Echo (fast, ~200ms) so the mic is never muted for 30-60s.
+        echoSpeak(text);
+    }
+
+    /**
+     * Speaks {@code text} via Echo (edge-tts, ~200 ms) — the instant fast path.
+     * The mic is muted for ~200 ms instead of 30–60 s (Qwen3-TTS on CPU).
+     * Use for all action confirmations where low latency matters.
+     */
+    public void echoSpeak(String text) {
+        if (text == null || text.isBlank()) return;
+        PythonVoiceAgent agent = pythonAgent;
+        if (agent != null) {
+            agent.sendSpeakFast(text);
+        } else {
+            pendingVivianSpeaks.add(text);
+            System.out.println("[VoiceAssistant-Vivian] Queued (agent loading): " + text);
+        }
     }
 
     /**
@@ -679,15 +927,28 @@ public class VoiceAssistantService {
         String text = json.substring(start + 1, end).trim();
         if (text.isBlank()) return;
 
+        // ── Wake-word timeout check ───────────────────────────────────────────
+        checkWakeWordTimeout();
+
         // ── Layer 1: minimum meaningful-word filter ───────────────────────────
-        // Reject if no word has ≥ 3 characters (noise produces short fragments).
+        // Reject if no word has ≥ 2 characters (noise produces single-char fragments).
+        // Allows conversational words like "hi", "ok", "yo", "bye" through.
         String[] words = text.split("\\s+");
         boolean hasMeaningfulWord = false;
         for (String w : words) {
-            if (w.length() >= 3) { hasMeaningfulWord = true; break; }
+            if (w.length() >= 2) { hasMeaningfulWord = true; break; }
         }
         if (!hasMeaningfulWord) {
             System.out.println("[VoiceAssistant-Gate] Rejected (too short): \"" + text + "\"");
+            return;
+        }
+
+        // ── Wake-word check — must run BEFORE the dormant gate ────────────────
+        if (checkAndTriggerWakeWord(text)) return;  // wake word consumed — don't route as command
+
+        // ── Dormant gate: if wake-word mode is on but not yet active, discard ─
+        if (wakeWordModeEnabled.get() && !wakeWordActive.get()) {
+            System.out.println("[VoiceAssistant-WakeGate] Dormant — ignoring: \"" + text + "\"");
             return;
         }
 
@@ -798,15 +1059,15 @@ public class VoiceAssistantService {
                         } else {
                             VoiceCommandListener listener = commandListener;
                             if (listener instanceof org.example.assistant.CommandRouter cr) {
-                                // Acknowledge the command before executing — gives Siri-like feel.
-                                speak("On it.");
+                                // Acknowledge via Vivian (single voice — not Java TTS).
+                                vivianSpeak("On it!");
                                 boolean matched = cr.tryKeywordMatch(cmd);
                                 if (!matched) {
                                     // Grammar hit but keyword table miss — let ML decide
                                     dispatchText(cmd);
                                 }
                             } else if (listener != null) {
-                                speak("On it.");
+                                vivianSpeak("On it!");
                                 try { listener.onCommand(cmd.trim().toUpperCase(), cmd); }
                                 catch (Exception ex) { System.err.println("[VoiceAssistant] Fast-path error: " + ex.getMessage()); }
                             }
@@ -889,8 +1150,8 @@ public class VoiceAssistantService {
                     if (!cmd.isEmpty() && !ttsSpeaking.get()
                             && System.currentTimeMillis() - ttsFinishedAtMs >= TTS_MUTE_WINDOW_MS) {
                         System.out.println("[VoiceAssistant-Grammar] [FAST] \"" + cmd + "\"");
-                        // Acknowledge the command so the user knows it was heard.
-                        speak("On it.");
+                        // Acknowledge via Vivian — single voice throughout.
+                        vivianSpeak("On it!");
                         VoiceCommandListener listener = commandListener;
                         if (listener instanceof CommandRouter cr) {
                             if (!cr.tryKeywordMatch(cmd)) dispatchText(cmd);
@@ -922,6 +1183,9 @@ public class VoiceAssistantService {
         // All command keywords the router understands — loaded as a grammar
         // for high precision. Dictation grammar also loaded for free-form phrases.
         String[] commands = {
+            // ── Wake words ──
+            "hi go", "hey go", "hello go", "ok go", "govibe",
+            "salut go", "bonjour go",
             // ── Booking (both accented and unaccented for fr-FR SAPI) ──
             "réserver", "reserver", "book", "nouvelle réservation", "nouvelle reservation", "réserve", "reserve",
             // ── Bookings list ──
@@ -943,6 +1207,28 @@ public class VoiceAssistantService {
             "email", "adresse email", "nom utilisateur", "username",
             "mot de passe", "password",
             "créer un compte", "creer un compte", "sign up", "register", "inscription",
+            // ── Car rental ──
+            "voitures", "louer", "cars", "car rental", "rent a car",
+            // ── Activities ──
+            "activités", "activites", "activities", "quoi faire", "what to do", "loisirs",
+            "describe activity", "describe activities", "tell me about activities",
+            "décris l activite", "what can i do",
+            // ── Hotels ──
+            "hôtels", "hotels", "hotel", "hébergement", "hebergement", "chambres",
+            // ── Sessions ──
+            "sessions", "my sessions", "show sessions", "session list", "workshops",
+            // ── Profile / account ──
+            "profile", "my profile", "mon profil", "my account", "mon compte", "settings", "parametres",
+            // ── Messages / inbox ──
+            "messages", "mes messages", "inbox", "messagerie", "chat",
+            // ── Forum / community ──
+            "forum", "community", "communaute", "communauté", "discussions",
+            // ── Reclamation / complaint ──
+            "reclamation", "réclamation", "complaint", "support", "signaler", "plainte",
+            // ── Locations / map ──
+            "map", "carte", "locations", "explorer", "explore", "destinations",
+            // ── Car describe ──
+            "describe car", "describe the car", "tell me about cars", "car details",
             // ── Noise recalibration ──
             "recalibrer", "calibrer", "bruit"
         };
@@ -1035,7 +1321,6 @@ public class VoiceAssistantService {
         return tmp;
     }
 
-    // ── Shared dispatch ───────────────────────────────────────────────────────
     /**
      * Routes recognised speech through the Python ML agent (if ready) to get
      * an intent, a natural TTS response, and an action code, then:
@@ -1047,6 +1332,16 @@ public class VoiceAssistantService {
      * Falls back to raw keyword dispatch if the Python agent is not ready.
      */
     private void dispatchText(String text) {
+        // ── Wake-word dormant gate ────────────────────────────────────────────
+        checkWakeWordTimeout();
+        if (wakeWordModeEnabled.get() && !wakeWordActive.get()) {
+            // Check for wake word in plain SAPI/grammar output too
+            if (!checkAndTriggerWakeWord(text)) {
+                System.out.println("[VoiceAssistant-WakeGate] Dormant (dispatchText) — ignoring: \"" + text + "\"");
+            }
+            return;
+        }
+
         // ── TTS bleed gate ────────────────────────────────────────────────────
         // Discard any text recognised while TTS is playing or within the
         // settle window after it finishes (speaker echo picked up by mic).
@@ -1082,24 +1377,19 @@ public class VoiceAssistantService {
                     }
                 }
                 if (!keywordHit) {
-                    // No keyword matched — ask user to repeat (throttled to avoid spam).
-                    long now = System.currentTimeMillis();
-                    if ((now - lastNotUnderstoodTime) >= NOT_UNDERSTOOD_THROTTLE_MS) {
-                        lastNotUnderstoodTime = now;
-                        speak("I heard something interesting, but I need you to repeat that clearly.");
-                    } else {
-                        System.out.println("[VoiceAssistant-Gate] UNKNOWN throttled — too soon.");
-                    }
+                    // Vivian (Python) already spoke "Hmm, I didn't quite catch that."
+                    // before returning UNKNOWN — no Java TTS needed here.
+                    System.out.println("[VoiceAssistant] UNKNOWN — Vivian already spoke not-understood response.");
                 }
                 return;
             }
 
-            // Speak the natural-language response.
-            boolean mlSpoke = false;
-            if (ar.response != null && !ar.response.isBlank()) {
-                speak(ar.response);
-                mlSpoke = true;
-            }
+            // Extend wake-word active window — conversation is ongoing.
+            extendWakeWordWindow();
+
+            // Python agent already spoke the response via edge-tts — do NOT
+            // call speak(ar.response) here or the user hears every line twice.
+            boolean mlSpoke = (ar.response != null && !ar.response.isBlank());
 
             // Dispatch action to CommandRouter (UI execution).
             if (!"NONE".equals(ar.action) && !"UNKNOWN".equals(ar.action)) {
@@ -1129,6 +1419,7 @@ public class VoiceAssistantService {
                 if (ar != null && !"UNKNOWN".equals(ar.intent) && ar.confidence >= 0.65) {
                     System.out.println("[VoiceAssistant] Ollama-Java → intent=" + ar.intent
                             + "  conf=" + String.format("%.2f", ar.confidence));
+                    extendWakeWordWindow();
                     boolean ollamaSpoke = false;
                     if (ar.response != null && !ar.response.isBlank()) { speak(ar.response); ollamaSpoke = true; }
                     if (!"NONE".equals(ar.action)) {
@@ -1152,7 +1443,7 @@ public class VoiceAssistantService {
             String command = text.trim().toUpperCase();
             VoiceCommandListener listener = commandListener;
             if (listener instanceof CommandRouter cr) {
-                cr.tryKeywordMatch(command);
+                if (cr.tryKeywordMatch(command)) extendWakeWordWindow();
             } else if (listener != null) {
                 try { listener.onCommand(command, text); }
                 catch (Exception e) {

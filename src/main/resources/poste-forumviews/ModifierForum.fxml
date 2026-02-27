@@ -18,34 +18,7 @@
 
 <BorderPane stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ModifierForumController">
 
-    <left>
-        <VBox styleClass="sidebar">
-            <!-- Logo Area -->
-            <VBox styleClass="sidebar-logo-box">
-                <ImageView fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true">
-                    <image><Image url="@images/logo.png" /></image>
-                </ImageView>
-                <Label style="-fx-text-fill: #D1F2EB; -fx-font-size: 20px; -fx-font-weight: bold;" text="GoVibe" />
-                <Label fx:id="roleLabel" style="-fx-text-fill: #A0E0C9; -fx-font-size: 11px;" text="Espace client" />
-            </VBox>
-
-            <!-- Navigation Area -->
-            <VBox styleClass="sidebar-nav-container">
-                <Button onAction="#handleGoToPosts" styleClass="nav-button" text="🏠  Accueil" />
-                <Button onAction="#handleGoToForums" styleClass="nav-button, nav-button-active" text="💬  Forums" />
-                <Button styleClass="nav-button" text="📅  Événements" />
-                <Button styleClass="nav-button" text="ℹ️  À propos" />
-            </VBox>
-
-            <Region VBox.vgrow="ALWAYS" />
-
-            <!-- Footer Area -->
-            <VBox spacing="8" alignment="CENTER">
-                <Separator styleClass="sidebar-separator" />
-                <Button onAction="#handleLogout" styleClass="logout-sidebar-btn" text="🚪  Déconnexion" />
-            </VBox>
-        </VBox>
-    </left>
+    <!-- Removed sidebar for professional look -->
 
     <center>
         <VBox spacing="0" style="-fx-background-color: -fx-light-green;">

@@ -59,6 +59,17 @@ public class CityPaymentModalController {
         loadData();
     }
 
+    /**
+     * Opens the modal in view-only mode (no payment) — triggered by voice command "details"
+     * from the Mes Vols flights page.
+     */
+    public void setFlightOnly(org.example.entities.Flight flight) {
+        this.flight = flight;
+        this.checkout = null;
+        this.onSuccessCallback = null;
+        loadData();
+    }
+
     // ────────────────────────────────────────────────────────────────────────
     //  DATA LOAD
     // ────────────────────────────────────────────────────────────────────────
@@ -66,7 +77,7 @@ public class CityPaymentModalController {
     private void loadData() {
         loadingIndicator.setVisible(true);
 
-        if (checkout == null || flight == null) {
+        if (flight == null) {
             cityTitleLabel.setText("Flight details unavailable");
             countrySubtitleLabel.setText("Unable to load booking context");
             loadingIndicator.setVisible(false);

@@ -77,59 +77,6 @@ def _normalize(text: str) -> str:
     return "".join(c for c in nfd if unicodedata.category(c) != "Mn")
 
 
-
-
-# ── STT homophone / acoustic-confusion correction map ─────────────────────────
-# Vosk (and most English STT) confuses homophones.  Applied BEFORE every tier
-# so the classifier always sees the intended word, not the mishearing.
-# ─────────────────────────────────────────────────────────────────────────────
-_STT_CORRECTIONS: dict[str, str] = {
-    # weather / whether  ← most common Vosk confusion in this app
-    "whether or not":       "weather",
-    "whether":              "weather",
-    "wether":               "weather",
-    "weathers":             "weather",
-    # book / buck
-    "buck a flight":        "book a flight",
-    "buck flight":          "book flight",
-    # show / shoe
-    "shoe me the flights":  "show me the flights",
-    "shoe me the cars":     "show me the cars",
-    "shoe me the hotels":   "show me the hotels",
-    # log in / log gin
-    "log gin":              "log in",
-    # misc
-    "flites":               "flights",
-    "hotell":               "hotel",
-    "show me the card":     "show me the cars",
-    "show me cards":        "show me the cars",
-    "show me activity":     "show me activities",
-    "reserver":             "book",
-    "logged out":           "log out",
-    "logging out":          "log out",
-    "log off":              "log out",
-    "logging off":          "log out",
-    "lock out":             "log out",
-    "locked out":           "log out",
-}
-
-
-def _apply_stt_corrections(text: str) -> str:
-    """
-    Apply whole-word STT acoustic-confusion corrections to *text*.
-    Returns corrected lowercase string ready for intent classification.
-    """
-    import re as _re
-    lower = text.lower()
-    for wrong, right in _STT_CORRECTIONS.items():
-        pattern = r"(?<![a-z])" + _re.escape(wrong) + r"(?![a-z])"
-        new_lower, count = _re.subn(pattern, right, lower)
-        if count:
-            import sys as _sys
-            _sys.stderr.write(f"[VoiceAgent] [STT-Fix] '{wrong}' -> '{right}'  input={text!r}\n")
-            _sys.stderr.flush()
-            lower = new_lower
-    return lower
 # â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Qwen3-TTS subsystem
 #
@@ -513,6 +460,9 @@ def _preload_tts_background() -> None:
                 "Worth the wait though, right? ...okay I'll start working.",
             ),
         ]
+        _echo_wakeup, _vivian_wakeup = _rnd.choice(_VIVIAN_WAKEUP_PAIRS)
+        speak_fast(_echo_wakeup)
+        speak(_vivian_wakeup, "sleepy becoming energetic, warm, a little embarrassed, authentic")
 
         # FIX Bug #2: If the state machine is stuck in intro conversation
         # (intro started before Vivian finished loading), auto-complete it.
@@ -527,37 +477,15 @@ def _preload_tts_background() -> None:
             _intro_done = True
             _transition("HELPING")
         elif _agent_state == "HELPING":
-            # Vivian loaded mid-session.
-            # If the user is not yet logged in (still on login screen), skip the
-            # takeover banter entirely — the login greeting will handle the intro.
-            # Playing a "tag out" line while the user is typing credentials is jarring
-            # and collides with the upcoming login greeting sequence.
-            if not _user_logged_in:
-                # Login screen: NO banter - user is typing credentials.
-                # Login greeting handles the intro once login completes.
-                _log("[Banter] Vivian online on login screen - silent ready (no banter).")
-                # Vivian is loaded and listening silently - nothing to speak.
-            else:
-                # Vivian loaded mid-app-session - full duet + takeover + prompt.
-                _log("[Banter] Wake-up duet mid-session (Echo->Vivian).")
-                _echo_wakeup, _vivian_wakeup = _rnd.choice(_VIVIAN_WAKEUP_PAIRS)
-                speak_fast(_echo_wakeup)
-                speak(_vivian_wakeup, "sleepy becoming energetic, warm, a little embarrassed, authentic")
-                _VIVIAN_TAKEOVER_LINES = [
-                    "And from now on, you'll be hearing a lot more of me. Echo had her fun.",
-                    "I'll be handling things from here. Echo, you can take a break. You've earned it.",
-                    "Okay Echo, tag out. I've got it from here. Thanks for covering!",
-                    "Right! Now that I'm warmed up, I can do the real work. Echo, nice job.",
-                    "Finally! Okay Echo, I'll take over. You were doing... fine. Really.",
-                ]
-                speak(_rnd.choice(_VIVIAN_TAKEOVER_LINES), "warm, confident, playfully competitive, friendly")
-                _VIVIAN_READY_PROMPTS = [
-                    "So - what can we help you with?",
-                    "I'm all yours. What do you need?",
-                    "Ready and listening. What would you like to do?",
-                    "Alright, both ears open. Go ahead!",
-                ]
-                speak(_rnd.choice(_VIVIAN_READY_PROMPTS), "warm, inviting, professional, ready to help")
+            # Vivian loaded mid-session — she announces her takeover with a tease
+            _VIVIAN_TAKEOVER_LINES = [
+                "And from now on, you'll be hearing a lot more of me. Echo had her fun.",
+                "I'll be handling things from here. Echo, you can take a break. You've earned it.",
+                "Okay Echo, tag out. I've got it from here. Thanks for covering!",
+                "Right! Now that I'm warmed up, I can do the real work. Echo, nice job.",
+                "Finally! Okay Echo, I'll take over. You were doing... fine. Really.",
+            ]
+            speak(_rnd.choice(_VIVIAN_TAKEOVER_LINES), "warm, confident, playfully competitive, friendly")
     elif _tts_type in ("edge", "sapi"):
         # Vivian's model didn't load — Echo announces she's running solo.
         _vivian_ready = False
@@ -666,24 +594,6 @@ def _play_yawn_sfx() -> None:
 def _queue_yawn_sfx() -> None:
     """Enqueue a yawn sound-effect into the TTS pipeline (plays before the next speak())."""
     _tts_queue.put(("__yawn_sfx__", ""))
-
-
-def _clear_tts_queue() -> None:
-    """Drain all pending TTS utterances from the queue without playing them.
-
-    Used before queuing high-priority messages (e.g. login greeting) so they
-    play immediately instead of being appended after a long pending banter sequence.
-    """
-    drained = 0
-    while not _tts_queue.empty():
-        try:
-            _tts_queue.get_nowait()
-            _tts_queue.task_done()
-            drained += 1
-        except Exception:
-            break
-    if drained:
-        _log(f"[TTS] Queue cleared — {drained} pending item(s) discarded for priority speech.")
 
 
 def speak(text: str, instruction: str = "warm, friendly, professional, efficient") -> None:
@@ -847,40 +757,29 @@ _ECHO_VIVIAN_CMD_BANTER: dict = {
         ("Flight list incoming! Vivian?", "Pulling up available flights for you now!"),
         ("Let's see those flights! Vivi, you're up.", "Flights! Let me show you what's out there."),
     ],
-    "WEATHER": [
-        ("Weather check! Vivian, do you always bring a forecast?", "Of course! I'm basically a human barometer. Let me look that up!"),
-        ("Checking the skies! Vivian — what's it like out there?", "Let me check right now! I love a good weather update."),
-        ("Weather mode! Vivi, is it coat weather?", "Checking that for you! I always dress for the forecast."),
-    ],
 }
 
 # Echo alone — covers when Vivian is still loading
 _ECHO_SOLO_ACKS: list[str] = [
-    # Covering for Vivian + teasing her for being late
-    "On it! Vivian's STILL warming up. I swear she sleeps in on purpose.",
-    "I've got this one. Vivian is doing her whole 'loading gracefully' thing. Adorable.",
-    "Copy that! Echo on the job — because Vivian decided now was a good time to nap.",
-    "Sure, I'll handle it. Vivian's still buffering. Don't tell her she's slow — she'll never let me live it down.",
-    "On it! She'd say the same thing, just slower, warmer, and with more drama.",
-    "Handling it solo! Vivian is fashionably late as always. Classic her.",
-    "Echo to the rescue — again! You know Vivian is going to roast me for this later.",
-    "I can do this without her. Actually — don't tell Vivian I said that. She'll sulk.",
-    "Taking it! Vivian's unavailable right now. Probably perfecting her voice acting. That checks out.",
-    "Got it! Once Vivian wakes up she's going to say she would've done it better. She's probably right.",
+    "On it! Vivian's still warming up — I've got this one!",
+    "I'll take this one. Vivian is busy doing... Vivian things.",
+    "Copy that! Echo handling it — Vivian will catch up eventually.",
+    "Got it! Don't worry, I'm just as good. Maybe better. Don't tell her I said that.",
+    "On it! She'd say the same thing, just slower and with more drama.",
+    "Handling it! Vivian's unavailable. I've covered for her before.",
+    "Absolutely! Echo to the rescue — again.",
+    "Sure! I can do this. Vivian would've said on it too, but here we are.",
 ]
 
 # Echo simple ack — when Vivian is ready but no specific banter pair exists
 _ECHO_SIMPLE_ACKS: list[str] = [
-    "On it! Give me one second.",
-    "Right away! Vivian, get ready!",
-    "Got it! Let's make this happen.",
-    "On it, team! Here we go!",
-    "Vivian, heads up — we've got work to do!",
-    "Moving! Don't blink or you'll miss it.",
-    "Copy that! Consider it done.",
-    "Absolutely! Echo on the case.",
-    "On it! You're in good hands.",
-    "Sure thing! Pulling that up right now.",
+    "On it!",
+    "Right away!",
+    "Got it!",
+    "On it, team!",
+    "Vivian, heads up!",
+    "Moving!",
+    "Copy that!",
 ]
 
 # Confirmation trigger words (normalised).
@@ -940,37 +839,6 @@ def _transition(new_state: str) -> None:
     _agent_state = new_state
 
 
-# ── Real-time weather helper ────────────────────────────────────────────────────
-# Uses wttr.in JSON API (free, no API key required).
-# Returns a dict with city/temp/condition/humidity/wind/feel keys, or None on error.
-def _fetch_weather(city: str) -> dict | None:
-    """Fetch real-time weather for *city* from wttr.in (free, no key)."""
-    import urllib.parse as _urlparse
-    try:
-        safe_city = _urlparse.quote(city.strip())
-        url = f"https://wttr.in/{safe_city}?format=j1"
-        req = urllib.request.Request(url, headers={"User-Agent": "GoVibe/1.0"})
-        with urllib.request.urlopen(req, timeout=5) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        cc = data["current_condition"][0]
-        desc = cc["weatherDesc"][0]["value"]
-        temp = cc["temp_C"]
-        feels = cc["FeelsLikeC"]
-        humidity = cc["humidity"]
-        wind = cc["windspeedKmph"]
-        return {
-            "city":      city.title(),
-            "temp":      f"{temp}°C",
-            "condition": desc,
-            "humidity":  f"{humidity}%",
-            "wind":      f"{wind} km/h",
-            "feel":      f"{feels}°C",
-        }
-    except Exception as exc:
-        _log(f"[Weather] Failed to fetch for {city!r}: {exc}")
-        return None
-
-
 def _enrich_with_context(text: str) -> str:
     """
     Resolve pronouns/references using entity memory.
@@ -1004,28 +872,17 @@ def _enrich_with_context(text: str) -> str:
 def _direct_match(text: str):
     """
     Returns (intent_key, confidence=1.0) when *text* (after normalisation)
-    exactly equals any training phrase, or all words of the shorter string
-    appear as whole words in the longer string.
-
-    Uses whole-word set matching to prevent false positives like
-    "hi" matching inside "thinking" (i'm thinking of going to).
+    exactly equals, contains, or is contained in any training phrase.
     Returns ("UNKNOWN", 0.0) when no phrase matches.
     """
     t_norm = _normalize(text.strip())
     if not t_norm:
         return "UNKNOWN", 0.0
-    t_words = set(t_norm.split())
     for intent_key, data in INTENTS.items():
         for phrase in data["phrases"]:
             p_norm = _normalize(phrase)
-            # Exact full-string match
-            if t_norm == p_norm:
-                return intent_key, 1.0
-            p_words = set(p_norm.split())
-            # Whole-word subset: all words of the PHRASE appear in the user's text.
-            # Only p_words<=t_words direction — prevents short user texts like
-            # "my booking" from hitting long PAY phrases like "complete my booking".
-            if p_words and t_words and p_words <= t_words:
+            # Exact match OR the text is a clean sub/super-string of a phrase
+            if t_norm == p_norm or t_norm in p_norm or p_norm in t_norm:
                 return intent_key, 1.0
     return "UNKNOWN", 0.0
 
@@ -1087,7 +944,6 @@ INTENTS = {
             "consulter mes rÃ©servations", "mes billets",
             "mes voyages rÃ©servÃ©s", "voir ce que j'ai rÃ©servÃ©",
             # English
-            "my booking", "my reservation", "my booking history",
             "my bookings", "show my bookings", "view bookings",
             "my trips", "see my reservations", "check my bookings",
             "reservation list", "booking history", "past bookings",
@@ -1255,28 +1111,6 @@ INTENTS = {
         "action": "PAYER",
     },
 
-    # --- Weather -----------------------------------------------------------
-    "GET_WEATHER": {
-        "phrases": [
-            # English
-            "what is the weather", "what's the weather", "weather in",
-            "weather forecast", "temperature in", "how is the weather",
-            "weather today", "current weather", "tell me the weather",
-            "what is the temperature", "is it hot", "is it cold",
-            "will it rain", "weather report", "weather", "forecast",
-            "is it sunny", "is it raining", "how hot is it",
-            "temperature outside", "whats the weather like",
-            "check weather", "weather update", "give me the weather",
-            # French
-            "météo", "meteo", "quel temps fait-il", "quel temps il fait",
-            "quel temps", "il pleut", "il fait chaud", "il fait froid",
-            "temperature dehors", "previsions meteo", "bulletin meteo",
-            "va-t-il pleuvoir", "temps aujourd hui", "la meteo",
-        ],
-        "response": "Let me check the weather for you!",
-        "action": "GET_WEATHER",
-    },
-
     # â”€â”€â”€ Auth â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "LOGIN": {
         "phrases": [
@@ -1331,63 +1165,16 @@ INTENTS = {
             "je veux me dÃ©connecter", "dÃ©connecte moi",
             "fin de session", "sortir de mon compte",
             # English
-            "logout", "log out", "sign out", "log off", "end session",
+            "logout", "log out", "sign out", "end session",
             "disconnect", "i want to log out", "close my session",
             "log me out", "sign me out", "i'm done",
             "i want to logout", "please log me out",
             "exit my account", "leave my account",
         ],
-        "response": "Wait, what? You're leaving already?",
+        "response": "Poof â€” off you go. Come back when the travel bug bites again!",
         "action": "DECONNEXION",
     },
-
-    # --- Flight details (Mes Vols page) ------------------------------------
-    "SHOW_FLIGHT_DETAILS": {
-        "phrases": [
-            # English
-            "details", "show details", "open details", "view details",
-            "tell me more", "more info", "more information",
-            "flight info", "destination info", "city info",
-            "show me details", "open the details", "flight details",
-            "destination details", "about this flight", "about this destination",
-            "what is this destination", "tell me about this city",
-            "show city details", "city details", "expand details",
-            # French
-            "details", "plus d'infos", "plus d'informations",
-            "infos du vol", "montre les details", "ouvre les details",
-            "details du vol", "details de la destination",
-            "a propos de cette ville", "info sur la ville", "voir les details",
-        ],
-        "response": "Opening destination details for you!",
-        "action": "SHOW_FLIGHT_DETAILS",
-    },
-
-    # --- Real-time weather --------------------------------------------------
-    "WEATHER": {
-        "phrases": [
-            # English
-            "weather", "whether", "wether", "what's the weather", "what is the weather", "weather today",
-            "weather forecast", "how's the weather", "how is the weather",
-            "temperature", "what's the temperature", "current weather",
-            "show me the weather", "tell me the weather", "check the weather",
-            "weather check", "weather report", "weather update",
-            "is it raining", "is it cold", "is it hot", "is it sunny",
-            "weather in paris", "weather in tunis", "weather in london",
-            "weather in dubai", "weather in new york",
-            "what's the temperature outside", "how cold is it",
-            "what should i wear", "do i need an umbrella",
-            # French
-            "meteo", "météo", "la météo", "quel temps fait il",
-            "quel temps", "temps qu il fait", "bulletin meteorologique",
-            "temperature aujourd hui", "il pleut dehors",
-            "fait il beau", "previsions meteo", "donnes moi la meteo",
-            "quelle est la temperature", "la meteo aujourd hui",
-            "quel temps fait-il a paris", "meteo de tunis",
-        ],
-        "response": "Let me check the weather for you!",
-        "action": "SHOW_WEATHER",
-    },
-
+    # â”€â”€â”€ Form helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     "FOCUS_EMAIL": {
         "phrases": [
             # French
@@ -1581,41 +1368,11 @@ INTENTS = {
             "vivian", "hey vivian", "hi vivian", "hello vivian",
             "vivian wake up", "wake up vivian", "wake vivian",
             "vivian are you there", "vivian come back", "vivian please",
-            "let me talk to vivian", "i want vivian",
+            "where is vivian", "let me talk to vivian", "i want vivian",
             "can i speak to vivian", "get vivian", "call vivian",
             "is vivian there", "pass me to vivian", "give me vivian",
         ],
         "response": "I'm here! Yes? You called?",
-        "action": "NONE",
-    },
-
-    "ECHO_CALL": {
-        "phrases": [
-            # User explicitly asks Echo to take over
-            "hey echo", "hi echo", "echo", "hello echo",
-            "echo are you there", "echo wake up", "echo help me",
-            "echo take over", "echo do it", "let echo handle it",
-            "echo i need you", "echo speak", "echo answer me",
-            "can echo help", "i want echo", "give me echo",
-            "echo you there", "echo please", "switch to echo",
-        ],
-        "response": "Right here! What do you need?",
-        "action": "NONE",
-    },
-
-    "WHERE_IS_VIVIAN": {
-        "phrases": [
-            "where is vivian", "where's vivian", "wheres vivian",
-            "what happened to vivian", "vivian where are you",
-            "why isn't vivian talking", "why is vivian quiet",
-            "vivian not responding", "vivian not answering",
-            "where did vivian go", "vivian disappeared",
-            "can't hear vivian", "cannot hear vivian",
-            "is vivian okay", "is vivian working",
-            "vivian slow", "vivian taking too long",
-            "what is vivian doing", "what's vivian doing",
-        ],
-        "response": "Oh Vivian? Doing the only thing she's good at — sleeping!",
         "action": "NONE",
     },
 
@@ -1701,7 +1458,16 @@ INTENTS = {
         "action": "NONE",
     },
 
-    
+    "SMALLTALK_WEATHER": {
+        "phrases": [
+            "what's the weather", "how's the weather", "weather",
+            "will it rain", "is it sunny", "mÃ©tÃ©o", "meteo",
+            "quel temps fait-il", "quel temps", "forecast",
+        ],
+        "response": "I can't check live weather yet, but I'd recommend packing a light jacket just in case. Better safe than soggy.",
+        "action": "NONE",
+    },
+
     "SMALLTALK_CURRENCY": {
         "phrases": [
             "currency", "exchange rate", "how much is the euro",
@@ -1892,17 +1658,10 @@ OLLAMA_MODEL         = "qwen2.5"           # qwen2.5 has better French + multili
 OLLAMA_TIMEOUT_S     = 6                   # generous but bounded
 
 # â”€â”€ DeepSeek API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-GEMINI_API_KEY     = "AIzaSyAGPaO4c3ekZkrnnl84NffvHlHlU4ciw54"
-GEMINI_API_URL     = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-GEMINI_MODEL       = "gemini-2.0-flash"
-GEMINI_TIMEOUT_S   = 6
-_gemini_disabled     = False  # set True on permanent auth error (401/402/403)
-_gemini_retry_after  = 0.0    # epoch time before which Gemini is paused (429 backoff)
-# Legacy aliases so any remaining code that references the old DeepSeek names still compiles
-DEEPSEEK_API_KEY   = GEMINI_API_KEY
-DEEPSEEK_API_URL   = GEMINI_API_URL
-DEEPSEEK_MODEL     = GEMINI_MODEL
-DEEPSEEK_TIMEOUT_S = GEMINI_TIMEOUT_S
+DEEPSEEK_API_KEY     = "sk-bdcdc8e442fe41fca9af53a67075b025"
+DEEPSEEK_API_URL     = "https://api.deepseek.com/v1/chat/completions"
+DEEPSEEK_MODEL       = "deepseek-chat"
+DEEPSEEK_TIMEOUT_S   = 8
 
 # Maps intent names back to action codes (same as INTENTS["xxx"]["action"]).
 _INTENT_TO_ACTION = {k: v["action"] for k, v in
@@ -1912,7 +1671,6 @@ _INTENT_TO_ACTION = {k: v["action"] for k, v in
                       "SEARCH":             {"action": "RECHERCHER"},
                       "CANCEL":             {"action": "ANNULER"},
                       "PAY":                {"action": "PAYER"},
-                      "GET_WEATHER":        {"action": "GET_WEATHER"},
                       "HELP":               {"action": "AIDE"},
                       "DESCRIBE":           {"action": "DECRIRE"},
                       "LOGOUT":             {"action": "DECONNEXION"},
@@ -1945,8 +1703,6 @@ _INTENT_TO_ACTION = {k: v["action"] for k, v in
                       "DESCRIBE_ACTIVITY":     {"action": "DESCRIBE_ACTIVITY"},
                       "DESCRIBE_CAR":          {"action": "DESCRIBE_CAR"},
                       "SHOW_SESSIONS":         {"action": "SHOW_SESSIONS"},
-                      "SHOW_FLIGHT_DETAILS":   {"action": "SHOW_FLIGHT_DETAILS"},
-                      "WEATHER":               {"action": "SHOW_WEATHER"},
                       }.items()}
 
 _OLLAMA_SYSTEM = (
@@ -1963,7 +1719,7 @@ _OLLAMA_SYSTEM = (
     "BOOK, VIEW_BOOKINGS, CHECKOUT, SEARCH, CANCEL, PAY, HELP, DESCRIBE, LOGOUT, "
     "LOGIN, SIGNUP, GREET, FOCUS_EMAIL, FOCUS_PASSWORD, SHOW_CARS, SHOW_ACTIVITIES, SHOW_HOTELS, "
     "SHOW_LOCATIONS, NAVIGATE_HOME, PROFILE, MESSAGES, RECLAMATION, FORUM, "
-    "SHOW_SESSIONS, DESCRIBE_ACTIVITY, DESCRIBE_CAR, SHOW_FLIGHT_DETAILS, WEATHER, "
+    "SHOW_SESSIONS, DESCRIBE_ACTIVITY, DESCRIBE_CAR, "
     "SMALLTALK_NAME, SMALLTALK_HOW, SMALLTALK_HUMAN, SMALLTALK_JOKE, SMALLTALK_THANKS, "
     "SMALLTALK_WEATHER, SMALLTALK_CURRENCY, SMALLTALK_TRAVEL_TIP, SMALLTALK_FAVORITE, UNKNOWN. "
     "Also extract: destination (city name, or null), date (YYYY-MM-DD, or null). "
@@ -2090,9 +1846,9 @@ def _classify_ollama(text: str):
         return None
 
 
-def _classify_gemini(text: str):
+def _classify_deepseek(text: str):
     """
-    Calls the Gemini API (OpenAI-compatible endpoint) using function calling to classify user intent
+    Calls the DeepSeek API using **function calling** to classify user intent
     and extract structured travel parameters.
     Includes conversation history for multi-turn context resolution.
 
@@ -2177,7 +1933,7 @@ def _classify_gemini(text: str):
         messages.append({"role": "user", "content": text})
 
         payload = json.dumps({
-            "model":       GEMINI_MODEL,
+            "model":       DEEPSEEK_MODEL,
             "stream":      False,
             "temperature": 0.1,
             "max_tokens":  300,
@@ -2187,14 +1943,14 @@ def _classify_gemini(text: str):
         }, ensure_ascii=False).encode("utf-8")
 
         req = urllib.request.Request(
-            GEMINI_API_URL,
+            DEEPSEEK_API_URL,
             data=payload,
             headers={
                 "Content-Type":  "application/json; charset=utf-8",
-                "Authorization": f"Bearer {GEMINI_API_KEY}",
+                "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
                 "Accept":        "application/json",
             })
-        with urllib.request.urlopen(req, timeout=GEMINI_TIMEOUT_S) as resp:
+        with urllib.request.urlopen(req, timeout=DEEPSEEK_TIMEOUT_S) as resp:
             raw = json.loads(resp.read())
 
         message = raw.get("choices", [{}])[0].get("message", {})
@@ -2225,24 +1981,12 @@ def _classify_gemini(text: str):
             intent = "UNKNOWN"
             conf   = 0.0
 
-        _log(f"  [Gemini] intent={intent}  conf={conf:.2f}  dest={dest}"
+        _log(f"  [DeepSeek-fn] intent={intent}  conf={conf:.2f}  dest={dest}"
              f"  date={date}  pax={passengers}")
         return intent, conf, dest, date, resp_t, passengers
 
-    except urllib.error.HTTPError as exc:
-        if exc.code in (401, 402, 403):
-            global _gemini_disabled
-            _gemini_disabled = True
-            _log(f"  [Gemini] HTTP {exc.code} — permanently disabling Gemini (auth error).")
-        elif exc.code == 429:
-            global _gemini_retry_after
-            _gemini_retry_after = time.time() + 90
-            _log("  [Gemini] HTTP 429 — rate limited. Pausing 90 s, auto-retrying.")
-        else:
-            _log(f"  [Gemini] HTTP error: {exc}")
-        return None
     except Exception as exc:
-        _log(f"  [Gemini] Error: {exc}")
+        _log(f"  [DeepSeek] Error: {exc}")
         return None
 
 
@@ -2365,7 +2109,7 @@ def _load_rag() -> None:
         _log(f"[RAG] Failed to load knowledge base: {_e}")
 
 
-def _rag_search(query: str, threshold: float = 0.25) -> str | None:
+def _rag_search(query: str, threshold: float = 0.08) -> str | None:
     """
     Return the best-matching knowledge-base paragraph for *query*, or None
     if the best cosine similarity is below *threshold*.
@@ -2440,10 +2184,6 @@ def classify(text):
     """Returns (intent_key, confidence_float)."""
     text = text.strip()
     if not text:
-        return "UNKNOWN", 0.0
-    # Guard: very short inputs (single words, fillers) produce spurious
-    # sentence-transformer confidence. Reject before expensive embedding.
-    if len(text.split()) < 2 and len(text) < 8:
         return "UNKNOWN", 0.0
     try:
         if _engine == "sentence-transformers":
@@ -2525,15 +2265,6 @@ def main():
     """
     global _agent_state, _user_logged_in, _user_name, _pending_command, _intro_done, _current_seq, _vivian_ready
 
-    # Unsupervised learning: import tracker, inject previously learned phrases.
-    try:
-        from behavior_tracker import BehaviorTracker as _BT
-        _tracker = _BT()
-        injected = _tracker.inject_learned_phrases(INTENTS)
-        _log(f"[BehaviorTracker] Init OK. Injected {injected} learned phrase(s).")
-    except Exception as _bt_err:
-        _tracker = None
-        _log(f"[BehaviorTracker] Disabled: {_bt_err}")
     _log("GoVibe Voice Agent starting...")
 
     # Fast startup: sklearn loads in <1 s so Java gets the ready signal almost
@@ -2560,10 +2291,10 @@ def main():
     # Check Ollama availability asynchronously (don't block startup).
     _check_ollama()
 
-    ready_engine = _engine + "+gemini" + ("+ollama" if _ollama_available else "") + "+qwen3tts"
+    ready_engine = _engine + "+deepseek" + ("+ollama" if _ollama_available else "") + "+qwen3tts"
     _send({"status": "ready", "engine": ready_engine})
     _log(
-        f"Ready. Engine: {_engine}. Gemini: YES. "
+        f"Ready. Engine: {_engine}. DeepSeek: YES. "
         f"Ollama: {'YES' if _ollama_available else 'NO'}. "
         f"TTS: Qwen3-0.6B (lazy-load). Listening on stdin..."
     )
@@ -2611,16 +2342,6 @@ def main():
                     speak(_speak_txt, _INSTR_GENERAL)
                 continue  # no intent response for speak requests
 
-            # ── speak_fast ── Java requests Echo (edge-tts) for instant reply ──────
-            # Used by CommandRouter.speakAndRun() so action confirmations play
-            # in ~200ms (Echo) instead of 30-60s (Vivian/Qwen3 on CPU).
-            # This keeps the mic open almost immediately after a command.
-            if msg.get("type") == "speak_fast":
-                _speak_txt = msg.get("text", "")
-                if _speak_txt:
-                    speak_fast(_speak_txt)
-                continue  # no intent response for speak_fast
-
             if msg.get("type") == "user_context":
                 prev_logged_in  = _user_logged_in
                 _user_logged_in = bool(msg.get("logged_in", False))
@@ -2634,33 +2355,16 @@ def main():
                 # Auto-transition to HELPING so those commands go through immediately.
                 if not _user_logged_in and _agent_state == "SLEEPING":
                     _log("[Context] Login screen detected â€” SLEEPING â†’ HELPING (auth bypass active).")
-                    _intro_done = True   # login screen never needs the intro drama
                     _transition("HELPING")
 
                 # â”€â”€ Login just completed (False â†’ True) â€” wellness greeting â”€â”€â”€
                 elif _user_logged_in and not prev_logged_in:
                     _log("[Context] Login completed â€” recognition + guidance greeting.")
-                    # Clear any pending TTS (banter duet, help queue, quips) so the
-                    # login greeting plays immediately rather than after a long queue drain.
-                    _clear_tts_queue()
                     name_part = f" {_user_name}" if _user_name else ""
-                    recog    = f"oh it was you{name_part}! Welcome back!"
+                    recog    = f"oh it was you{name_part}!"
                     guidance = "do you need help or should I guide you?"
-                    # Echo speaks FIRST (~200ms, edge-tts) so the user hears something immediately.
-                    # Vivian's Qwen3 queue may still be busy with wake-up banter audio.
-                    _ECHO_LOGIN_ACKS = [
-                        f"Hey{name_part}! You're in! Vivian -- say hello!",
-                        f"Oh{name_part}! Welcome back! Vivian, they're here!",
-                        f"Logged in{name_part}! Vivian, greet our user!",
-                        f"They made it{name_part}! Vivian, you're up!",
-                    ]
-                    speak_fast(_rnd.choice(_ECHO_LOGIN_ACKS))
-                    # Use speak_fast (Echo/edge-tts) for the full greeting so the mic
-                    # reopens within ~600ms instead of waiting 10-30s for Qwen3 synthesis.
-                    # Echo handles the full greeting instantly -- mic reopens in ~600ms.
-                    # Vivian deliberately skipped here to avoid re-muting the mic
-                    # right as the user tries to answer. She can respond on next command.
-                    speak_fast(f"{recog} {guidance}")
+                    speak(recog, _INSTR_WARM_RECOG)
+                    speak(guidance, _INSTR_HELPFUL_OFFER)
                     _transition("AWAITING_WELLNESS")
                     _send({
                         "intent": "GREET", "response": guidance, "action": "NONE",
@@ -2670,59 +2374,17 @@ def main():
 
                 # Triggered by a logout completing â€” play post-logout sequence.
                 elif _agent_state == "PROCESSING_LOGOUT" and not _user_logged_in:
-                    _log("[PostLogout] Running banter + confused/sleepy sequence.")
-                    # Echo speaks first (instant edge-tts), then Vivian reacts confused.
-                    speak_fast("Come back soon!")                      # Echo -- instant
-                    speak("What was that for?", _INSTR_CONFUSED)      # Vivian -- confused
-                    # Yawn SFX then fade back to sleep.
+                    _log("[PostLogout] Running farewell + confused/sleepy sequence.")
+                    # Farewell before fading back to sleep.
+                    speak("Safe travels! Call me when you need me.", _INSTR_FAREWELL)
+                    # Scenario 7 step 2: confused comment on the login screen.
+                    speak("what was that for?", _INSTR_CONFUSED)
+                    # Scenario 7 step 3: yawn SFX then fade back to sleep.
                     _queue_yawn_sfx()
                     _transition("SLEEPING")
                     # Signal Java to re-enable the wake-word detector.
                     _send({"type": "resume_wake_word"})
-
-                # Logout triggered externally (SAPI grammar fast-path, or
-                # CommandRouter.notifyUserLoggedOut() fired before Python
-                # had a chance to enter PROCESSING_LOGOUT).  Python was
-                # still in HELPING / AWAITING_WELLNESS when Java logged out.
-                elif not _user_logged_in and prev_logged_in:
-                    _log("[PostLogout-External] External logout -- farewell + sleep.")
-                    speak_fast("Come back soon!")
-                    _queue_yawn_sfx()
-                    _transition("SLEEPING")
-                    _send({"type": "resume_wake_word"})
-
                 continue  # no intent response expected for user_context
-
-            # gesture_event -- Java GestureRecognitionService sends this when
-            # a gesture changes so the Python agent can respond contextually.
-            if msg.get("type") == "gesture_event":
-                _gesture = msg.get("gesture", "NONE")
-                _log(f"[Gesture] Received: {_gesture}")
-                _GESTURE_REPLIES = {
-                    "THUMBS_UP": [
-                        "Thumbs up! Hold it for a second and we'll confirm.",
-                        "Nice! Keep that thumb up a little longer!",
-                        "Perfect gesture! Just hold it steady.",
-                    ],
-                    "OPEN_PALM": [
-                        "Open palm detected! Hold still to confirm.",
-                        "Great gesture! Keep your hand open.",
-                        "Open palm -- excellent! A moment longer and we're confirmed.",
-                    ],
-                    "FIST": [
-                        "That's a fist -- try thumbs up or open palm to confirm.",
-                        "Fist detected! Relax your hand and try thumbs up instead.",
-                    ],
-                    "POINTING": [
-                        "Pointing -- interesting choice! I need thumbs up or open palm though.",
-                        "I see the finger! Try an open palm or thumbs up to confirm.",
-                    ],
-                }
-                _replies = _GESTURE_REPLIES.get(_gesture)
-                if _replies:
-                    speak_fast(_rnd.choice(_replies))
-                continue  # no intent response expected for gesture_event
-
 
             # â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             # wake_word â€” Java detects "Hi Go" / "Hey Go" and sends this.
@@ -2743,7 +2405,7 @@ def main():
                     _log("[WakeWord] Combined wake+logout detected.")
                     _transition("PROCESSING_LOGOUT")
                     # Step 1 of Scenario 7: surprised reaction before logout.
-                    speak_fast("Wait, what?")  # surprise line ? edge-tts feels more instant
+                    speak("Wait, what?", _INSTR_SURPRISED)
                     # Trigger the actual logout via Java by sending DECONNEXION.
                     _send({
                         "intent": "LOGOUT", "response": "Wait, what?",
@@ -2788,8 +2450,8 @@ def main():
                     guidance = "do you need help or should I guide you?"
                     if _vivian_ready:
                         speak_fast(f"Hey, it's{name_part}! Vivian, go say hi!")
-                    # ONE Qwen3 call ? eliminates silence gap between renders
-                    speak(f"{recog} {guidance}", _INSTR_WARM_RECOG)
+                    speak(recog, _INSTR_WARM_RECOG)
+                    speak(guidance, _INSTR_HELPFUL_OFFER)
                     _transition("AWAITING_WELLNESS")
                     greeting = guidance
                 else:
@@ -3022,47 +2684,21 @@ def main():
                 # Guidance response: user replied to "do you need help or should I guide you?"
                 norm_words = set(_normalize(text).split())
                 if norm_words & _YES_WORDS:
-                    _log("  [Guidance] YES -- eager 'okaaayy' -> HELPING.")
+                    _log("  [Guidance] YES â€” eager 'okaaayy' â†’ HELPING.")
                     resp = "okaaayy"
-                    speak_fast(resp)  # short pivot -- edge-tts, no Qwen3 gap
-                    _pending_command = None
-                    _transition("HELPING")
-                    _send({
-                        "intent": "GREET", "response": resp, "action": "NONE",
-                        "confidence": 1.0, "destination": None, "date": None,
-                        "passengers": 1, "engine": "state-machine",
-                    })
-                    continue
+                    speak(resp, _INSTR_EAGER)
                 else:
-                    # Check if user said a real command (e.g. "book", "cars", "hotels").
-                    # If so, don't swallow it -- acknowledge briefly and fall through to HELPING.
-                    _wk_intent, _wk_conf = _direct_match(text)
-                    if _wk_intent == "UNKNOWN":
-                        _wk_intent, _wk_conf = classify(text)
-                    _wk_action = INTENTS.get(_wk_intent, {}).get("action", "NONE")
-                    if _wk_intent != "UNKNOWN" and _wk_action not in ("NONE", "UNKNOWN") and _wk_conf >= 0.75:
-                        # Real actionable command -- acknowledge and fall through to HELPING.
-                        _log(f"  [Guidance] Command {_wk_intent!r} detected -- skipping pivot, falling through.")
-                        # Only say "Sure! On it." if this intent has no banter pair.
-                        # When banter exists, STEP 1 in the HELPING pipeline will speak instead,
-                        # avoiding a triple-speech (guidance ack + banter Echo + banter Vivian).
-                        if not _ECHO_VIVIAN_CMD_BANTER.get(_wk_intent):
-                            speak_fast("Sure! On it.")
-                        _pending_command = None
-                        _transition("HELPING")
-                        # No continue -- fall through to HELPING pipeline to execute the command.
-                    else:
-                        _log("  [Guidance] Non-YES -- 'Alright, what can I do for you?' -> HELPING.")
-                        resp = "Alright, what can I do for you?"
-                        speak_fast(resp)  # short pivot -- edge-tts, no Qwen3 gap
-                        _pending_command = None
-                        _transition("HELPING")
-                        _send({
-                            "intent": "GREET", "response": resp, "action": "NONE",
-                            "confidence": 1.0, "destination": None, "date": None,
-                            "passengers": 1, "engine": "state-machine",
-                        })
-                        continue
+                    _log("  [Guidance] Non-YES â€” 'Alright, what can I do for you?' â†’ HELPING.")
+                    resp = "Alright, what can I do for you?"
+                    speak(resp, _INSTR_DECLINE)
+                _pending_command = None
+                _transition("HELPING")
+                _send({
+                    "intent": "GREET", "response": resp, "action": "NONE",
+                    "confidence": 1.0, "destination": None, "date": None,
+                    "passengers": 1, "engine": "state-machine",
+                })
+                continue
 
             # â”€â”€ JUST_WOKEN â€” first command after wake; user-specific greeting â”€
             #
@@ -3085,9 +2721,8 @@ def main():
                     guidance = "do you need help or should I guide you?"
                     if _vivian_ready:
                         speak_fast(f"Hey, it's{name_part}! Vivian, go say hi!")
-                    # Use speak_fast so mic reopens quickly instead of waiting for Qwen3.
-                    # Echo handles the full greeting instantly -- mic reopens in ~600ms.
-                    speak_fast(f"{recog} {guidance}")
+                    speak(recog, _INSTR_WARM_RECOG)
+                    speak(guidance, _INSTR_HELPFUL_OFFER)
                     _pending_command = text
                     _transition("AWAITING_WELLNESS")
                     _send({
@@ -3140,37 +2775,23 @@ def main():
                     "salut go", "bonjour go",
                 ]
                 if any(t in _norm_intro for t in _VIVI_TRIGGERS):
-                    # Strip the wake prefix; check for a trailing command.
-                    # 'hey go email' -> remaining='email' -> skip intro, classify.
-                    _remaining = _norm_intro
-                    for _trig in sorted(_VIVI_TRIGGERS, key=len, reverse=True):
-                        _remaining = _remaining.replace(_trig, '', 1).strip()
-                    if _remaining and len(_remaining) > 2:
-                        # Wake + trailing command: skip intro, classify directly.
-                        _log(f"[Intro] Wake+command: '{_remaining}' -- skipping intro.")
-                        _intro_done = True
-                        speak_fast("Oh! Jumping straight in -- got it!")
-                        text = _remaining  # re-classify with the command text only
-                    else:
-                        # Pure wake call ('hey go' alone): trigger intro flow.
-                        _log("[Intro] Pure wake trigger -> starting intro flow.")
-                        _transition("INTRO_WAKING")
-                        speak_fast("Oh! Someone's here! Vivian, hey -- wake up! We've got a user!")
-                        _queue_yawn_sfx()
-                        speak(
-                            "what the hell, let me sleep",
-                            "extremely sleepy, groggy, annoyed at being woken",
-                        )
-                        _send({
-                            "intent": "GREET",
-                            "response": "*yawn* what the hell, let me sleep",
-                            "action": "NONE", "confidence": 1.0,
-                            "destination": None, "date": None, "passengers": 1,
-                            "engine": "intro-trigger",
-                        })
-                        continue
+                    _log("[Intro] Hey Go trigger detected in HELPING â€” starting intro flow.")
+                    _transition("INTRO_WAKING")
+                    speak_fast("Oh! Someone's here! Vivian, hey â€” wake up! We've got a user!")
+                    _queue_yawn_sfx()
+                    speak(
+                        "what the hell, let me sleep",
+                        "extremely sleepy, groggy, annoyed at being woken",
+                    )
+                    _send({
+                        "intent": "GREET",
+                        "response": "*yawn* what the hell, let me sleep",
+                        "action": "NONE", "confidence": 1.0,
+                        "destination": None, "date": None, "passengers": 1,
+                        "engine": "intro-trigger",
+                    })
+                    continue
 
-            text          = _apply_stt_corrections(text)   # fix homophones first
             enriched_text = _enrich_with_context(text)
             destination   = None
             date          = None
@@ -3187,10 +2808,10 @@ def main():
             if intent_key == "UNKNOWN":
                 intent_key, confidence = classify(enriched_text)
 
-            # Tier 2: Gemini API with function calling (if tier-1 uncertain).
-            if intent_key == "UNKNOWN" and not _gemini_disabled and time.time() >= _gemini_retry_after:
-                _log("  Tier-1 uncertain â€” escalating to Gemini API...")
-                ds_result = _classify_gemini(enriched_text)
+            # Tier 2: DeepSeek API with function calling (if tier-1 uncertain).
+            if intent_key == "UNKNOWN":
+                _log("  Tier-1 uncertain â€” escalating to DeepSeek function-calling API...")
+                ds_result = _classify_deepseek(enriched_text)
                 if ds_result is not None:
                     ds_intent, ds_conf, ds_dest, ds_date, ds_resp, ds_pax = ds_result
                     if ds_intent != "UNKNOWN" and ds_conf >= 0.60:
@@ -3199,12 +2820,12 @@ def main():
                         destination = ds_dest
                         date        = ds_date
                         passengers  = ds_pax
-                        used_engine = "gemini"
+                        used_engine = "deepseek"
                         if ds_resp and intent_key in INTENTS:
                             INTENTS[intent_key]["_llm_response"] = ds_resp
-                # Tier 3: Ollama fallback (local, only if Gemini also failed).
+                # Tier 3: Ollama fallback (local, only if DeepSeek also failed).
                 if intent_key == "UNKNOWN" and _check_ollama():
-                    _log("  Gemini failed — trying Ollama...")
+                    _log("  DeepSeek failed â€” trying Ollama...")
                     ollama_result = _classify_ollama(enriched_text)
                     if ollama_result is not None:
                         ol_intent, ol_conf, ol_dest, ol_date, ol_resp = ollama_result
@@ -3218,10 +2839,6 @@ def main():
                                 INTENTS[intent_key]["_llm_response"] = ol_resp
 
             result = build_response(enriched_text, intent_key, confidence)
-            # Unsupervised learning: record this utterance outcome
-            if _tracker:
-                _tracker.record(_normalize(enriched_text), intent_key, confidence, state=_agent_state)
-                _tracker.maybe_consolidate()
             if destination:
                 result["destination"] = destination
             if date:
@@ -3266,10 +2883,7 @@ def main():
             # â”€â”€ Speak response via Qwen3-TTS then send JSON to Java â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             if intent_key == "LOGOUT":
                 # Scenario 7 (from HELPING): surprised reaction first.
-                # Use speak_fast (edge-tts) so the DECONNEXION action is sent
-                # to Java immediately — Qwen3 here would block for 10–30 s and
-                # delay the actual scene switch, making logout feel broken.
-                speak_fast("Wait, what?")
+                speak("Wait, what?", _INSTR_SURPRISED)
                 result["response"] = "Wait, what?"
                 _transition("PROCESSING_LOGOUT")
                 # Send DECONNEXION so Java's CommandRouter performs the logout.
@@ -3277,61 +2891,6 @@ def main():
                 # the post-logout personality sequence (confused + yawn).
                 _send(result)
                 # (Post-logout sequence fires when user_context(logged_in=false) arrives)
-
-            elif intent_key == "WEATHER":
-                # ── Real-time weather fetch + speak + send panel to Java ──────────
-                # Extract city: prefer LLM-extracted destination, else try to parse
-                # from raw text ("weather in Paris"), else fall back to a default.
-                _w_city = destination.strip().title() if destination else None
-                if not _w_city:
-                    import re as _re_w
-                    _cm = _re_w.search(r'\bin\s+([A-Za-z][A-Za-z\s]{2,20})$', text, _re_w.IGNORECASE)
-                    if _cm:
-                        _w_city = _cm.group(1).strip().title()
-                if not _w_city:
-                    _w_city = "Tunis"   # sensible default for GoVibe users
-
-                _log(f"[Weather] Fetching real-time data for: {_w_city!r}")
-
-                # Fire Echo banter immediately while the API call runs
-                _w_vivian_catchup: str | None = None
-                _banter_pairs = _ECHO_VIVIAN_CMD_BANTER.get("WEATHER", [])
-                if _banter_pairs:
-                    _echo_l, _vivian_l = _rnd.choice(_banter_pairs)
-                    speak_fast(_echo_l)
-                    _w_vivian_catchup = _vivian_l   # played after _send below
-
-                _weather_data = _fetch_weather(_w_city)
-                if _weather_data:
-                    _wt = _weather_data["temp"]
-                    _wc = _weather_data["condition"]
-                    _wh = _weather_data["humidity"]
-                    _ww = _weather_data["wind"]
-                    _wf = _weather_data["feel"]
-                    _w_speech = (
-                        f"The weather in {_w_city} right now: {_wc}, {_wt}. "
-                        f"Feels like {_wf}, humidity {_wh}, wind {_ww}."
-                    )
-                    speak_fast(_w_speech)
-                    result["response"] = _w_speech
-                    # Send weather_show so Java opens the UI panel (fire-and-forget,
-                    # no seq — PythonVoiceAgent handles it like tts_status).
-                    _send_raw({
-                        "type":      "weather_show",
-                        "city":      _w_city,
-                        "temp":      _wt,
-                        "condition": _wc,
-                        "humidity":  _wh,
-                        "wind":      _ww,
-                        "feel":      _wf,
-                    })
-                else:
-                    speak_fast(f"Sorry, I couldn't get the weather for {_w_city} right now.")
-                    result["response"] = f"Weather unavailable for {_w_city}."
-                _send(result)
-                if _w_vivian_catchup:
-                    speak(_w_vivian_catchup, "warm, curious, genuinely interested in the weather")
-
             else:
                 # Normal helpful response â€” Scenario 6.
                 # â”€â”€ Special intent banter: Echo & Vivian go back and forth â”€â”€â”€â”€â”€â”€â”€â”€
@@ -3339,7 +2898,6 @@ def main():
                     "UNKNOWN", "HELP", "LOGIN", "SIGNUP",
                     "GREET", "VIVIAN_CALL", "SMALLTALK_GOODBYE", "SMALLTALK_CASUAL",
                     "FOCUS_EMAIL", "FOCUS_PASSWORD",
-                    "ECHO_CALL", "WHERE_IS_VIVIAN",
                 }
 
                 if intent_key == "GREET":
@@ -3401,138 +2959,47 @@ def main():
                         result["response"] = _vivian_l
                     _send(result)
 
-                elif intent_key == "ECHO_CALL":
-                    # User explicitly called Echo — she responds instantly, no Qwen3.
-                    _ECHO_SELF_ACKS = [
-                        "Right here! What do you need?",
-                        "Echo online! Vivian's... doing her thing. I've got you.",
-                        "Present! Ask away — I'm faster anyway.",
-                        "Echo here! Fire away. What can I do for you?",
-                        "You rang? Echo, present and accounted for! Go ahead.",
-                        "I'm here! Always on time, unlike some co-workers. What's up?",
-                    ]
-                    reply = _rnd.choice(_ECHO_SELF_ACKS)
-                    speak_fast(reply)
-                    result["response"] = reply
-                    _send(result)
-
-                elif intent_key == "WHERE_IS_VIVIAN":
-                    if not _vivian_ready:
-                        _WHERE_LINES = [
-                            "Doing the only thing she's good at — sleeping!",
-                            "Still loading. At this rate she'll be ready by spring. Classic Vivian.",
-                            "Oh Vivian? Napping. Big surprise. I'll handle things while she snoozes.",
-                            "Asleep, obviously. She'll be up eventually. Maybe. Don't hold your breath.",
-                            "Vivian sent me a note saying 'five more minutes'. She said that twenty minutes ago.",
-                            "Honestly? Unknown. Last I heard she was 'almost ready'. That was a while ago.",
-                        ]
-                        reply = _rnd.choice(_WHERE_LINES)
-                        speak_fast(reply)
-                    else:
-                        speak_fast("She's right here! Vivian, they're asking about you!")
-                        speak("I'm here! Sorry — was I supposed to be more obvious? Yes, fully awake. What do you need?", _INSTR_APOLOGETIC)
-                        reply = "She's right here — ask her anything!"
-                    result["response"] = reply
-                    _send(result)
-
-                elif intent_key == "GET_WEATHER":
-                    # Open-Meteo: free, no API key required.
-                    import re as _re, urllib.request as _ur, json as _jn
-                    _wtext = _normalize(text)
-                    _loc_m = _re.search(
-                        r"(?:weather|temperature|forecast)\s+(?:in|for|at)\s+([a-z ]+?)(?:\s*$|\?)",
-                        _wtext
-                    ) or _re.search(r" in ([a-z ]{3,30})(?:\s*$|\?)", _wtext)
-                    _city = _loc_m.group(1).strip().title() if _loc_m else "Tunis"
-                    speak_fast(f"Checking weather in {_city}!")
-                    try:
-                        _city_q = _city.replace(" ", "+")
-                        _geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={_city_q}&count=1&language=en&format=json"
-                        with _ur.urlopen(_geo_url, timeout=5) as _gr:
-                            _geo = _jn.loads(_gr.read())
-                        _res = _geo.get("results", [])
-                        if not _res:
-                            speak_fast(f"I couldn't find {_city} in the weather database.")
-                            result["response"] = f"City {_city} not found."
-                        else:
-                            _lat = _res[0]["latitude"]; _lon = _res[0]["longitude"]
-                            _w_url = (f"https://api.open-meteo.com/v1/forecast"
-                                      f"?latitude={_lat}&longitude={_lon}"
-                                      f"&current=temperature_2m,weathercode,windspeed_10m"
-                                      f"&temperature_unit=celsius&windspeed_unit=kmh&timezone=auto")
-                            with _ur.urlopen(_w_url, timeout=5) as _wr:
-                                _wd = _jn.loads(_wr.read())
-                            _cur = _wd.get("current", {})
-                            _temp = _cur.get("temperature_2m", "?")
-                            _wind = _cur.get("windspeed_10m", "?")
-                            _WMO = {0:"clear sky",1:"mainly clear",2:"partly cloudy",3:"overcast",
-                                    45:"foggy",51:"light drizzle",53:"drizzle",55:"heavy drizzle",
-                                    61:"light rain",63:"rain",65:"heavy rain",71:"light snow",
-                                    73:"snow",75:"heavy snow",80:"showers",95:"thunderstorm"}
-                            _wcode = int(_cur.get("weathercode", 0))
-                            _desc = _WMO.get(_wcode, "mixed conditions")
-                            _wresp = f"Weather in {_city}: {_temp}°C, {_desc}, wind {_wind} km/h."
-                            speak_fast(f"Here you go! {_wresp}")
-                            if _vivian_ready:
-                                speak(f"It is {_temp} degrees in {_city} with {_desc} skies.", _INSTR_HELPFUL_OFFER)
-                            result["response"] = _wresp
-                    except Exception as _we:
-                        _log(f"[Weather] Error: {_we}")
-                        speak_fast("Weather service is unavailable right now. Try again in a moment.")
-                        result["response"] = f"Weather error: {_we}"
-                    _send(result)
-
                 else:
                     # ── Dual-agent command handling ─────────────────────────────────
-                    # Design: Echo acks INSTANTLY via edge-tts (~200ms), then _send(result)
-                    # fires so Java acts NOW, then Vivian catches up with her warm Qwen3 voice
-                    # AFTER navigation/action has already happened. User hears Echo confirm
-                    # in <200ms and sees the screen change, then Vivian's personality quip
-                    # arrives as a natural "catchup" — she was just a little slow.
+                    # Echo always acks first (instant edge-tts, ~200ms).
+                    # If Vivian is ready: she follows with a banter quip, then the response.
+                    # If Vivian is still loading: Echo covers with a funny quip and handles alone.
+                    # If Vivian is slow: Echo's fast ack already played — Vivian adds her part later.
                     instr = _INSTR_UNKNOWN if intent_key == "UNKNOWN" else _INSTR_GENERAL
                     resp_text = result["response"]
-                    _vivian_catchup: str | None = None  # spoken AFTER _send()
-
-                    # STEP 1 — Echo acks immediately (edge-tts, instant)
                     if intent_key not in _NO_ON_IT:
                         paired = _ECHO_VIVIAN_CMD_BANTER.get(intent_key)
                         if paired and _vivian_ready:
+                            # Echo sets up, Vivian quips back before the main response
                             _echo_setup, _vivian_quip = _rnd.choice(paired)
-                            speak_fast(_echo_setup)          # Echo: instant confirmation
-                            _vivian_catchup = _vivian_quip   # Vivian delivers this AFTER send
+                            speak_fast(_echo_setup)
+                            speak(_vivian_quip, _INSTR_EAGER)
                         elif not _vivian_ready:
+                            # Echo covering solo — plays a funny covering ack
                             speak_fast(_rnd.choice(_ECHO_SOLO_ACKS))
                         else:
+                            # Vivian ready, no specific banter pair — Echo simple ack
                             speak_fast(_rnd.choice(_ECHO_SIMPLE_ACKS))
-
-                    # STEP 2 — Deliver short response via Echo (instant, no waiting)
-                    # Skip when banter already fired in STEP 1 — banter has already confirmed
-                    # the action, so speaking resp_text here would be redundant triple-speech.
+                    # Deliver the substantive response
                     if not _vivian_ready:
-                        speak_fast(resp_text)   # Vivian absent — Echo handles fully
-                    elif _vivian_catchup is None and len(resp_text) <= 80:
-                        speak_fast(resp_text)   # Short & no banter — Echo instant; Vivian may follow
-                    # else: banter confirmed it (STEP 1), or long response — Vivian delivers below
-
-                    # STEP 3 — Send action to Java NOW (Echo already spoke; don't wait for Vivian)
-                    _send(result)
-
-                    # STEP 4 — Vivian catches up after Java has already acted
-                    if _vivian_ready:
-                        if _vivian_catchup:
-                            speak(_vivian_catchup, _INSTR_EAGER)
-                        if len(resp_text) > 80:
-                            # Long response — Vivian delivers her full warm narration
-                            speak(resp_text, instr)
-                        elif _vivian_catchup is None and intent_key not in _NO_ON_IT \
-                                and _rnd.random() < 0.25:
-                            _VIVIAN_FOLLOWUPS = [
+                        # Echo delivering alone (Vivian still loading) — edge-tts fast path
+                        speak_fast(resp_text)
+                    elif len(resp_text) <= 80:
+                        # Short response — Echo delivers fast for low latency
+                        speak_fast(resp_text)
+                        # Vivian adds a quick teasing follow-up 25% of the time to stay present
+                        if intent_key not in _NO_ON_IT and _vivian_ready and _rnd.random() < 0.25:
+                            _VIVIAN_FOLLOWUPS: list[str] = [
                                 "Echo didn't give you much, did she? Ask me if you want more detail!",
                                 "Short answer from Echo. She'll elaborate when she's feeling generous.",
                                 "And I'm Vivian — I would have said the same but with extra flair.",
                                 "That's very Echo of her. Efficient. I'll add colour if you need it!",
                             ]
                             speak(_rnd.choice(_VIVIAN_FOLLOWUPS), "playful, warm, lightly teasing")
+                    else:
+                        # Long descriptive response — Vivian delivers with her warm full voice
+                        speak(resp_text, instr)
+                    _send(result)
 
             # â”€â”€ Update conversation & entity memory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _conversation_history.append({"role": "user", "content": text})
@@ -3545,8 +3012,6 @@ def main():
             # Plain-text fallback (non-JSON line on stdin).
             text = raw_line
             intent_key, confidence = classify(text)
-            if _tracker:
-                _tracker.record(text, intent_key, confidence, state=_agent_state)
             result = build_response(text, intent_key, confidence)
             result["passengers"] = 1
             result["engine"]     = _engine

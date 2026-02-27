@@ -35,6 +35,23 @@
                             </HBox>
                         </graphic>
                     </Button>
+                    <!-- Rain-drop weather button: round pill, rain-blue, raindrop SVG icon -->
+                    <Button fx:id="btnWeather" onAction="#handleWeatherButton"
+                            style="-fx-background-color: rgba(74,158,255,0.18);
+                                   -fx-border-color: rgba(74,158,255,0.65);
+                                   -fx-border-width: 1.5; -fx-border-radius: 50;
+                                   -fx-background-radius: 50;
+                                   -fx-min-width: 54; -fx-min-height: 54;
+                                   -fx-max-width: 54; -fx-max-height: 54;
+                                   -fx-cursor: hand; -fx-padding: 0;
+                                   -fx-effect: dropshadow(gaussian, rgba(74,158,255,0.55), 18, 0, 0, 0);"
+                            tooltip="Check current weather">
+                        <graphic>
+                            <!-- Raindrop / water-drop shape (24×24 coordinate space) -->
+                            <SVGPath content="M12 2C8 7 4 11.5 4 15c0 4.4 3.6 8 8 8s8-3.6 8-8C20 11.5 16 7 12 2z"
+                                     style="-fx-fill: #4A9EFF;" scaleX="0.9" scaleY="0.9"/>
+                        </graphic>
+                    </Button>
                 </HBox>
             </HBox>
 
@@ -61,6 +78,32 @@
                     </FlowPane>
                 </content>
             </ScrollPane>
+
+            <!-- ═══ Rain-drop reveal overlay ════════════════════════════════
+                 Shown briefly when the user opens the weather panel.
+                 Controller fades it in, animates the drop, then fades out.  -->
+            <StackPane fx:id="weatherRainOverlay" visible="false" opacity="0"
+                       mouseTransparent="true"
+                       style="-fx-background-color: rgba(6,15,36,0.72);
+                              -fx-background-radius: 12;">
+                <VBox alignment="CENTER" spacing="22">
+
+                    <!-- Large animated raindrop (controller scales + blurs this) -->
+                    <StackPane fx:id="rainDropCenter" alignment="CENTER"
+                               style="-fx-effect: dropshadow(gaussian, rgba(74,158,255,0.90), 60, 0, 0, 0);">
+                        <SVGPath content="M12 2C8 7 4 11.5 4 15c0 4.4 3.6 8 8 8s8-3.6 8-8C20 11.5 16 7 12 2z"
+                                 style="-fx-fill: rgba(74,158,255,0.92);" scaleX="4.2" scaleY="4.2"/>
+                    </StackPane>
+
+                    <!-- Subtitle below the drop -->
+                    <Text fx:id="rainOverlaySubtitle" text="Fetching weather …"
+                          style="-fx-fill: rgba(190,220,255,0.88);
+                                 -fx-font-size: 18;
+                                 -fx-font-weight: 700;
+                                 -fx-effect: dropshadow(gaussian, rgba(74,158,255,0.6), 12, 0, 0, 0);"/>
+                </VBox>
+            </StackPane>
+
         </StackPane>
     </center>
 

@@ -116,13 +116,16 @@ public class ForumItemController {
         if (alert.showAndWait().get() == ButtonType.OK) {
             try {
                 serviceMembre.supprimer(currentForum.getForum_id(), SessionManager.getCurrentUser().getId());
-
-                // Refresh list
                 Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
+                Scene scene = new Scene(root);
+                root.setOpacity(0);
+                stage.setScene(scene);
                 stage.show();
-
+                javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
+                ft.setFromValue(0);
+                ft.setToValue(1);
+                ft.play();
             } catch (SQLException | IOException e) {
                 e.printStackTrace();
             }
@@ -134,13 +137,17 @@ public class ForumItemController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/DetailsForum.fxml"));
             Parent root = loader.load();
-
             DetailsForumController controller = loader.getController();
             controller.initData(currentForum);
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            root.setOpacity(0);
+            stage.setScene(scene);
             stage.show();
+            javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -151,13 +158,17 @@ public class ForumItemController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/ModifierForum.fxml"));
             Parent root = loader.load();
-
             ModifierForumController controller = loader.getController();
             controller.initData(currentForum);
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            root.setOpacity(0);
+            stage.setScene(scene);
             stage.show();
+            javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -173,11 +184,16 @@ public class ForumItemController {
         if (alert.showAndWait().get() == ButtonType.OK) {
             try {
                 serviceForum.supprimer(currentForum.getForum_id());
-                // Refresh list
                 Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
+                Scene scene = new Scene(root);
+                root.setOpacity(0);
+                stage.setScene(scene);
                 stage.show();
+                javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
+                ft.setFromValue(0);
+                ft.setToValue(1);
+                ft.play();
             } catch (SQLException | IOException e) {
                 e.printStackTrace();
             }

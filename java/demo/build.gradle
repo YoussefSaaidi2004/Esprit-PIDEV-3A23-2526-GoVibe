@@ -12,4 +12,5 @@ repositories {
 
 dependencies {
     implementation group: 'com.alphacephei', name: 'vosk', version: '0.3.75'
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.29'
 }

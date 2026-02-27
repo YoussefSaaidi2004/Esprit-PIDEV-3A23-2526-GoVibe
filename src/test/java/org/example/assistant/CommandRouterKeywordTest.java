@@ -103,8 +103,8 @@ class CommandRouterKeywordTest {
             // AIDE and HELP are both in the table; the first one registered (AIDE) wins
             // The router just returns true — we verify the call count to distinguish
             assertTrue(router.tryKeywordMatch("AIDE HELP"));
-            // vas.speak() should have been called exactly once (one handler invoked)
-            verify(mockVas, times(1)).speak(anyString());
+            // vas.vivianSpeak() should have been called exactly once (one handler invoked)
+            verify(mockVas, times(1)).vivianSpeak(anyString());
         }
     }
 
@@ -120,7 +120,7 @@ class CommandRouterKeywordTest {
         @DisplayName("AIDE → speaks help text")
         void aideSpokenViaOnCommand() {
             router.onCommand("AIDE", "aide");
-            verify(mockVas, atLeastOnce()).speak(anyString());
+            verify(mockVas, atLeastOnce()).vivianSpeak(anyString());
         }
 
         @Test
@@ -128,7 +128,7 @@ class CommandRouterKeywordTest {
         void quoiCallsDescribeScreen() {
             router.onCommand("QUOI", "quoi");
             verify(mockProxy).describeScreen();
-            verify(mockVas).speak("Écran de test.");
+            verify(mockVas).vivianSpeak("Écran de test.");
         }
 
         @Test
@@ -142,7 +142,7 @@ class CommandRouterKeywordTest {
         @DisplayName("RECALIBRER → speaks recalibration message")
         void recalibrerSpeaksMessage() {
             router.onCommand("RECALIBRER", "recalibrer");
-            verify(mockVas).speak(contains("Recalibrating"));
+            verify(mockVas).vivianSpeak(contains("Recalibrating"));
         }
 
         @Test
@@ -150,7 +150,7 @@ class CommandRouterKeywordTest {
         void unknownCommandSpeaksRepeat() {
             assertDoesNotThrow(() -> router.onCommand("XYZXYZ_UNKNOWN", "raw"));
             // The router must ask user to repeat when nothing matches
-            verify(mockVas, atLeastOnce()).speak(contains("repeat"));
+            verify(mockVas, atLeastOnce()).vivianSpeak(contains("repeat"));
         }
     }
 
@@ -196,7 +196,7 @@ class CommandRouterKeywordTest {
         void speaksFrenchMessageBeforeReset() {
             router.onCommand("RECALIBRER", "recalibrer");
             // Message should mention microphone and silence
-            verify(mockVas).speak(argThat(msg ->
+            verify(mockVas).vivianSpeak(argThat(msg ->
                     msg.toLowerCase().contains("recalibration") ||
                     msg.toLowerCase().contains("microphone") ||
                     msg.toLowerCase().contains("silencieux") ||
@@ -316,7 +316,7 @@ class CommandRouterKeywordTest {
         void helpMentionsRecalibrer() {
             router.onCommand("AIDE", "aide");
 
-            verify(mockVas).speak(argThat(msg ->
+            verify(mockVas).vivianSpeak(argThat(msg ->
                     msg.toLowerCase().contains("recalibrer") ||
                     msg.toLowerCase().contains("recalibr")));
         }
@@ -326,7 +326,7 @@ class CommandRouterKeywordTest {
         void helpContainsKeywords() {
             router.onCommand("AIDE", "aide");
 
-            verify(mockVas).speak(argThat(msg ->
+            verify(mockVas).vivianSpeak(argThat(msg ->
                     msg.contains("Login") &&
                     msg.contains("Recalibrate") &&
                     msg.contains("commands")));

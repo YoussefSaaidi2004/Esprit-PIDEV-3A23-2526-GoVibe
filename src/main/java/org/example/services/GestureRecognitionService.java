@@ -49,23 +49,39 @@ public class GestureRecognitionService {
 
     /**
      * Start recognition.
-     * @param onFrame    receives the mirrored camera frame for display (~30 fps)
-     * @param onGesture  receives the detected gesture (~30 fps)
+     * @param onFrame     receives the mirrored camera frame for display (~30 fps)
+     * @param onGesture   receives the detected gesture (~30 fps)
      */
     public void start(Consumer<WritableImage> onFrame, Consumer<Gesture> onGesture) {
+        start(onFrame, onGesture, null);
+    }
+
+    /**
+     * Start recognition with optional AI-relay callback.
+     * @param onFrame     receives the mirrored camera frame for display (~30 fps)
+     * @param onGesture   receives the detected gesture (~30 fps)
+     * @param onAiRelay   receives gesture name strings for dispatch to the Python agent
+     *                    (deduplicated — only fires on gesture change); may be null
+     */
+    public void start(Consumer<WritableImage> onFrame,
+                      Consumer<Gesture>       onGesture,
+                      Consumer<String>        onAiRelay) {
         if (running) return;
         running = true;
 
         workerThread = new Thread(() -> {
             try {
-                webcam = Webcam.getDefault();
+                // Borrow the shared pre-warmed camera from WebcamManager.
+                // This avoids the "Cannot change resolution when webcam is open" error
+                // that occurs when GestureRecognitionService tries to reopen the already-
+                // open camera at a different resolution (640×480 vs the pre-warmed 320×240).
+                webcam = WebcamManager.borrow(4000);
                 if (webcam == null) {
                     Platform.runLater(() -> onGesture.accept(Gesture.NONE));
                     return;
                 }
-                webcam.setCustomViewSizes(new Dimension(640, 480));
-                webcam.setViewSize(new Dimension(640, 480));
-                webcam.open();
+
+                Gesture lastRelayed = Gesture.NONE;
 
                 while (running) {
                     BufferedImage raw = webcam.getImage();
@@ -78,9 +94,18 @@ public class GestureRecognitionService {
                     WritableImage fxFrame = toFXImage(raw, rw, rh, true);
                     Gesture g = classify(raw, rw, rh);
 
+                    // AI relay: send gesture name to agent on gesture change
+                    final Gesture relayG = g;
+                    if (onAiRelay != null && g != lastRelayed) {
+                        lastRelayed = g;
+                        if (g != Gesture.NONE) {
+                            onAiRelay.accept(g.name());
+                        }
+                    }
+
                     Platform.runLater(() -> {
                         onFrame.accept(fxFrame);
-                        onGesture.accept(g);
+                        onGesture.accept(relayG);
                     });
 
                     Thread.sleep(33); // ~30 fps
@@ -91,18 +116,19 @@ public class GestureRecognitionService {
             } catch (Exception e) {
                 System.err.println("[GestureRecognition] " + e.getMessage());
             } finally {
-                if (webcam != null && webcam.isOpen()) webcam.close();
+                WebcamManager.release(); // return shared camera
             }
         }, "gesture-ai-thread");
         workerThread.setDaemon(true);
         workerThread.start();
     }
 
-    /** Stop recognition and release camera. */
+    /** Stop recognition and return camera to WebcamManager shared pool. */
     public void stop() {
         running = false;
         if (workerThread != null) workerThread.interrupt();
-        if (webcam != null && webcam.isOpen()) webcam.close();
+        // Webcam is managed by WebcamManager — do not close it here;
+        // WebcamManager.release() in the worker thread's finally block handles it.
     }
 
     // ── Core AI classification ────────────────────────────────────────────────

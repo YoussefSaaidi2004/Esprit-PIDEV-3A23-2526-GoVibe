@@ -14,6 +14,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import tn.esprit.entities.Forum;
 import tn.esprit.entities.Poste;
 import tn.esprit.services.ServicePoste;
 import java.io.IOException;
@@ -22,12 +23,10 @@ import java.sql.SQLException;
 public class AjoutPostController {
 
     private final ServicePoste servicePoste = new ServicePoste();
-    private tn.esprit.entities.Forum currentForum; // Contexte du forum (peut être null)
+    private Forum currentForum;
 
-    public void setForum(tn.esprit.entities.Forum forum) {
+    public void setForum(Forum forum) {
         this.currentForum = forum;
-        // Optionnel : changer le titre ou interface pour indiquer qu'on poste dans un
-        // forum
     }
 
     @FXML
@@ -48,65 +47,67 @@ public class AjoutPostController {
     @FXML
     private ImageView mediaPreview;
 
-    // Assuming these ToggleButtons exist in the FXML
     @FXML
     private ToggleButton mediaToggle;
+
     @FXML
     private ToggleButton statusToggle;
 
     @FXML
     public void initialize() {
         syncSidebarRole();
-        // Logique pour afficher/masquer les champs média
-        mediaUrlContainer.setVisible(false); // Initially hidden
-        mediaUrlContainer.setManaged(false); // Initially not managed
-        previewContainer.setVisible(false); // Initially hidden
-        previewContainer.setManaged(false); // Initially not managed
+        if (mediaUrlContainer != null) {
+            mediaUrlContainer.setVisible(false);
+            mediaUrlContainer.setManaged(false);
+        }
+        if (previewContainer != null) {
+            previewContainer.setVisible(false);
+            previewContainer.setManaged(false);
+        }
 
-        mediaToggle.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            mediaUrlContainer.setVisible(newVal);
-            mediaUrlContainer.setManaged(newVal);
-            previewContainer.setVisible(newVal);
-            previewContainer.setManaged(newVal);
+        if (mediaToggle != null) {
+            mediaToggle.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (mediaUrlContainer != null) {
+                    mediaUrlContainer.setVisible(newVal);
+                    mediaUrlContainer.setManaged(newVal);
+                }
+                if (previewContainer != null) {
+                    previewContainer.setVisible(newVal);
+                    previewContainer.setManaged(newVal);
+                }
 
-            if (newVal) {
-                statusToggle.setSelected(false);
-                statusToggle
-                        .setStyle("-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-text-fill: #084E36;");
-                mediaToggle.setStyle("-fx-background-color: white; -fx-border-color: #50C878; -fx-text-fill: #50C878;");
-            }
-        });
+                if (newVal && statusToggle != null) {
+                    statusToggle.setSelected(false);
+                    statusToggle.setStyle("-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-text-fill: #084E36;");
+                    mediaToggle.setStyle("-fx-background-color: white; -fx-border-color: #50C878; -fx-text-fill: #50C878;");
+                }
+            });
+        }
 
-        statusToggle.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                mediaToggle.setSelected(false);
-                mediaToggle.setStyle("-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-text-fill: #084E36;");
-                statusToggle
-                        .setStyle("-fx-background-color: white; -fx-border-color: #50C878; -fx-text-fill: #50C878;");
-
-                // Clear media info when switching to STATUS for consistency
-                urlField.setText("");
-                mediaPreview.setImage(null);
-            }
-        });
-
-        // Character count listener
-        if (contenuArea != null) {
-            contenuArea.textProperty().addListener((observable, oldValue, newValue) -> {
-                // Remove error border if user starts typing (optional immediate feedback)
-                // contenuArea.getStyleClass().remove("error-border");
+        if (statusToggle != null) {
+            statusToggle.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal && mediaToggle != null) {
+                    mediaToggle.setSelected(false);
+                    mediaToggle.setStyle("-fx-background-color: white; -fx-border-color: #A0E0C9; -fx-text-fill: #084E36;");
+                    statusToggle.setStyle("-fx-background-color: white; -fx-border-color: #50C878; -fx-text-fill: #50C878;");
+                    if (urlField != null) urlField.setText("");
+                    if (mediaPreview != null) mediaPreview.setImage(null);
+                }
             });
         }
     }
 
     private void syncSidebarRole() {
-        if (roleLabel != null && tn.esprit.mains.MainApp.loggedInUser != null) {
-            String role = tn.esprit.mains.MainApp.loggedInUser.getRole();
-            if ("admin".equalsIgnoreCase(role)) {
-                roleLabel.setText("Espace admin");
-            } else {
-                roleLabel.setText("Espace client");
+        try {
+            if (roleLabel != null && tn.esprit.mains.MainApp.loggedInUser != null) {
+                String role = tn.esprit.mains.MainApp.loggedInUser.getRole();
+                if ("admin".equalsIgnoreCase(role)) {
+                    roleLabel.setText("Espace admin");
+                } else {
+                    roleLabel.setText("Espace client");
+                }
             }
+        } catch (Exception ignored) {
         }
     }
 
@@ -118,46 +119,42 @@ public class AjoutPostController {
                 new javafx.stage.FileChooser.ExtensionFilter("Images/Vidéos", "*.jpg", "*.png", "*.mp4", "*.mkv"));
         java.io.File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
-            urlField.setText(selectedFile.getAbsolutePath());
-            if (selectedFile.getName().toLowerCase().endsWith(".png")
-                    || selectedFile.getName().toLowerCase().endsWith(".jpg")) {
-                mediaPreview.setImage(new javafx.scene.image.Image(selectedFile.toURI().toString()));
+            if (urlField != null) urlField.setText(selectedFile.getAbsolutePath());
+            if (selectedFile.getName().toLowerCase().endsWith(".png") || selectedFile.getName().toLowerCase().endsWith(".jpg")) {
+                if (mediaPreview != null) mediaPreview.setImage(new javafx.scene.image.Image(selectedFile.toURI().toString()));
             } else {
-                // Placeholder pour vidéo
-                mediaPreview.setImage(null);
+                if (mediaPreview != null) mediaPreview.setImage(null);
             }
         }
     }
 
     @FXML
     private void handlePublish(ActionEvent event) {
-        String contenu = contenuArea.getText();
-        String url = mediaToggle.isSelected() ? urlField.getText() : null; // Clear URL if text status
-        String type = mediaToggle.isSelected() ? "MEDIA" : "STATUS";
+        String contenu = contenuArea != null ? contenuArea.getText() : "";
+        String url = (mediaToggle != null && mediaToggle.isSelected()) ? (urlField != null ? urlField.getText() : null) : null;
+        String type = (mediaToggle != null && mediaToggle.isSelected()) ? "MEDIA" : "STATUS";
 
         boolean isValid = true;
         StringBuilder errorMessage = new StringBuilder();
 
-        // Validation: Not empty and Max 500 chars
         if (contenu == null || contenu.trim().isEmpty()) {
-            contenuArea.getStyleClass().add("error-border");
+            if (contenuArea != null) contenuArea.getStyleClass().add("error-border");
             errorMessage.append("Le contenu ne peut pas être vide.\n");
             isValid = false;
         } else if (contenu.length() > 500) {
-            contenuArea.getStyleClass().add("error-border");
+            if (contenuArea != null) contenuArea.getStyleClass().add("error-border");
             errorMessage.append("Le contenu ne peut pas dépasser 500 caractères.\n");
             isValid = false;
         } else {
-            contenuArea.getStyleClass().remove("error-border");
+            if (contenuArea != null) contenuArea.getStyleClass().remove("error-border");
         }
 
-        // Validation for media
-        if (mediaToggle.isSelected() && (url == null || url.trim().isEmpty())) {
-            urlField.getStyleClass().add("error-border");
+        if (mediaToggle != null && mediaToggle.isSelected() && (url == null || url.trim().isEmpty())) {
+            if (urlField != null) urlField.getStyleClass().add("error-border");
             errorMessage.append("Vous devez sélectionner un média (photo/vidéo) pour ce type de publication.\n");
             isValid = false;
         } else {
-            urlField.getStyleClass().remove("error-border");
+            if (urlField != null) urlField.getStyleClass().remove("error-border");
         }
 
         if (!isValid) {
@@ -169,8 +166,7 @@ public class AjoutPostController {
             return;
         }
 
-        // Création de l'objet Poste
-        int userId = 1; // Default to admin if no user logged in (fallback)
+        int userId = 1;
         if (tn.esprit.mains.MainApp.loggedInUser != null) {
             userId = tn.esprit.mains.MainApp.loggedInUser.getId();
         }
@@ -191,15 +187,13 @@ public class AjoutPostController {
             alert.setContentText("Publication ajoutée avec succès !");
             alert.showAndWait();
 
-            // Retourner à la liste
             handleCancel(event);
 
         } catch (SQLException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur");
             alert.setHeaderText("Erreur lors de l'ajout");
-            alert.setContentText(
-                    "Une erreur est survenue lors de l'enregistrement dans la base de données : " + e.getMessage());
+            alert.setContentText("Une erreur est survenue lors de l'enregistrement dans la base de données : " + e.getMessage());
             alert.showAndWait();
             e.printStackTrace();
         }
@@ -209,7 +203,6 @@ public class AjoutPostController {
     private void handleCancel(ActionEvent event) {
         try {
             if (currentForum != null) {
-                // Retour au détail du forum
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/DetailsForum.fxml"));
                 Parent root = loader.load();
                 DetailsForumController controller = loader.getController();
@@ -219,7 +212,6 @@ public class AjoutPostController {
                 stage.setScene(new Scene(root));
                 stage.show();
             } else {
-                // Retour à la liste globale
                 Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
@@ -249,7 +241,6 @@ public class AjoutPostController {
 
     @FXML
     private void handleLogout(ActionEvent event) {
-        // Clear session
         tn.esprit.mains.MainApp.loggedInUser = null;
 
         try {

@@ -94,6 +94,8 @@ public class UserDashboardController {
     private final CheckoutService checkoutService = new CheckoutService();
     private int userId = -1;
     private Flight currentBookingFlight;
+    /** Reference to the active booking-form confirm button so triggerPayment() can submit it. */
+    private volatile Button activePayConfirmBtn = null;
 
     @FXML
     public void initialize() {
@@ -166,7 +168,7 @@ public class UserDashboardController {
 
             @Override
             public void openBooking() {
-                vas.speak("Hold on — pick a flight from the list first. I can't book thin air.");
+                vas.vivianSpeak("Hold on — pick a flight from the list first. I can't book thin air.");
             }
 
             /**
@@ -214,7 +216,16 @@ public class UserDashboardController {
 
             @Override
             public void triggerPayment() {
-                vas.speak("Almost there! Just confirm what's on screen and we'll handle the rest.");
+                // If the booking form is open, programmatically click the confirm button
+                // so the user can say "pay" instead of reaching for the mouse.
+                Platform.runLater(() -> {
+                    Button btn = activePayConfirmBtn;
+                    if (btn != null && btn.isVisible() && !btn.isDisabled()) {
+                        btn.fire();
+                    } else {
+                        vas.vivianSpeak("Please select a flight and open the booking form first, then say pay.");
+                    }
+                });
             }
 
             @Override
@@ -254,6 +265,97 @@ public class UserDashboardController {
                     }
                 }
             }
+
+            // ── Section navigation — called by CommandRouter voice commands ──
+
+            @Override
+            public void showCarsSection() {
+                javafx.application.Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/VoitureView.fxml", "Location de voitures"));
+            }
+
+            @Override
+            public void showActivitiesSection() {
+                javafx.application.Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/UserHome.fxml", "Activit\u00e9s"));
+            }
+
+            @Override
+            public void showHotelsSection() {
+                javafx.application.Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/views/room-booking.fxml", "H\u00f4tels & Chambres"));
+            }
+
+            @Override
+            public void showSessionsSection() {
+                javafx.application.Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/DashboardSession.fxml", "Sessions"));
+            }
+
+            @Override
+            public void showMessagesSection() {
+                javafx.application.Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/MesMessages.fxml", "Messages"));
+            }
+
+            @Override
+            public void showForumSection() {
+                javafx.application.Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/poste-forumviews/ListForum.fxml", "Forum"));
+            }
+
+            @Override
+            public void showReclamationSection() {
+                javafx.application.Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/ReclamationView.fxml", "R\u00e9clamations"));
+            }
+
+            @Override
+            public void showProfileSection() {
+                javafx.application.Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/org/example/UserProfileView.fxml", "Mon Profil"));
+            }
+
+            @Override
+            public void showLocationsSection() {
+                javafx.application.Platform.runLater(() ->
+                    org.example.mains.MainApp.switchScene("/LocationListView.fxml", "Mes Locations"));
+            }
+
+            @Override
+            public void showFlightDetails() {
+                javafx.application.Platform.runLater(() -> {
+                    try {
+                        java.util.List<Flight> flights = flightService.getAvailableFlights();
+                        if (flights == null || flights.isEmpty()) {
+                            vas.vivianSpeak("No flights found to show details for.");
+                            return;
+                        }
+                        Flight firstFlight = flights.get(0);
+                        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                            getClass().getResource("/views/city-payment-modal.fxml"));
+                        javafx.scene.Parent root = loader.load();
+                        CityPaymentModalController ctrl = loader.getController();
+                        ctrl.setFlightOnly(firstFlight);
+                        javafx.stage.Stage stage = new javafx.stage.Stage();
+                        stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+                        stage.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+                        javafx.scene.Node anchor = (flightGrid != null) ? flightGrid : searchField;
+                        if (anchor != null && anchor.getScene() != null) {
+                            stage.initOwner(anchor.getScene().getWindow());
+                            anchor.getScene().getRoot().setEffect(new javafx.scene.effect.GaussianBlur(15));
+                            stage.setOnHidden(e -> anchor.getScene().getRoot().setEffect(null));
+                        }
+                        javafx.scene.Scene scene = new javafx.scene.Scene(root);
+                        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                        stage.setScene(scene);
+                        stage.showAndWait();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        vas.vivianSpeak("Couldn't open flight details. Try again?");
+                    }
+                });
+            }
         };
 
         // Register proxy with the global router so commands reach this controller.
@@ -265,13 +367,7 @@ public class UserDashboardController {
         if (bookingsTab != null) bookingsTab.setAccessibleText("Onglet : Mes réservations");
         if (priceSlider != null) priceSlider.setAccessibleText("Filtre prix maximum");
 
-        // Announce dashboard is ready (TTS only — STT already running globally).
-        Thread t = new Thread(() -> {
-            try { Thread.sleep(800); } catch (InterruptedException ignored) {}
-            vas.speak("Dashboard loaded. Try not to break anything — say Help for commands.");
-        }, "VoiceAssistant-DashboardAnnounce");
-        t.setDaemon(true);
-        t.start();
+        // Python already greets the user after login — no duplicate Java announcement needed.
     }
 
     private void setupFilterListeners() {
@@ -476,6 +572,16 @@ public class UserDashboardController {
         TextField nameField  = glassField("Nom complet");
         TextField emailField = glassField("Email");
         TextField phoneField = glassField("Telephone");
+
+        // Pre-fill from logged-in session so the user doesn't have to type them
+        org.example.entities.personne sessionUser = SessionManager.getCurrentUser();
+        if (sessionUser != null) {
+            String fullName = ((sessionUser.getPrenom() != null ? sessionUser.getPrenom() : "")
+                + " " + (sessionUser.getNom() != null ? sessionUser.getNom() : "")).trim();
+            if (!fullName.isEmpty()) nameField.setText(fullName);
+            if (sessionUser.getEmail() != null && !sessionUser.getEmail().isEmpty())
+                emailField.setText(sessionUser.getEmail());
+        }
         Spinner<Integer> passengerSpinner = new Spinner<>(1, 10, 1);
         passengerSpinner.setEditable(true);
         passengerSpinner.setStyle(
@@ -542,6 +648,8 @@ public class UserDashboardController {
         // === Pay Now button ===
         Button confirmBtn = new Button("Payer Maintenant");
         confirmBtn.setMaxWidth(Double.MAX_VALUE);
+        // Save this ref so the voice "pay" command can submit the form programmatically
+        activePayConfirmBtn = confirmBtn;
         confirmBtn.setStyle(
             "-fx-background-color: linear-gradient(to right,#00c875,#00e5a0);" +
             "-fx-text-fill: #002b1a; -fx-font-size: 16; -fx-font-weight: 900;" +
@@ -770,6 +878,7 @@ public class UserDashboardController {
         return s;
     }
     private void hideBookingModal() {
+        activePayConfirmBtn = null;   // clear voice-pay ref
         bookingOverlay.setVisible(false);
         bookingOverlay.setManaged(false);
         // Restore container defaults so re-opening the booking form works correctly
@@ -1012,6 +1121,12 @@ public class UserDashboardController {
                         oc.fillText(gNameStr, 26, 38);
                     }
                 }
+            },
+            // AI relay — forward every gesture change to the Python agent so it
+            // can respond contextually (e.g. "Hold it!" / "Try thumbs up").
+            gestureName -> {
+                VoiceAssistantService localVas = MainApp.getVoiceAssistant();
+                if (localVas != null) localVas.sendGestureToAgent(gestureName);
             }
         );
 

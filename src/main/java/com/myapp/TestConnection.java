@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 
 public class TestConnection {
     public static void main(String[] args) {
-        String url = "jdbc:mysql://127.0.0.1:3306/projet?useSSL=false&serverTimezone=UTC";
+        String url = "jdbc:mysql://127.0.0.1:3306/govibe_project?useSSL=false&serverTimezone=UTC";
         String user = "root";
         String password = ""; // vide si WAMP par défaut
 

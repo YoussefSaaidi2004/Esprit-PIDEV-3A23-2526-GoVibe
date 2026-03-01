@@ -129,6 +129,22 @@
             <artifactId>vosk</artifactId>
             <version>0.3.45</version>
         </dependency>
+        <!-- JSON parser pour interagir avec le script Python Face ID -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.15.2</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -170,6 +186,8 @@
                         <option>--add-opens=java.base/java.nio=ALL-UNNAMED</option>
                         <option>--add-opens=java.base/java.util=ALL-UNNAMED</option>
                         <option>--add-opens=java.base/sun.nio.ch=ALL-UNNAMED</option>
+                        <!-- FIX: Prevent native heap corruption crashes (-805306369) from JNI drivers -->
+                        <option>--add-opens=java.desktop/sun.awt=ALL-UNNAMED</option>
                     </options>
                 </configuration>
             </plugin>

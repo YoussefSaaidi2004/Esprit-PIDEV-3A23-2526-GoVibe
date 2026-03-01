@@ -18,6 +18,9 @@ module org.example {
     requires jdk.httpserver;
     requires webcam.capture;
     requires vosk;
+    requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.annotation;
     opens org.example.controllers to javafx.fxml, jdk.jsobject;
     opens org.example.entities to javafx.base, com.google.gson;
     opens org.example.mains to javafx.graphics;

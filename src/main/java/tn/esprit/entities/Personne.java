@@ -10,6 +10,7 @@ public class Personne {
     private String password;
     private String role;
     private Timestamp created_at;
+    private String faceEncoding; // Used for Face ID
 
     public Personne() {
     }
@@ -23,6 +24,18 @@ public class Personne {
         this.password = password;
         this.role = role;
         this.created_at = created_at;
+    }
+
+    public Personne(int id, String nom, String prenom, String email, String password, String role,
+            Timestamp created_at, String faceEncoding) {
+        this.id = id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.created_at = created_at;
+        this.faceEncoding = faceEncoding;
     }
 
     public Personne(String nom, String prenom, String email, String password, String role) {
@@ -87,6 +100,14 @@ public class Personne {
 
     public void setCreated_at(Timestamp created_at) {
         this.created_at = created_at;
+    }
+
+    public String getFaceEncoding() {
+        return faceEncoding;
+    }
+
+    public void setFaceEncoding(String faceEncoding) {
+        this.faceEncoding = faceEncoding;
     }
 
     @Override

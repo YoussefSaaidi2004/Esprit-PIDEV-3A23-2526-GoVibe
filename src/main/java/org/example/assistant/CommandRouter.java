@@ -102,6 +102,8 @@ public class CommandRouter implements VoiceCommandListener {
 
         /** Trigger the login button / authenticate. */
         default void performLogin() {}
+        /** Open the camera / Face ID login flow on the login screen. */
+        default void openCamera() {}
         /** Focus the email / username input field. */
         default void focusEmailField() {}
         /** Focus the password input field. */
@@ -269,6 +271,11 @@ public class CommandRouter implements VoiceCommandListener {
         });
 
         // ---- Login screen actions ----
+        add("OPEN_CAMERA",  "camera",          cmd -> doOpenCamera());
+        add("OPEN CAMERA",  "camera",          cmd -> doOpenCamera());
+        add("CAMERA",       "camera",          cmd -> doOpenCamera());
+        add("FACE ID",      "face id",         cmd -> doOpenCamera());
+        add("FACE LOGIN",   "face id",         cmd -> doOpenCamera());
         add("LOGIN",        "login",           cmd -> doLogin());
         add("LOG IN",       "log in",          cmd -> doLogin());
         add("SIGN IN",      "sign in",         cmd -> doLogin());
@@ -469,6 +476,13 @@ public class CommandRouter implements VoiceCommandListener {
                     p.openBooking();                // standard
                 }
             }
+        });
+    }
+
+    private void doOpenCamera() {
+        speakAndRun("Opening camera — look at the lens!", () -> {
+            ControllerProxy p = proxy;
+            if (p != null) p.openCamera();
         });
     }
 

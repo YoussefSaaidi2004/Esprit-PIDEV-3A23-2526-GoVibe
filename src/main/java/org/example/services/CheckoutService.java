@@ -40,6 +40,15 @@ public class CheckoutService {
     }
 
     /**
+     * Get all checkouts belonging to a specific user
+     * @param userId The user ID
+     * @return List of that user's checkouts
+     */
+    public List<Checkout> getCheckoutsByUserId(int userId) {
+        return checkoutDAO.findByUserId(userId);
+    }
+
+    /**
      * Find checkout by ID
      * @param checkoutId The checkout ID
      * @return Checkout if found, null otherwise

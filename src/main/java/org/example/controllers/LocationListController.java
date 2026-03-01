@@ -306,23 +306,28 @@ public class LocationListController {
         scale.setToX(0.85);
         scale.setToY(0.85);
 
-        BoxBlur blur = (BoxBlur) contentRoot.getEffect();
-        javafx.animation.Timeline blurTimeline = new javafx.animation.Timeline(
-            new javafx.animation.KeyFrame(Duration.millis(250),
-                new javafx.animation.KeyValue(blur.widthProperty(), 0),
-                new javafx.animation.KeyValue(blur.heightProperty(), 0)
-            )
-        );
-
+        // FIX Crash #1: Guard against null/non-BoxBlur effect (e.g. tracking map modal
+        // sets effect directly and may have already cleared it)
+        javafx.scene.effect.Effect rawEffect = contentRoot.getEffect();
         ParallelTransition pt = new ParallelTransition(fade, scale);
+
+        if (rawEffect instanceof BoxBlur blur) {
+            javafx.animation.Timeline blurTimeline = new javafx.animation.Timeline(
+                new javafx.animation.KeyFrame(Duration.millis(250),
+                    new javafx.animation.KeyValue(blur.widthProperty(), 0),
+                    new javafx.animation.KeyValue(blur.heightProperty(), 0)
+                )
+            );
+            blurTimeline.play();
+        }
+
         pt.setOnFinished(e -> {
             modalOverlay.setVisible(false);
             contentRoot.setEffect(null);
             refreshList(); // Auto refresh when modal closes
         });
-        
+
         pt.play();
-        blurTimeline.play();
     }
 
     @FXML
@@ -411,10 +416,18 @@ public class LocationListController {
             applyFiltersAndSort();
             return;
         }
-        List<Location> locations = locationService.getAllByPersonneId(currentUser.getId());
-        masterItems.setAll(locations);
-        updateVoitureOptions();
-        applyFiltersAndSort();
+        new Thread(() -> {
+            try {
+                List<Location> locations = locationService.getAllByPersonneId(currentUser.getId());
+                Platform.runLater(() -> {
+                    masterItems.setAll(locations);
+                    updateVoitureOptions();
+                    applyFiltersAndSort();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, "User-Location-Refresh-Thread").start();
     }
 
     private void setupFilters() {
@@ -870,22 +883,24 @@ public class LocationListController {
 
     @FXML
     private void refreshFleetStatus() {
-        if (bookNowClient.testConnection()) {
-            java.util.Map<String, Object> status = bookNowClient.getFleetStatus();
-            if (!status.isEmpty()) {
+        new Thread(() -> {
+            if (bookNowClient.testConnection()) {
+                java.util.Map<String, Object> status = bookNowClient.getFleetStatus();
+                if (!status.isEmpty()) {
+                    Platform.runLater(() -> {
+                        fleetTotalLabel.setText(String.valueOf(Math.round(((Double) status.getOrDefault("total", 0.0)))));
+                        fleetAvailableLabel.setText(String.valueOf(Math.round(((Double) status.getOrDefault("available", 0.0)))));
+                        fleetRentedLabel.setText(String.valueOf(Math.round(((Double) status.getOrDefault("rented", 0.0)))));
+                    });
+                }
+            } else {
                 Platform.runLater(() -> {
-                    fleetTotalLabel.setText(String.valueOf(Math.round(((Double) status.getOrDefault("total", 0.0)))));
-                    fleetAvailableLabel.setText(String.valueOf(Math.round(((Double) status.getOrDefault("available", 0.0)))));
-                    fleetRentedLabel.setText(String.valueOf(Math.round(((Double) status.getOrDefault("rented", 0.0)))));
+                    fleetTotalLabel.setText("N/A");
+                    fleetAvailableLabel.setText("N/A");
+                    fleetRentedLabel.setText("N/A");
                 });
             }
-        } else {
-            Platform.runLater(() -> {
-                fleetTotalLabel.setText("N/A");
-                fleetAvailableLabel.setText("N/A");
-                fleetRentedLabel.setText("N/A");
-            });
-        }
+        }, "Fleet-Status-Refresh-Thread").start();
     }
 
     private void showAlert(String title, String message) {
@@ -902,7 +917,8 @@ public class LocationListController {
         }
         Voiture voiture = item.getVoiture();
         if (voiture != null) {
-            return safeTrim(voiture.getMarque()) + " " + safeTrim(voiture.getModele()) + " Â· " + safeTrim(voiture.getMatricule());
+            // FIX Crash #5: Use proper middle-dot character (U+00B7), not Â· mojibake
+            return safeTrim(voiture.getMarque()) + " " + safeTrim(voiture.getModele()) + " \u00B7 " + safeTrim(voiture.getMatricule());
         }
         return String.valueOf(item.getIdVoiture());
     }
@@ -936,23 +952,26 @@ public class LocationListController {
     private class LocationCell extends ListCell<Location> {
         // Card components - Root is now an HBox for horizontal flow
         private final HBox cardRoot = new HBox(25);
-        
+
+        // Cached placeholder URL (resolved once per cell)
+        private static java.net.URL placeholderUrl = null;
+
         // Left Column: Image
         private final ImageView carImageView = new ImageView();
-        
+
         // Middle Column: Info (Model, Dates, Duration, Route)
         private final VBox detailsBox = new VBox(5);
         private final Label carModelLabel = new Label();
         private final Label dateRangeLabel = new Label();
         private final Label durationLabel = new Label();
         private final Label routeInfoLabel = new Label(); // Distance + ETA
-        
+
         // Right Column: Price & Status
         private final VBox rightDetails = new VBox(8);
         private final Label priceLabel = new Label();
         private final Label statusBadge = new Label();
         private final Label refLabel = new Label();
-        
+
         // Action Column: Icons
         private final HBox actionButtons = new HBox(10);
 
@@ -964,6 +983,22 @@ public class LocationListController {
         private final Button saveContractButton = new Button();
         private final Button saveQrButton = new Button();
         private final Button trackButton = new Button();
+
+        /** FIX Crash #2: Load placeholder image safely using resource URL. */
+        private void loadPlaceholderImage() {
+            if (placeholderUrl == null) {
+                placeholderUrl = getClass().getResource("/images/car_placeholder.png");
+            }
+            if (placeholderUrl != null) {
+                try {
+                    carImageView.setImage(new Image(placeholderUrl.toExternalForm(), true));
+                } catch (Exception e) {
+                    carImageView.setImage(null);
+                }
+            } else {
+                carImageView.setImage(null);
+            }
+        }
 
         private SVGPath createIcon(String pathData) {
             SVGPath svg = new SVGPath();
@@ -1063,24 +1098,30 @@ public class LocationListController {
                 Voiture v = item.getVoiture();
                 if (v != null) {
                     carModelLabel.setText(v.getMarque() + " " + v.getModele());
+                    // FIX Crash #2: Use getClass().getResource() so JavaFX gets a valid URL,
+                    // not a bare classpath path that throws IllegalArgumentException.
                     if (v.getImageUrl() != null && !v.getImageUrl().isEmpty()) {
-                        carImageView.setImage(new Image(v.getImageUrl(), true));
+                        try {
+                            carImageView.setImage(new Image(v.getImageUrl(), true));
+                        } catch (Exception imgEx) {
+                            loadPlaceholderImage();
+                        }
                     } else {
-                        carImageView.setImage(new Image("/images/car_placeholder.png", true));
+                        loadPlaceholderImage();
                     }
 
                     // Compute route info (distance + ETA) from Tunis center to car
                     double userLat = 36.8065, userLon = 10.1815;
                     RouteInfo routeInfo = routingService.getRouteInfo(userLat, userLon, v.getLatitude(), v.getLongitude());
                     if (routeInfo != null) {
-                        routeInfoLabel.setText("📍 " + routeInfo.distanceText + " · ~" + routeInfo.timeText
+                        routeInfoLabel.setText("\uD83D\uDCCD " + routeInfo.distanceText + " \u00B7 ~" + routeInfo.timeText
                                 + (routeInfo.isEstimate ? " (est.)" : ""));
                     } else {
                         routeInfoLabel.setText("");
                     }
                 } else {
-                    carModelLabel.setText("Voiture non spécifiée");
-                    carImageView.setImage(new Image("/images/car_placeholder.png", true));
+                    carModelLabel.setText("Voiture non sp\u00E9cifi\u00E9e");
+                    loadPlaceholderImage();
                     routeInfoLabel.setText("");
                 }
 
@@ -1208,54 +1249,84 @@ public class LocationListController {
             return;
         }
 
+        double budget;
         try {
-            double budget = Double.parseDouble(budgetText);
-            
-            // 1. Update UI Status: Harvesting
-            aiStatusLabel.setText("Recherche sur le web...");
-            aiStatusLabel.setStyle("-fx-text-fill: #FFD700;"); // Gold for progress
-
-            // 2. Perform Harvesting (simulated web search + JSON storage)
-            WebCarHarvester harvester = new WebCarHarvester();
-            harvester.harvestFromWeb();
-
-            // 3. Update UI Status: Analyzing
-            aiStatusLabel.setText("DeepSeek analyse...");
-            aiStatusLabel.setStyle("-fx-text-fill: #50C878;");
-
-            // 4. Get Recommendations (Local + Web + AI Ranking)
-            List<Voiture> recommendations = aiRecommendationService.recommendCars(budget, destination);
-            
-            if (recommendations.isEmpty()) {
-                aiStatusLabel.setText("Aucun résultat");
-                showAlert("AI Assistant", "Désolé, aucune voiture ne correspond à votre budget, même sur le web.");
-                return;
-            }
-
-            aiStatusLabel.setText("Optimisé ! (" + recommendations.size() + " voitures)");
-            
-            // Format to JSON for JavaScript
-            StringBuilder jsonBuilder = new StringBuilder("[");
-            for (int i = 0; i < recommendations.size(); i++) {
-                Voiture v = recommendations.get(i);
-                jsonBuilder.append(String.format(
-                    "{\"id\":%d, \"marque\":\"%s\", \"modele\":\"%s\", \"prix\":%.2f, \"lat\":%.6f, \"lng\":%.6f}",
-                    v.getIdVoiture(), v.getMarque(), v.getModele(), v.getPrixJour(), v.getLatitude(), v.getLongitude()
-                ));
-                if (i < recommendations.size() - 1) jsonBuilder.append(",");
-            }
-            jsonBuilder.append("]");
-            
-            // Call JavaScript function in map.html
-            runInWebView("showRecommendations(" + jsonBuilder.toString() + ")");
-            
-            showAlert("Succès", "L'Assistant Pro a trouvé " + recommendations.size() + 
-                     " options. Les voitures recommandées (locales et web) sont étoilées sur la carte.");
-
+            budget = Double.parseDouble(budgetText);
         } catch (NumberFormatException e) {
-            showAlert("Erreur de format", "Le budget doit être un nombre valide.");
-            aiStatusLabel.setText("Erreur");
+            showAlert("Erreur de format", "Le budget doit \u00EAtre un nombre valide.");
+            if (aiStatusLabel != null) aiStatusLabel.setText("Erreur");
+            return;
         }
+
+        // FIX Crash #3: Offload ALL network/AI work to a background thread.
+        // Running harvestFromWeb() + recommendCars() on the FX thread would freeze the UI.
+        if (aiBudgetField != null) aiBudgetField.setDisable(true);
+        if (aiDestinationField != null) aiDestinationField.setDisable(true);
+        if (aiStatusLabel != null) {
+            aiStatusLabel.setText("Recherche sur le web...");
+            aiStatusLabel.setStyle("-fx-text-fill: #FFD700;");
+        }
+
+        final double finalBudget = budget;
+        final String finalDest   = destination;
+
+        new Thread(() -> {
+            try {
+                // 1. Web harvesting (network IO — must NOT run on FX thread)
+                WebCarHarvester harvester = new WebCarHarvester();
+                harvester.harvestFromWeb();
+
+                Platform.runLater(() -> {
+                    if (aiStatusLabel != null) {
+                        aiStatusLabel.setText("DeepSeek analyse...");
+                        aiStatusLabel.setStyle("-fx-text-fill: #50C878;");
+                    }
+                });
+
+                // 2. AI ranking (may call network — must NOT run on FX thread)
+                List<Voiture> recommendations = aiRecommendationService.recommendCars(finalBudget, finalDest);
+
+                Platform.runLater(() -> {
+                    try {
+                        if (recommendations.isEmpty()) {
+                            if (aiStatusLabel != null) aiStatusLabel.setText("Aucun r\u00E9sultat");
+                            showAlert("AI Assistant", "D\u00E9sol\u00E9, aucune voiture ne correspond \u00E0 votre budget, m\u00EAme sur le web.");
+                            return;
+                        }
+
+                        if (aiStatusLabel != null)
+                            aiStatusLabel.setText("Optimis\u00E9 ! (" + recommendations.size() + " voitures)");
+
+                        // Format to JSON for JavaScript
+                        StringBuilder jsonBuilder = new StringBuilder("[");
+                        for (int i = 0; i < recommendations.size(); i++) {
+                            Voiture v = recommendations.get(i);
+                            jsonBuilder.append(String.format(
+                                "{\"id\":%d, \"marque\":\"%s\", \"modele\":\"%s\", \"prix\":%.2f, \"lat\":%.6f, \"lng\":%.6f}",
+                                v.getIdVoiture(), v.getMarque(), v.getModele(), v.getPrixJour(), v.getLatitude(), v.getLongitude()
+                            ));
+                            if (i < recommendations.size() - 1) jsonBuilder.append(",");
+                        }
+                        jsonBuilder.append("]");
+
+                        runInWebView("showRecommendations(" + jsonBuilder.toString() + ")");
+                        showAlert("Succ\u00E8s", "L'Assistant Pro a trouv\u00E9 " + recommendations.size() +
+                                 " options. Les voitures recommand\u00E9es (locales et web) sont \u00E9toil\u00E9es sur la carte.");
+                    } finally {
+                        if (aiBudgetField != null) aiBudgetField.setDisable(false);
+                        if (aiDestinationField != null) aiDestinationField.setDisable(false);
+                    }
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Platform.runLater(() -> {
+                    if (aiStatusLabel != null) aiStatusLabel.setText("Erreur");
+                    if (aiBudgetField != null) aiBudgetField.setDisable(false);
+                    if (aiDestinationField != null) aiDestinationField.setDisable(false);
+                    showAlert("Erreur", "Erreur lors de la recommandation : " + ex.getMessage());
+                });
+            }
+        }, "AI-Recommend-Thread").start();
     }
 
     public void highlightCarOnMap(Voiture v) {

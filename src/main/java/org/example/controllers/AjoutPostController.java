@@ -2,10 +2,6 @@ package org.example.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -13,12 +9,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
-import javafx.stage.Stage;
 import org.example.entities.Forum;
 import org.example.entities.Poste;
 import org.example.services.ServicePoste;
 import org.example.utils.SessionManager;
-import java.io.IOException;
 import java.sql.SQLException;
 
 public class AjoutPostController {
@@ -30,6 +24,11 @@ public class AjoutPostController {
     private DetailsForumController parentController;
     public void setOverlayController(DetailsForumController parent) {
         this.parentController = parent;
+    }
+
+    private ListPostController listPostController;
+    public void setListPostOverlayController(ListPostController parent) {
+        this.listPostController = parent;
     }
 
     public void setForum(Forum forum) {
@@ -197,36 +196,14 @@ public class AjoutPostController {
             parentController.hideFormOverlay();
             return;
         }
-        try {
-            if (currentForum != null) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/DetailsForum.fxml"));
-                Parent root = loader.load();
-                org.example.controllers.DetailsForumController controller = loader.getController();
-                controller.initData(currentForum);
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                // Fade transition for smoothness
-                root.setOpacity(0);
-                stage.setScene(scene);
-                stage.show();
-                javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
-                ft.setFromValue(0);
-                ft.setToValue(1);
-                ft.play();
-            } else {
-                Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                Scene scene = new Scene(root);
-                root.setOpacity(0);
-                stage.setScene(scene);
-                stage.show();
-                javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(400), root);
-                ft.setFromValue(0);
-                ft.setToValue(1);
-                ft.play();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (listPostController != null) {
+            listPostController.hideFormOverlay();
+            return;
+        }
+        if (currentForum != null) {
+            org.example.mains.MainApp.switchScene("/poste-forumviews/DetailsForum.fxml", "GoVibe - Forum");
+        } else {
+            org.example.mains.MainApp.switchScene("/poste-forumviews/ListPost.fxml", "GoVibe - Publications");
         }
     }
     @FXML
@@ -235,23 +212,14 @@ public class AjoutPostController {
             parentController.hideFormOverlay();
             return;
         }
-        try {
-            if (currentForum != null) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/DetailsForum.fxml"));
-                Parent root = loader.load();
-                DetailsForumController controller = loader.getController();
-                controller.initData(currentForum);
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.show();
-            } else {
-                Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.show();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (listPostController != null) {
+            listPostController.hideFormOverlay();
+            return;
+        }
+        if (currentForum != null) {
+            org.example.mains.MainApp.switchScene("/poste-forumviews/DetailsForum.fxml", "GoVibe - Forum");
+        } else {
+            org.example.mains.MainApp.switchScene("/poste-forumviews/ListPost.fxml", "GoVibe - Publications");
         }
     }
 
@@ -262,14 +230,7 @@ public class AjoutPostController {
 
     @FXML
     private void handleGoToForums(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        org.example.mains.MainApp.switchScene("/poste-forumviews/ListForum.fxml", "GoVibe - Forums");
     }
 
     @FXML

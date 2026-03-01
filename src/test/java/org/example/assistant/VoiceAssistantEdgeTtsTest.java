@@ -230,13 +230,15 @@ class VoiceAssistantEdgeTtsTest {
     // ──────────────────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("TTS_MUTE_WINDOW_MS is 600 ms (tight gate so real commands aren't swallowed)")
+    @DisplayName("TTS_MUTE_WINDOW_MS is ≥ 1000 ms (anti-echo gate must outlast startup TTS)")
     void ttsMuteWindowIs600() throws Exception {
         Field field = VoiceAssistantService.class.getDeclaredField("TTS_MUTE_WINDOW_MS");
         field.setAccessible(true);
         long value = (long) field.get(null);
-        assertTrue(value <= 1_000L,
-                "Mute window should be ≤ 1000 ms so commands spoken shortly after TTS are not dropped");
+        assertTrue(value >= 1_000L,
+                "Mute window should be ≥ 1000 ms so startup TTS audio is not fed back into Vosk as fake commands");
+        assertTrue(value <= 5_000L,
+                "Mute window should be ≤ 5000 ms so real user commands are not dropped");
     }
 
     // ──────────────────────────────────────────────────────────────────────────

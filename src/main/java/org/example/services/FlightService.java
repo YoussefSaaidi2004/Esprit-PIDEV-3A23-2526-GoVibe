@@ -98,7 +98,7 @@ public class FlightService {
             throw new IllegalArgumentException("Airline is required");
         }
         
-        if (flight.getPrix() <= 0) {
+        if (flight.getPrix() == null || flight.getPrix().compareTo(java.math.BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Price must be positive");
         }
         

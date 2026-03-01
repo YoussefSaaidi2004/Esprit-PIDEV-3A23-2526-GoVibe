@@ -1671,3 +1671,160 @@
   -fx-border-width: 1;
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
 }
+
+/* ============ PREMIUM HOTEL MODULE ENHANCEMENTS ============ */
+
+.hero-title {
+  -fx-font-family: "Montserrat", "Segoe UI", sans-serif;
+  -fx-font-size: 42px;
+  -fx-font-weight: 900;
+  -fx-text-fill: white;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0, 0, 2);
+}
+
+.premium-nav-btn {
+  -fx-background-color: transparent;
+  -fx-text-fill: #A0E0C9;
+  -fx-font-size: 14px;
+  -fx-font-weight: 700;
+  -fx-padding: 10 20;
+  -fx-background-radius: 10;
+  -fx-cursor: hand;
+}
+
+.premium-nav-btn:hover {
+  -fx-background-color: rgba(160, 224, 201, 0.1);
+  -fx-text-fill: white;
+}
+
+.premium-nav-btn-active {
+  -fx-background-color: rgba(80, 200, 120, 0.2);
+  -fx-text-fill: #D1F2EB;
+  -fx-font-size: 14px;
+  -fx-font-weight: 900;
+  -fx-padding: 10 20;
+  -fx-background-radius: 10;
+  -fx-border-color: #50C878;
+  -fx-border-width: 1;
+  -fx-border-radius: 10;
+  -fx-cursor: hand;
+}
+
+.premium-sidebar-btn {
+  -fx-background-color: rgba(160, 224, 201, 0.15);
+  -fx-text-fill: #A0E0C9;
+  -fx-padding: 10 20;
+  -fx-background-radius: 12;
+  -fx-font-size: 13px;
+  -fx-font-weight: 600;
+  -fx-cursor: hand;
+}
+
+.premium-sidebar-btn:hover {
+  -fx-background-color: rgba(160, 224, 201, 0.25);
+  -fx-text-fill: white;
+}
+
+.glass-search-box {
+  -fx-background-color: rgba(255, 255, 255, 0.08);
+  -fx-background-radius: 25;
+  -fx-border-color: rgba(13, 77, 53, 0.4);
+  -fx-border-width: 1.5;
+  -fx-border-radius: 25;
+  -fx-padding: 0 15;
+}
+
+.glass-search-box .text-field {
+  -fx-background-color: transparent;
+  -fx-text-fill: white;
+  -fx-prompt-text-fill: rgba(255, 255, 255, 0.5);
+  -fx-border-width: 0;
+}
+
+.glass-combo-box {
+  -fx-background-color: rgba(255, 255, 255, 0.08);
+  -fx-background-radius: 25;
+  -fx-border-color: rgba(13, 77, 53, 0.4);
+  -fx-border-width: 1.5;
+  -fx-border-radius: 25;
+}
+
+.glass-combo-box .list-cell {
+  -fx-text-fill: #013220;
+}
+
+.premium-button {
+  -fx-background-color: linear-gradient(to bottom, #50C878, #0B6E4F);
+  -fx-text-fill: white;
+  -fx-background-radius: 25;
+  -fx-padding: 12 28;
+  -fx-font-size: 15px;
+  -fx-font-weight: 800;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgba(11, 110, 79, 0.3), 15, 0, 0, 5);
+}
+
+.premium-button:hover {
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+  -fx-effect: dropshadow(gaussian, rgba(80, 200, 120, 0.5), 20, 0, 0, 8);
+}
+
+/* Card Specific Typography */
+.card-title {
+  -fx-text-fill: white;
+  -fx-font-weight: 900;
+  -fx-font-size: 20px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 4, 0, 0, 1);
+}
+
+.card-description {
+  -fx-text-fill: rgba(255, 255, 255, 0.7);
+  -fx-font-size: 13px;
+  -fx-line-spacing: 2;
+}
+
+.card-action-btn {
+  -fx-background-color: rgba(80, 200, 120, 0.15);
+  -fx-text-fill: #50C878;
+  -fx-background-radius: 10;
+  -fx-padding: 8 16;
+  -fx-font-weight: bold;
+  -fx-cursor: hand;
+  -fx-border-color: rgba(80, 200, 120, 0.3);
+  -fx-border-width: 1;
+  -fx-border-radius: 10;
+}
+
+.card-action-btn:hover {
+  -fx-background-color: #50C878;
+  -fx-text-fill: white;
+}
+
+.card-action-btn-danger {
+  -fx-background-color: rgba(255, 71, 111, 0.1);
+  -fx-text-fill: #EF476F;
+  -fx-background-radius: 10;
+  -fx-padding: 8 16;
+  -fx-font-weight: bold;
+  -fx-cursor: hand;
+  -fx-border-color: rgba(239, 71, 111, 0.3);
+  -fx-border-width: 1;
+  -fx-border-radius: 10;
+}
+
+.card-action-btn-danger:hover {
+  -fx-background-color: #EF476F;
+  -fx-text-fill: white;
+}
+
+/* Polished Glass Form Card */
+.form-card-glass {
+  -fx-background-color: rgba(255, 255, 255, 0.95);
+  -fx-background-radius: 20;
+  -fx-padding: 35;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 30, 0, 0, 15);
+  -fx-border-color: rgba(80, 200, 120, 0.2);
+  -fx-border-width: 1;
+  -fx-border-radius: 20;
+}

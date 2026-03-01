@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
@@ -13,7 +14,7 @@
 
 <StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml"
            fx:controller="org.example.controllers.UserDashboardController"
-           fx:id="rootStackPane">
+           fx:id="rootStackPane" stylesheets="@../styles.css">
     <!-- Premium Image Background -->
     <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" styleClass="premium-bg" />
     
@@ -98,24 +99,28 @@
 
     <!-- ==================== CONTENU CENTRAL ==================== -->
     <center>
-        <ScrollPane fx:id="mainScroll" fitToWidth="true" 
+        <ScrollPane fx:id="mainScroll" fitToWidth="true" styleClass="transparent-scroll"
                     style="-fx-background-color: transparent; -fx-background: transparent;"
                     VBox.vgrow="ALWAYS" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
             <content>
-                <VBox fx:id="contentRoot" spacing="28" style="-fx-padding: 28 50 50 50; -fx-background-color: transparent;">
+                <VBox fx:id="contentRoot" spacing="0" style="-fx-background-color: transparent;">
                     
                     <!-- Header Section (Glass) -->
-                    <HBox alignment="CENTER_LEFT" spacing="25" styleClass="glass-panel" style="-fx-padding: 30; -fx-background-radius: 20;">
+                    <HBox alignment="CENTER_LEFT" spacing="25" styleClass="glass-panel" 
+                          style="-fx-padding: 30 40; -fx-background-radius: 20;">
+                        <VBox.margin>
+                            <Insets top="40" right="50" bottom="30" left="50"/>
+                        </VBox.margin>
                         <StackPane styleClass="icon-circle-emerald">
                             <Label text="✈️" style="-fx-font-size: 32;"/>
                         </StackPane>
-                        <VBox spacing="5">
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
                             <Label text="Réservation de Vols" 
-                                   style="-fx-font-size: 32; -fx-font-weight: 900; -fx-text-fill: white;"/>
+                                   style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: white;
+                                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 8, 0, 0, 2);"/>
                             <Label text="Trouvez et réservez votre prochain vol pour votre aventure" 
-                                   style="-fx-font-size: 15; -fx-text-fill: rgba(255,255,255,0.7);"/>
+                                   style="-fx-font-size: 14; -fx-text-fill: rgba(255,255,255,0.8);"/>
                         </VBox>
-                        <Region HBox.hgrow="ALWAYS"/>
                         
                         <!-- Statistiques (Glass Tiles) -->
                         <HBox spacing="15" alignment="CENTER">
@@ -127,103 +132,69 @@
                                 <Label fx:id="compCountLabel" text="12" styleClass="tile-value-emerald" style="-fx-font-size: 20;"/>
                                 <Label text="COMPAGNIES" styleClass="tile-label-tiny" style="-fx-font-size: 8;"/>
                             </VBox>
-                            <VBox alignment="CENTER" spacing="5" styleClass="glass-tile-mini" prefWidth="100">
-                                <Label text="24/7" styleClass="tile-value-emerald" style="-fx-font-size: 20;"/>
-                                <Label text="SERVICE CLIENT" styleClass="tile-label-tiny" style="-fx-font-size: 8;"/>
-                            </VBox>
                         </HBox>
                     </HBox>
                     
                     <!-- Tabs -->
-                    <HBox alignment="CENTER_LEFT" spacing="12">
-                        <ToggleButton fx:id="bookTab" text="🔍 Rechercher un vol" selected="true"
-                                      style="-fx-background-color: #013220; -fx-text-fill: white; 
-                                             -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 10 20;"/>
-                        <ToggleButton fx:id="bookingsTab" text="📋 Mes réservations"
-                                      style="-fx-background-color: white; -fx-text-fill: #013220; 
-                                             -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 10 20;
-                                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);"/>
+                    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 0 50 20 50;">
+                        <HBox styleClass="lf-tab-bar">
+                            <ToggleButton fx:id="bookTab" text="🔍 Rechercher un vol" selected="true" styleClass="lf-tab lf-tab-active" />
+                            <ToggleButton fx:id="bookingsTab" text="📋 Mes réservations" styleClass="lf-tab" />
+                        </HBox>
                     </HBox>
 
-                    <!-- Book a Flight Section -->
-                    <VBox fx:id="flightsSection" spacing="22">
-                        <HBox alignment="CENTER_LEFT" spacing="20">
-                            <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                <Text text="Vols disponibles" style="-fx-fill: #013220; -fx-font-size: 20; -fx-font-weight: bold;"/>
-                                <Text text="Sélectionnez votre vol parmi les options disponibles" style="-fx-fill: #5a7d6e; -fx-font-size: 13;"/>
-                            </VBox>
-                        </HBox>
+                    <!-- Feed Center Container -->
+                    <HBox alignment="TOP_CENTER" style="-fx-padding: 10 0 50 0;">
+                        <VBox maxWidth="1200" prefWidth="1200">
+                            
+                            <!-- Book a Flight Section -->
+                            <VBox fx:id="flightsSection" spacing="22">
+                                <HBox alignment="CENTER_LEFT" spacing="20">
+                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                        <Label text="Vols disponibles" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: white;
+                                                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0, 0, 1);"/>
+                                        <Label text="Sélectionnez votre vol parmi les options disponibles" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13;"/>
+                                    </VBox>
+                                </HBox>
 
-                        <FlowPane fx:id="flightGrid" hgap="22" vgap="22" alignment="TOP_LEFT" style="-fx-padding: 10 0 0 0;"/>
-                        
-                        <!-- État Vide -->
-                        <VBox fx:id="emptyFlightsState" alignment="CENTER" spacing="15" 
-                              style="-fx-padding: 80;" visible="false">
-                            <Label text="✈️" style="-fx-font-size: 72; -fx-opacity: 0.5;"/>
-                            <Label text="Aucun vol trouvé" 
-                                   style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #013220;"/>
-                            <Label text="Essayez de modifier vos critères de recherche" 
-                                   style="-fx-font-size: 14; -fx-text-fill: #5a7d6e;"/>
-                        </VBox>
-                    </VBox>
-
-                    <!-- My Bookings Section -->
-                    <VBox fx:id="bookingsSection" spacing="22" visible="false">
-                        <HBox alignment="CENTER_LEFT">
-                            <VBox spacing="5">
-                                <Text text="Mes réservations actives" style="-fx-fill: #013220; -fx-font-size: 20; -fx-font-weight: bold;"/>
-                                <Text text="Visualisez et gérez vos vols à venir" style="-fx-fill: #5a7d6e; -fx-font-size: 13;"/>
+                                <FlowPane fx:id="flightGrid" hgap="22" vgap="22" alignment="TOP_LEFT" style="-fx-padding: 10 0 0 0;"/>
+                                
+                                <!-- État Vide -->
+                                <VBox fx:id="emptyFlightsState" alignment="CENTER" spacing="15" 
+                                      styleClass="empty-state" visible="false">
+                                    <Label text="✈️" styleClass="empty-state-icon"/>
+                                    <Label text="Aucun vol trouvé" styleClass="empty-state-title"/>
+                                    <Label text="Essayez de modifier vos critères de recherche" styleClass="empty-state-subtitle"/>
+                                </VBox>
                             </VBox>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Button onAction="#handleRefresh" 
-                                    style="-fx-background-color: #50C878; -fx-text-fill: white;
-                                           -fx-font-size: 13; -fx-font-weight: bold; -fx-padding: 10 20;
-                                           -fx-background-radius: 20; -fx-cursor: hand;">
-                                <graphic>
-                                    <HBox alignment="CENTER" spacing="8">
-                                    </HBox>
-                                </graphic>
-                            </Button>
-                        </HBox>
-                        <FlowPane fx:id="bookingGrid" hgap="22" vgap="22" alignment="TOP_LEFT" style="-fx-padding: 10 0 0 0;"/>
-                        
-                        <!-- État Vide Réservations -->
-                        <VBox fx:id="emptyBookingsState" alignment="CENTER" spacing="15" 
-                              style="-fx-padding: 80;" visible="false">
-                            <Label text="📋" style="-fx-font-size: 72; -fx-opacity: 0.5;"/>
-                            <Label text="Aucune réservation active" 
-                                   style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #013220;"/>
-                            <Label text="Réservez votre premier vol dès maintenant !" 
-                                   style="-fx-font-size: 14; -fx-text-fill: #5a7d6e;"/>
-                            <Button text="✈️ Réserver un vol" onAction="#handleBookMenu"
-                                    style="-fx-background-color: #50C878; -fx-text-fill: white;
-                                           -fx-font-size: 14; -fx-padding: 12 30;
-                                           -fx-background-radius: 25; -fx-cursor: hand;"/>
+
+                            <!-- My Bookings Section -->
+                            <VBox fx:id="bookingsSection" spacing="22" visible="false">
+                                <HBox alignment="CENTER_LEFT">
+                                    <VBox spacing="5">
+                                        <Label text="Mes réservations actives" style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: white;
+                                                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0, 0, 1);"/>
+                                        <Label text="Visualisez et gérez vos vols à venir" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13;"/>
+                                    </VBox>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Button onAction="#handleRefresh" styleClass="lf-btn-primary" text="Actualiser"/>
+                                </HBox>
+                                <FlowPane fx:id="bookingGrid" hgap="22" vgap="22" alignment="TOP_LEFT" style="-fx-padding: 10 0 0 0;"/>
+                                
+                                <!-- État Vide Réservations -->
+                                <VBox fx:id="emptyBookingsState" alignment="CENTER" spacing="15" 
+                                      styleClass="empty-state" visible="false">
+                                    <Label text="📋" styleClass="empty-state-icon"/>
+                                    <Label text="Aucune réservation active" styleClass="empty-state-title"/>
+                                    <Label text="Réservez votre premier vol dès maintenant !" styleClass="empty-state-subtitle"/>
+                                    <Button text="✈️ Réserver un vol" onAction="#handleBookMenu" styleClass="lf-btn-primary"/>
+                                </VBox>
+                            </VBox>
                         </VBox>
-                    </VBox>
+                    </HBox>
                     
                     <!-- Footer -->
-                    <VBox alignment="CENTER" spacing="20" 
-                          style="-fx-background-color: linear-gradient(to bottom, #013220, #0B4F35); 
-                                 -fx-padding: 50;
-                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, -5);">
-                        <HBox alignment="CENTER" spacing="12">
-                            <StackPane>
-                                <Circle radius="25" fill="#50C878" opacity="0.2"/>
-                                <Label text="G" style="-fx-font-size: 20; -fx-font-weight: 900; -fx-text-fill: #50C878;"/>
-                            </StackPane>
-                            <Label text="Go" style="-fx-font-size: 26; -fx-font-weight: 900; -fx-text-fill: white;"/>
-                            <Label text="Vibe" style="-fx-font-size: 26; -fx-font-weight: 300; -fx-text-fill: #50C878;"/>
-                        </HBox>
-                        <Label text="© 2024 GoVibe. Tous droits réservés." 
-                               style="-fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.6);"/>
-                        <HBox alignment="CENTER" spacing="25">
-                            <Hyperlink text="À propos" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
-                            <Hyperlink text="Confidentialité" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
-                            <Hyperlink text="Conditions" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
-                            <Hyperlink text="Contact" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13;"/>
-                        </HBox>
-                    </VBox>
+                    <fx:include source="../components/Footer.fxml" fx:id="footer"/>
                     
                 </VBox>
             </content>

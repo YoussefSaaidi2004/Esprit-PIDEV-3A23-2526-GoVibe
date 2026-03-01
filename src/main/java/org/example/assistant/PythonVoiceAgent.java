@@ -98,7 +98,21 @@ public class PythonVoiceAgent {
     // Invoked from the reader thread whenever Python sends {"type":"tts_status",...}.
     // VoiceAssistantService wires this to control micDiscardUntilMs.
     private volatile Consumer<Boolean> ttsStatusCallback = speaking -> {};  // no-op default
+    // ── Boot-phase TTS mic-gate callback ──────────────────────────────────────
+    // Set by VoiceAssistantService BEFORE getInstance() is called so that
+    // tts_status signals emitted during Python startup (before the ready signal)
+    // also mute the Vosk microphone — preventing the startup TTS from being
+    // recognised as user voice commands (self-echo feedback loop).
+    private static volatile Consumer<Boolean> bootTtsCallback = b -> {};  // no-op default
 
+    /**
+     * Register a mic-gate callback that is invoked for {@code tts_status} signals
+     * received during the Python agent boot phase (before the ready signal).
+     * Must be called <em>before</em> {@link #getInstance()} to take effect.
+     */
+    public static void setBootTtsCallback(Consumer<Boolean> cb) {
+        bootTtsCallback = cb != null ? cb : b -> {};
+    }
     // ── Resume-wake-word callback ─────────────────────────────────────────────
     // Python sends {"type":"resume_wake_word"} after the post-logout TTS sequence
     // ends, signalling that the wake-word detector should be re-enabled.
@@ -160,7 +174,7 @@ public class PythonVoiceAgent {
         System.out.println("[PythonAgent] Python: " + python);
         System.out.println("[PythonAgent] Script: " + script.getAbsolutePath());
 
-        ProcessBuilder pb = new ProcessBuilder(python, "-u", script.getAbsolutePath());
+        ProcessBuilder pb = new ProcessBuilder(buildCommand(python, "-u", script.getAbsolutePath()));
         pb.redirectErrorStream(false);
         pb.environment().put("PYTHONIOENCODING", "utf-8");
         pb.environment().put("PYTHONUNBUFFERED", "1");
@@ -195,7 +209,19 @@ public class PythonVoiceAgent {
             String l;
             while ((l = stdout.readLine()) != null) {
                 if (l.contains("\"status\"") && l.contains("\"ready\"")) return l;
-                System.err.println("[PythonAgent-boot] skipping: " + l.substring(0, Math.min(l.length(), 80)));
+                // Forward tts_status signals during boot so VoiceAssistantService
+                // can mute the mic while Python plays its startup greeting —
+                // preventing TTS audio from being fed back into Vosk as fake commands.
+                if (isTtsStatusLine(l)) {
+                    boolean speaking = l.contains("\"speaking\":true")
+                            || l.contains("\"speaking\": true");
+                    bootTtsCallback.accept(speaking);
+                    System.err.println("[PythonAgent-boot] tts_status(speaking="
+                            + speaking + ") — mic gate updated.");
+                } else {
+                    System.err.println("[PythonAgent-boot] skipping: "
+                            + l.substring(0, Math.min(l.length(), 80)));
+                }
             }
             return null;
         });
@@ -247,6 +273,18 @@ public class PythonVoiceAgent {
 
     public boolean isReady() { return ready; }
     public String  getEngineName() { return engineName; }
+
+    /**
+     * Forcibly terminates the Python subprocess.
+     * Called by {@link org.example.assistant.VoiceAssistantService#shutdown()}
+     * when the application window is closed.
+     */
+    public void stop() {
+        if (pythonProcess != null && pythonProcess.isAlive()) {
+            pythonProcess.destroyForcibly();
+            System.out.println("[PythonAgent] Python subprocess killed.");
+        }
+    }
 
     /**
      * Registers a callback for Qwen3-TTS start/end events emitted by Python.
@@ -601,22 +639,116 @@ public class PythonVoiceAgent {
     }
 
     // ── Python executable discovery ───────────────────────────────────────────
+    /**
+     * Builds a ProcessBuilder command list from a possibly multi-token python command
+     * string (e.g. "py -3.14" or an absolute path) plus additional arguments.
+     */
+    private static java.util.List<String> buildCommand(String pythonCmd, String... extraArgs) {
+        java.util.List<String> cmd = new java.util.ArrayList<>();
+        // Absolute paths may contain spaces on Windows (e.g. "C:\Users\User Name\...").
+        // Only split on space if it doesn't look like an absolute path.
+        if (pythonCmd.startsWith("\"") || pythonCmd.startsWith("/")
+                || (pythonCmd.length() >= 3 && pythonCmd.charAt(1) == ':')) {
+            cmd.add(pythonCmd.replace("\"", ""));
+        } else {
+            for (String part : pythonCmd.split(" ")) {
+                if (!part.isEmpty()) cmd.add(part);
+            }
+        }
+        for (String arg : extraArgs) cmd.add(arg);
+        return cmd;
+    }
+
+    /**
+     * Discovers the best Python 3 interpreter on this machine.
+     *
+     * <p>Strategy (in order):
+     * <ol>
+     *   <li>Known absolute paths that are likely to have the full AI stack
+     *       (qwen_tts, sounddevice, sklearn) — Python 3.14 install dir first.</li>
+     *   <li>{@code py -3.14}, {@code py -3.13}, {@code py -3.12} via the
+     *       Windows Python launcher (multi-token, handled separately).</li>
+     *   <li>Plain {@code python}, {@code python3}, {@code py} on PATH.</li>
+     * </ol>
+     *
+     * <p>Among all Python 3 interpreters found, the one that can
+     * {@code import qwen_tts} is preferred (Vivian's TTS model lives there).
+     * If none has qwen_tts the first working Python 3 is returned.
+     */
     private static String findPython() {
-        String[] candidates = {"python", "python3", "py"};
-        for (String candidate : candidates) {
+        // ── Ordered candidate commands (single or multi-token) ────────────────
+        // Each entry is the full command array to pass to ProcessBuilder.
+        java.util.List<String[]> candidates = new java.util.ArrayList<>();
+
+        // 1. Known absolute paths — prefer Python 3.14 (has qwen_tts)
+        String[] knownPaths = {
+            "C:\\Users\\user\\AppData\\Local\\Python\\bin\\python3.14.exe",
+            "C:\\Users\\user\\AppData\\Local\\Python\\bin\\python3.14-64.exe",
+            "C:\\Users\\user\\AppData\\Local\\Python\\bin\\python3.exe",
+            "C:\\Users\\user\\AppData\\Local\\Python\\bin\\python.exe",
+            System.getProperty("user.home") + "\\AppData\\Local\\Python\\bin\\python3.14.exe",
+        };
+        for (String p : knownPaths) {
+            if (new java.io.File(p).isFile()) candidates.add(new String[]{p});
+        }
+
+        // 2. py launcher with explicit version
+        candidates.add(new String[]{"py", "-3.14"});
+        candidates.add(new String[]{"py", "-3.13"});
+        candidates.add(new String[]{"py", "-3.12"});
+        candidates.add(new String[]{"py", "-3.11"});
+
+        // 3. Generic names on PATH
+        candidates.add(new String[]{"python3"});
+        candidates.add(new String[]{"python"});
+        candidates.add(new String[]{"py"});
+
+        // ── First pass: collect all working Python 3 interpreters ─────────────
+        java.util.List<String> working = new java.util.ArrayList<>();
+        for (String[] cmd : candidates) {
             try {
-                Process test = new ProcessBuilder(candidate, "--version")
+                String[] versionCmd = java.util.Arrays.copyOf(cmd, cmd.length + 1);
+                versionCmd[cmd.length] = "--version";
+                Process test = new ProcessBuilder(versionCmd)
                         .redirectErrorStream(true).start();
                 String ver = new String(test.getInputStream().readAllBytes()).trim();
                 test.waitFor(3, TimeUnit.SECONDS);
                 if (ver.startsWith("Python 3")) {
-                    System.out.println("[PythonAgent] Found: " + candidate + " → " + ver);
-                    return candidate;
+                    // Build the command string (space-joined) for later use
+                    String cmdStr = String.join(" ", cmd);
+                    System.out.println("[PythonAgent] Found: " + cmdStr + " → " + ver);
+                    if (!working.contains(cmdStr)) working.add(cmdStr);
                 }
             } catch (Exception ignored) {}
         }
-        throw new RuntimeException(
-                "Python 3 not found on PATH. Install Python 3 to enable ML voice responses.");
+
+        if (working.isEmpty()) {
+            throw new RuntimeException(
+                    "Python 3 not found on PATH. Install Python 3 to enable ML voice responses.");
+        }
+
+        // ── Second pass: prefer the first interpreter that has qwen_tts ───────
+        for (String cmdStr : working) {
+            try {
+                String[] parts = cmdStr.split(" ");
+                String[] checkCmd = java.util.Arrays.copyOf(parts, parts.length + 2);
+                checkCmd[parts.length]     = "-c";
+                checkCmd[parts.length + 1] = "import qwen_tts";
+                Process check = new ProcessBuilder(checkCmd)
+                        .redirectErrorStream(true).start();
+                check.getInputStream().readAllBytes(); // drain
+                boolean hasQwen = check.waitFor(5, TimeUnit.SECONDS) && check.exitValue() == 0;
+                if (hasQwen) {
+                    System.out.println("[PythonAgent] Selected (has qwen_tts): " + cmdStr);
+                    return cmdStr;
+                }
+            } catch (Exception ignored) {}
+        }
+
+        // ── Fallback: first working Python 3 (qwen_tts unavailable) ──────────
+        String fallback = working.get(0);
+        System.out.println("[PythonAgent] Selected (no qwen_tts found): " + fallback);
+        return fallback;
     }
 
     // ── Minimal JSON helpers (avoids depending on Gson here) ──────────────────

@@ -3,10 +3,14 @@ package org.example.dao;
 import org.example.config.UnifiedDatabaseManager;
 import org.example.entities.Flight;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Data Access Object for Flight entity
@@ -42,7 +46,7 @@ public class FlightDAO {
             ps.setTime(5, Time.valueOf(flight.getArrivalTime()));
             ps.setString(6, flight.getClasseChaise());
             ps.setString(7, flight.getAirline());
-            ps.setInt(8, flight.getPrix());
+            ps.setBigDecimal(8, flight.getPrix() != null ? flight.getPrix() : BigDecimal.ZERO);
             ps.setInt(9, flight.getAvailableSeats());
             ps.setString(10, flight.getDescription());
 
@@ -141,7 +145,7 @@ public class FlightDAO {
             ps.setTime(4, Time.valueOf(flight.getArrivalTime()));
             ps.setString(5, flight.getClasseChaise());
             ps.setString(6, flight.getAirline());
-            ps.setInt(7, flight.getPrix());
+            ps.setBigDecimal(7, flight.getPrix() != null ? flight.getPrix() : BigDecimal.ZERO);
             ps.setInt(8, flight.getAvailableSeats());
             ps.setString(9, flight.getDescription());
             ps.setString(10, flight.getFlightId());
@@ -188,36 +192,43 @@ public class FlightDAO {
      * @throws SQLException if database error occurs
      */
     private Flight extractFlightFromResultSet(ResultSet rs) throws SQLException {
+        // Build column set ONCE — repeated rs.getMetaData() calls inside the
+        // while-loop corrupt MySQL JDBC's internal columnDefinition state and
+        // cause NullPointerException on the next rs.getXxx() invocation.
+        Set<String> cols = buildColumnSet(rs);
+
         Flight flight = new Flight();
         flight.setFlightId(rs.getString("flight_id"));
         flight.setDepartureAirport(rs.getString("departure_airport"));
         flight.setDestination(rs.getString("destination"));
-        
+
         Time depTime = rs.getTime("departure_time");
         Time arrTime = rs.getTime("arrival_time");
-        
+
         flight.setDepartureTime(depTime != null ? depTime.toLocalTime() : LocalTime.now());
         flight.setArrivalTime(arrTime != null ? arrTime.toLocalTime() : LocalTime.now());
         flight.setClasseChaise(rs.getString("classe_chaise"));
         flight.setAirline(rs.getString("airline"));
-        
-        // Handle prix vs price
-        if (hasColumn(rs, "prix")) {
-            flight.setPrix(rs.getInt("prix"));
-        } else if (hasColumn(rs, "price")) {
-            flight.setPrix(rs.getInt("price"));
+
+        // Handle prix vs price — check once, read once
+        if (cols.contains("prix")) {
+            BigDecimal v = rs.getBigDecimal("prix");
+            if (v != null) flight.setPrix(v);
+        } else if (cols.contains("price")) {
+            BigDecimal v = rs.getBigDecimal("price");
+            if (v != null) flight.setPrix(v);
         }
-        
+
         int availableSeats = rs.getInt("available_seats");
         flight.setAvailableSeats(availableSeats);
         int totalSeats = availableSeats;
-        try {
-            totalSeats = rs.getInt("total_seats");
-            if (rs.wasNull()) {
+        if (cols.contains("total_seats")) {
+            try {
+                totalSeats = rs.getInt("total_seats");
+                if (rs.wasNull()) totalSeats = availableSeats;
+            } catch (SQLException e) {
                 totalSeats = availableSeats;
             }
-        } catch (SQLException e) {
-            totalSeats = availableSeats;
         }
         flight.setTotalSeats(totalSeats);
         flight.setDescription(rs.getString("description"));
@@ -225,14 +236,19 @@ public class FlightDAO {
         return flight;
     }
 
-    private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
-        ResultSetMetaData metaData = rs.getMetaData();
-        int count = metaData.getColumnCount();
-        for (int i = 1; i <= count; i++) {
-            if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
-                return true;
-            }
+    /**
+     * Reads all column names from the ResultSet's metadata exactly once and
+     * returns them as a lower-case Set.  Use this Set for column presence checks
+     * instead of calling rs.getMetaData() repeatedly, which corrupts MySQL JDBC's
+     * internal columnDefinition and causes NullPointerException.
+     */
+    private static Set<String> buildColumnSet(ResultSet rs) throws SQLException {
+        ResultSetMetaData meta = rs.getMetaData();
+        int n = meta.getColumnCount();
+        Set<String> cols = new HashSet<>(n * 2);
+        for (int i = 1; i <= n; i++) {
+            cols.add(meta.getColumnName(i).toLowerCase(Locale.ROOT));
         }
-        return false;
+        return cols;
     }
 }

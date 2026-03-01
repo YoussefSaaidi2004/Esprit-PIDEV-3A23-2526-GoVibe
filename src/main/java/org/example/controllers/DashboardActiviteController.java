@@ -6,6 +6,7 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,8 +15,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.util.Duration;
@@ -40,6 +45,11 @@ public class DashboardActiviteController {
     private TextField searchField;
     @FXML
     private ImageView bgImageView;
+
+    @FXML
+    private FlowPane activitesContainer;
+
+    private Activite selectedActivite;
 
     @FXML
     private AdminSidebarController adminSidebarController;
@@ -76,15 +86,18 @@ public class DashboardActiviteController {
             adminSidebarController.setActivePage("activites");
         }
 
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        colDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colType.setCellValueFactory(new PropertyValueFactory<>("type"));
-        colLoc.setCellValueFactory(new PropertyValueFactory<>("localisation"));
-        colPrix.setCellValueFactory(new PropertyValueFactory<>("prix"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-
-        tableActivite.setItems(data);
+        if (colId != null) {
+            colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+            colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+            colDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
+            colType.setCellValueFactory(new PropertyValueFactory<>("type"));
+            colLoc.setCellValueFactory(new PropertyValueFactory<>("localisation"));
+            colPrix.setCellValueFactory(new PropertyValueFactory<>("prix"));
+            colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        }
+        if (tableActivite != null) {
+            tableActivite.setItems(data);
+        }
         setupHeroBackground();
         rafraichir();
 
@@ -203,7 +216,8 @@ public class DashboardActiviteController {
 
     @FXML
     private void validerActivite() {
-        Activite selected = tableActivite.getSelectionModel().getSelectedItem();
+        Activite selected = (selectedActivite != null) ? selectedActivite :
+                (tableActivite != null ? tableActivite.getSelectionModel().getSelectedItem() : null);
         if (selected == null) {
             Alert a = new Alert(Alert.AlertType.WARNING);
             a.setTitle("Attention");
@@ -247,16 +261,24 @@ public class DashboardActiviteController {
 
     @FXML
     private void rafraichir() {
-        try {
-            // On affiche TOUTES les activités (Pending + Confirmed) pour l'admin
-            data.setAll(service.getAllAll());
-            lblCount.setText(data.size() + " activité(s)");
-            lblMsg.setText("Liste chargée avec succès.");
-        } catch (Exception e) {
-            lblCount.setText("Erreur");
-            lblMsg.setText("Erreur: " + e.getMessage());
-            e.printStackTrace();
-        }
+        new Thread(() -> {
+            try {
+                // On affiche TOUTES les activités (Pending + Confirmed) pour l'admin
+                java.util.List<Activite> list = service.getAllAll();
+                Platform.runLater(() -> {
+                    data.setAll(list);
+                    if (activitesContainer != null) buildCards(list);
+                    lblCount.setText(list.size() + " activité(s)");
+                    lblMsg.setText("Liste chargée avec succès.");
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    lblCount.setText("Erreur");
+                    lblMsg.setText("Erreur: " + e.getMessage());
+                });
+                e.printStackTrace();
+            }
+        }, "Activite-Refresh-Thread").start();
     }
 
     // ================= NAVIGATION (using SceneNavigator for smooth transitions) =================
@@ -273,7 +295,8 @@ public class DashboardActiviteController {
 
     @FXML
     private void openModifier() {
-        Activite selected = tableActivite.getSelectionModel().getSelectedItem();
+        Activite selected = (selectedActivite != null) ? selectedActivite :
+                (tableActivite != null ? tableActivite.getSelectionModel().getSelectedItem() : null);
         if (selected == null) {
             showAlert("Attention", "Veuillez sélectionner une activité à modifier.");
             return;
@@ -291,6 +314,83 @@ public class DashboardActiviteController {
     @FXML
     private void openSessionsDashboard() {
         SceneNavigator.switchTo("DashboardSession.fxml", mainStack);
+    }
+
+    private void buildCards(java.util.List<Activite> list) {
+        activitesContainer.getChildren().clear();
+        for (Activite a : list) {
+            VBox card = new VBox(10);
+            card.setStyle("-fx-background-color: rgba(255,255,255,0.07); " +
+                          "-fx-background-radius: 18; " +
+                          "-fx-border-color: rgba(80,200,120,0.28); " +
+                          "-fx-border-width: 1.5; -fx-border-radius: 18; " +
+                          "-fx-padding: 20 22; " +
+                          "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.38), 16, 0, 0, 5);");
+            card.setPrefWidth(300);
+            card.setMaxWidth(300);
+
+            // Name
+            Label nameLabel = new Label(a.getName());
+            nameLabel.setStyle("-fx-font-size: 17px; -fx-font-weight: 900; -fx-text-fill: white; -fx-wrap-text: true;");
+            nameLabel.setWrapText(true);
+
+            // Type + status row
+            HBox badges = new HBox(8);
+            badges.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            Label typeLabel = new Label(a.getType());
+            typeLabel.setStyle("-fx-background-color: rgba(80,200,120,0.18); -fx-background-radius: 10; " +
+                               "-fx-text-fill: #50C878; -fx-font-weight: 700; -fx-font-size: 11; -fx-padding: 3 10;");
+            boolean confirmed = "Confirmed".equalsIgnoreCase(String.valueOf(a.getStatus()));
+            Label statusLabel = new Label(confirmed ? "✅ Confirmé" : "⏳ En attente");
+            statusLabel.setStyle("-fx-background-color: " + (confirmed ? "rgba(80,200,120,0.22)" : "rgba(255,165,0,0.22)") + "; " +
+                                 "-fx-background-radius: 10; " +
+                                 "-fx-text-fill: " + (confirmed ? "#50C878" : "#FFA500") + "; " +
+                                 "-fx-font-weight: 700; -fx-font-size: 11; -fx-padding: 3 10;");
+            badges.getChildren().addAll(typeLabel, statusLabel);
+
+            // Localisation
+            Label locLabel = new Label("📍 " + a.getLocalisation());
+            locLabel.setStyle("-fx-font-size: 12; -fx-text-fill: rgba(200,240,220,0.70);");
+
+            // Prix
+            Label prixLabel = new Label(a.getPrix() + " TND");
+            prixLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: 900; -fx-text-fill: white;");
+
+            // Action buttons
+            HBox actions = new HBox(8);
+            actions.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            Button btnEdit = new Button("✏️ Modifier");
+            btnEdit.setStyle("-fx-background-color: rgba(255,255,255,0.08); -fx-background-radius: 8; " +
+                             "-fx-border-color: rgba(255,255,255,0.2); -fx-border-width: 1; -fx-border-radius: 8; " +
+                             "-fx-text-fill: rgba(220,250,235,0.88); -fx-font-weight: 700; -fx-font-size: 11; " +
+                             "-fx-padding: 6 12; -fx-cursor: hand;");
+            btnEdit.setOnAction(e -> { selectedActivite = a; openModifier(); });
+
+            Button btnDel = new Button("🗑️");
+            btnDel.setStyle("-fx-background-color: rgba(255,80,80,0.14); -fx-background-radius: 8; " +
+                            "-fx-border-color: rgba(255,80,80,0.35); -fx-border-width: 1; -fx-border-radius: 8; " +
+                            "-fx-text-fill: rgba(255,140,140,0.90); -fx-font-weight: 700; -fx-font-size: 11; " +
+                            "-fx-padding: 6 12; -fx-cursor: hand;");
+            btnDel.setOnAction(e -> {
+                selectedActivite = a;
+                openSuppression();
+            });
+
+            if (!confirmed) {
+                Button btnVal = new Button("✅ Valider");
+                btnVal.setStyle("-fx-background-color: rgba(80,200,120,0.18); -fx-background-radius: 8; " +
+                                "-fx-border-color: rgba(80,200,120,0.40); -fx-border-width: 1; -fx-border-radius: 8; " +
+                                "-fx-text-fill: #50C878; -fx-font-weight: 700; -fx-font-size: 11; " +
+                                "-fx-padding: 6 12; -fx-cursor: hand;");
+                btnVal.setOnAction(e -> { selectedActivite = a; validerActivite(); });
+                actions.getChildren().addAll(btnVal, btnEdit, btnDel);
+            } else {
+                actions.getChildren().addAll(btnEdit, btnDel);
+            }
+
+            card.getChildren().addAll(nameLabel, badges, locLabel, prixLabel, actions);
+            activitesContainer.getChildren().add(card);
+        }
     }
 
     @FXML

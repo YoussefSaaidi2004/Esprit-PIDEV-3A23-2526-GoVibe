@@ -5,8 +5,23 @@ CREATE TABLE IF NOT EXISTS personne (
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NULL, -- Note: NULL allowed for OAuth2 users
     role ENUM('admin','user') NOT NULL DEFAULT 'user',
+    
+    -- OAuth2 Columns
+    provider VARCHAR(50) DEFAULT 'local',
+    provider_id VARCHAR(255) NULL,
+    photo_url VARCHAR(500) NULL,
+    
+    -- MFA & Security Columns
+    is_account_locked BOOLEAN DEFAULT FALSE,
+    preferred_mfa VARCHAR(20) DEFAULT 'NONE',
+    lockout_until DATETIME DEFAULT NULL,
+    
+    -- Face ID Column
+    face_encoding JSON NULL,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 

@@ -59,9 +59,19 @@
                                     <Label text="Des moments inoubliables vous attendent" style="-fx-font-size: 18; -fx-text-fill: rgba(255,255,255,0.8);"/>
                                 </VBox>
                                 <Region HBox.hgrow="ALWAYS"/>
-                                <HBox spacing="40">
-                                    <VBox alignment="CENTER"><Label text="150+" style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: #50C878;"/><Label text="Activités" style="-fx-text-fill: white;"/></VBox>
-                                    <VBox alignment="CENTER"><Label text="4.9" style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: #50C878;"/><Label text="Note Moyenne" style="-fx-text-fill: white;"/></VBox>
+                                <HBox spacing="25" alignment="CENTER_RIGHT">
+                                    <HBox spacing="40">
+                                        <VBox alignment="CENTER"><Label text="150+" style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: #50C878;"/><Label text="Activités" style="-fx-text-fill: white;"/></VBox>
+                                        <VBox alignment="CENTER"><Label text="4.9" style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: #50C878;"/><Label text="Note Moyenne" style="-fx-text-fill: white;"/></VBox>
+                                    </HBox>
+                                    <Button onAction="#openProposeActivity"
+                                            style="-fx-background-color: linear-gradient(to bottom, #50C878, #3DAF62);
+                                                   -fx-text-fill: white; -fx-font-size: 13; -fx-font-weight: 700;
+                                                   -fx-padding: 12 24; -fx-background-radius: 24; -fx-cursor: hand;
+                                                   -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.55), 12, 0, 0, 4);"
+                                            text="+ Proposer">
+                                        <tooltip><Tooltip text="Proposer une nouvelle activité"/></tooltip>
+                                    </Button>
                                 </HBox>
                             </HBox>
  

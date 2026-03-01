@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<VBox alignment="CENTER" spacing="20" 
+      style="-fx-background-color: linear-gradient(to bottom, #013220, #0B4F35); 
+             -fx-padding: 50;
+             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, -5);"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+    <HBox alignment="CENTER" spacing="12">
+        <StackPane>
+            <Circle radius="25" fill="#50C878" opacity="0.2"/>
+             <Label text="G" style="-fx-font-size: 20; -fx-font-weight: 900; -fx-text-fill: #50C878;"/>
+        </StackPane>
+        <Label text="Go" style="-fx-font-size: 26; -fx-font-weight: 900; -fx-text-fill: white;"/>
+        <Label text="Vibe" style="-fx-font-size: 26; -fx-font-weight: 300; -fx-text-fill: #50C878;"/>
+    </HBox>
+    <Label text="© 2024 GoVibe. Tous droits réservés." 
+           style="-fx-font-size: 13; -fx-text-fill: rgba(255,255,255,0.6);"/>
+    <HBox alignment="CENTER" spacing="25">
+        <Hyperlink text="À propos" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13; -fx-underline: false; -fx-border-width: 0;"/>
+        <Hyperlink text="Confidentialité" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13; -fx-underline: false; -fx-border-width: 0;"/>
+        <Hyperlink text="Conditions" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13; -fx-underline: false; -fx-border-width: 0;"/>
+        <Hyperlink text="Contact" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 13; -fx-underline: false; -fx-border-width: 0;"/>
+    </HBox>
+</VBox>

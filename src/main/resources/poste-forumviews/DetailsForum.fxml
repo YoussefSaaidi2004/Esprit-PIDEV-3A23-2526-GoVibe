@@ -54,7 +54,9 @@
                             <Label fx:id="forumDescriptionLabel" maxWidth="800" text="Description du forum..." wrapText="true" style="-fx-text-fill: #F0F0F0; -fx-font-size: 16px; -fx-font-weight: 500; -fx-line-spacing: 5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 3, 0, 0, 1);" />
                             
                             <HBox spacing="15" style="-fx-padding: 15 0 0 0;" alignment="CENTER_LEFT">
-                                <Label style="-fx-text-fill: #50C878; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: rgba(255,255,255,0.8); -fx-padding: 6 15; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);" text="Communauté Officielle" />
+                                <Label style="-fx-text-fill: #50C878; -fx-font-size: 12; -fx-font-weight: 800;
+                                  -fx-background-color: rgba(80,200,120,0.2); -fx-padding: 5 14;
+                                  -fx-background-radius: 20; -fx-letter-spacing: 1;" text="✦ Communauté GoVibe" />
                                 <Label fx:id="creatorLabel" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 5 0; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 3, 0, 0, 1);" text="Créé par Admin" />
                             </HBox>
                         </VBox>
@@ -67,14 +69,20 @@
                         <!-- Actions Bar -->
                         <HBox alignment="CENTER_LEFT">
                             <VBox spacing="5" style="-fx-padding: 0 0 10 0;">
-                                <Label style="-fx-text-fill: #012E20; -fx-font-size: 24px; -fx-font-weight: 800;" text="Discussion" />
-                                <Region style="-fx-background-color: #50C878; -fx-min-height: 4; -fx-pref-width: 50; -fx-background-radius: 2;" />
+                                <Label style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: 900;
+                                              -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.4),6,0,0,2);" text="💬  Discussions" />
+                                <Region style="-fx-background-color: linear-gradient(to right,#50C878,transparent); -fx-min-height: 3; -fx-pref-width: 80; -fx-background-radius: 2;" />
                             </VBox>
                             
                             <Region HBox.hgrow="ALWAYS" />
                             
                             <HBox alignment="CENTER_RIGHT" spacing="10">
                                 <Button fx:id="leaveButton" onAction="#handleLeaveForum" style="-fx-background-color: transparent; -fx-text-fill: #ff4d4d; -fx-font-weight: bold; -fx-border-color: #ff4d4d; -fx-border-radius: 20; -fx-padding: 5 15; -fx-cursor: hand;" text="Quitter le forum" visible="false" managed="false" />
+                                <Button text="📰  Toutes les publications" onAction="#handleGoToPosts"
+                                        style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #50C878;
+                                               -fx-border-color: rgba(80,200,120,0.4); -fx-border-radius: 20;
+                                               -fx-font-size: 13; -fx-font-weight: 800; -fx-padding: 9 22;
+                                               -fx-background-radius: 20; -fx-cursor: hand; -fx-border-width: 1;"/>
                                 <Button onAction="#handleAjoutPost" style="-fx-background-color: transparent; -fx-cursor: hand;">
                                     <graphic>
                                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -94,13 +102,21 @@
                             </VBox>
 
                             <!-- Members Sidebar (Right) -->
-                            <VBox minWidth="300" maxWidth="300" spacing="15" styleClass="glass-panel" style="-fx-padding: 20; -fx-background-color: white; -fx-background-radius: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 15, 0, 0, 5); -fx-border-color: rgba(80,200,120,0.1); -fx-border-radius: 18;">
+                            <VBox minWidth="300" maxWidth="300" spacing="15"
+                                  style="-fx-padding: 20; -fx-background-color: rgba(4,20,12,0.92);
+                                         -fx-background-radius: 18; -fx-border-color: rgba(80,200,120,0.28);
+                                         -fx-border-radius: 18; -fx-border-width: 1;
+                                         -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.5),20,0,0,6);">
                                 <HBox alignment="CENTER_LEFT" spacing="10">
-                                    <Label text="Membres" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #012E20;" />
+                                    <Label text="👥  Membres" style="-fx-font-size: 14; -fx-font-weight: 900; -fx-text-fill: white; -fx-letter-spacing: 1;" />
                                     <Region HBox.hgrow="ALWAYS" />
-                                    <Label fx:id="membersCountLabel" style="-fx-background-color: rgba(80,200,120,0.2); -fx-text-fill: #012E20; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 2 10; -fx-background-radius: 12;" text="0" />
+                                    <Label fx:id="membersCountLabel"
+                                           style="-fx-background-color: rgba(80,200,120,0.2); -fx-text-fill: #50C878;
+                                                  -fx-font-size: 12; -fx-font-weight: 900; -fx-padding: 3 12;
+                                                  -fx-background-radius: 14;"
+                                           text="0" />
                                 </HBox>
-                                <Region style="-fx-min-height: 1; -fx-background-color: rgba(0,0,0,0.05);" />
+                                <Region style="-fx-min-height: 1; -fx-background-color: rgba(80,200,120,0.18);" />
                                 <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" prefHeight="400">
                                     <content>
                                         <VBox fx:id="membersContainer" spacing="10" style="-fx-background-color: transparent;">
@@ -110,20 +126,30 @@
                                 </ScrollPane>
                                 
                                 <!-- Creator Controls (Add Member) -->
-                                <VBox fx:id="creatorControls" managed="false" visible="false" spacing="10" style="-fx-border-color: rgba(0,0,0,0.05); -fx-border-width: 1 0 0 0; -fx-padding: 15 0 0 0;">
-                                    <Label text="Ajouter un membre" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #012E20;" />
-                                    <javafx.scene.control.TextField fx:id="memberEmailField" promptText="Adresse email du membre" style="-fx-background-color: rgba(0,0,0,0.03); -fx-text-fill: #1A1A1A; -fx-background-radius: 8; -fx-padding: 10; -fx-border-color: rgba(0,0,0,0.05); -fx-border-radius: 8;" />
-                                    <Button onAction="#handleAddMember" style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;" text="Ajouter" maxWidth="Infinity"/>
+                                <VBox fx:id="creatorControls" managed="false" visible="false" spacing="10"
+                                      style="-fx-border-color: rgba(80,200,120,0.2); -fx-border-width: 1 0 0 0; -fx-padding: 15 0 0 0;">
+                                    <Label text="Ajouter un membre" style="-fx-font-size: 13; -fx-font-weight: 800; -fx-text-fill: rgba(255,255,255,0.85);" />
+                                    <javafx.scene.control.TextField fx:id="memberEmailField" promptText="Email du membre..."
+                                          style="-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white;
+                                                 -fx-prompt-text-fill: rgba(255,255,255,0.3); -fx-background-radius: 10;
+                                                 -fx-padding: 10; -fx-border-color: rgba(80,200,120,0.25);
+                                                 -fx-border-radius: 10; -fx-border-width: 1;" />
+                                    <Button onAction="#handleAddMember" text="+ Ajouter" maxWidth="Infinity"
+                                           style="-fx-background-color: linear-gradient(to right,#50C878,#3DAF62);
+                                                  -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 10;
+                                                  -fx-padding: 10; -fx-cursor: hand;
+                                                  -fx-effect: dropshadow(gaussian,rgba(80,200,120,0.4),10,0,0,3);"/>
                                 </VBox>
                             </VBox>
                         </HBox>
                         
                         <!-- Footer / End of List -->
                         <HBox alignment="CENTER" style="-fx-padding: 20;">
-                            <Label style="-fx-text-fill: #1A1A1A; -fx-opacity: 0.6; -fx-font-size: 14px;" text="Vous avez vu toutes les publications." />
+                            <Label style="-fx-text-fill: rgba(255,255,255,0.35); -fx-font-size: 13;" text="✓  Vous avez vu toutes les publications" />
                         </HBox>
                         
                     </VBox>
+                </VBox>
             </content>
         </ScrollPane>
     </center>

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 /**
  * Database connection manager for GoVibe.
- * Connects directly to GoVibe_Project database.
+ * Connects directly to govibe database.
  */
 @Deprecated
 public class MyDataBase {
@@ -14,7 +14,7 @@ public class MyDataBase {
     private static MyDataBase instance;
     private Connection connection;
 
-    private static final String URL = "jdbc:mysql://localhost:3306/GoVibe_Project?useSSL=false&serverTimezone=UTC&autoReconnect=true";
+    private static final String URL = "jdbc:mysql://localhost:3306/govibe_project?useSSL=false&serverTimezone=UTC&autoReconnect=true";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
@@ -34,13 +34,13 @@ public class MyDataBase {
         try {
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("✅ [MyDataBase] Connected to GoVibe_Project");
+                System.out.println("✅ [MyDataBase] Connected to govibe_project");
             }
         } catch (SQLException e) {
             System.err.println("❌ [MyDataBase] Connection failed for URL: " + URL);
             System.err.println("❌ Error: " + e.getMessage());
             // We throw here to prevent NullPointerException in services
-            throw new RuntimeException("Database connection failed. Please ensure MySQL is running and database 'GoVibe_Project' exists.", e);
+            throw new RuntimeException("Database connection failed. Please ensure MySQL is running and database 'govibe_project' exists.", e);
         }
         return connection;
     }

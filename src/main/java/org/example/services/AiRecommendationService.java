@@ -22,18 +22,19 @@ import java.util.stream.Collectors;
  * Service de recommandation IA Pro.
  * Utilise DeepSeek pour analyser les donnees locales et web.
  */
+/**
+ * Service de recommandation IA Pro.
+ * Utilise DeepSeek pour analyser les donnees locales et web.
+ */
 public class AiRecommendationService {
-
+    private final BookNowClient bookNowClient = new BookNowClient();
+    private final GeminiChatService geminiService = new GeminiChatService();
     private final ServiceVoiture voitureService = new ServiceVoiture();
     private final WebCarHarvester harvester = new WebCarHarvester();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
+    private static final String DEEPSEEK_API_KEY = "YOUR_DEEPSEEK_API_KEY"; // TODO: Replace with actual key
+    private static final String DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"; // TODO: Replace with actual URL
     private final HttpClient httpClient = HttpClient.newHttpClient();
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-            .create();
-    
-    // TODO: Laisser l'utilisateur configurer sa cle API
-    private static final String DEEPSEEK_API_KEY = "YOUR_DEEPSEEK_API_KEY";
-    private static final String DEEPSEEK_URL = "https://api.deepseek.com/chat/completions";
 
     public List<Voiture> recommendCars(double maxBudget, String destination) {
         // 1. Charger les donnees locales et web

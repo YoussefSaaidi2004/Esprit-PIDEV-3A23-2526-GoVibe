@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.scene.effect.GaussianBlur;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,12 +17,11 @@ import javafx.stage.StageStyle;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Alert;
-import java.io.IOException;
 import java.util.function.Consumer;
 
 public class CheckoutCardController {
-    @FXML private Text routeText, passengerText, priceText, dateText, airlineText;
-    @FXML private Text statusText;
+    @FXML private Label routeText, passengerText, priceText, dateText, airlineText;
+    @FXML private Label statusText;
     @FXML private HBox actionBox;
 
     private Checkout checkout;
@@ -50,9 +48,9 @@ public class CheckoutCardController {
             airlineText.setText(flight.getAirline());
         }
         
-        passengerText.setText(checkout.getPassengerNbr() + " passenger(s)");
+        passengerText.setText(checkout.getPassengerNbr() + " passager(s)");
         dateText.setText(checkout.getReservationDate().toString().split("T")[0]);
-        priceText.setText(checkout.getTotalPrix() + " DT");
+        priceText.setText(checkout.getTotalPrix() != null ? checkout.getTotalPrix().toPlainString() : "0");
 
         String statusValue = checkout.getStatusReservation();
         statusText.setText(statusValue != null ? statusValue.toUpperCase() : "");
@@ -90,17 +88,29 @@ public class CheckoutCardController {
     }
 
     private void updateStatusStyle() {
-        statusText.getStyleClass().removeAll("badge-pending", "badge-confirmed", "badge-rejected", "badge-cancelled");
-        
         String status = checkout.getStatusReservation();
+        String baseStyle = "-fx-font-size: 9; -fx-font-weight: 900; -fx-background-radius: 50;"
+            + "-fx-border-radius: 50; -fx-border-width: 1; -fx-padding: 3 10 3 10;";
         if ("PENDING".equalsIgnoreCase(status)) {
-            statusText.getStyleClass().add("badge-pending");
+            statusText.setStyle(baseStyle
+                + "-fx-text-fill: #f0a500; -fx-background-color: rgba(240,165,0,0.15);"
+                + "-fx-border-color: rgba(240,165,0,0.35);");
         } else if ("CONFIRMED".equalsIgnoreCase(status)) {
-            statusText.getStyleClass().add("badge-confirmed");
+            statusText.setStyle(baseStyle
+                + "-fx-text-fill: #4de88a; -fx-background-color: rgba(78,232,138,0.15);"
+                + "-fx-border-color: rgba(78,232,138,0.35);");
         } else if ("REJECTED".equalsIgnoreCase(status)) {
-            statusText.getStyleClass().add("badge-rejected");
+            statusText.setStyle(baseStyle
+                + "-fx-text-fill: #ef476f; -fx-background-color: rgba(239,71,111,0.15);"
+                + "-fx-border-color: rgba(239,71,111,0.35);");
         } else if ("CANCELLED".equalsIgnoreCase(status)) {
-            statusText.getStyleClass().add("badge-cancelled");
+            statusText.setStyle(baseStyle
+                + "-fx-text-fill: rgba(255,255,255,0.5); -fx-background-color: rgba(255,255,255,0.08);"
+                + "-fx-border-color: rgba(255,255,255,0.2);");
+        } else {
+            statusText.setStyle(baseStyle
+                + "-fx-text-fill: rgba(255,255,255,0.6); -fx-background-color: rgba(255,255,255,0.08);"
+                + "-fx-border-color: rgba(255,255,255,0.2);");
         }
     }
 

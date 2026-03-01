@@ -1,6 +1,7 @@
 package org.example.entities;
 
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 
 public class Flight {
@@ -9,13 +10,10 @@ public class Flight {
     private String departureAirport;
     private String destination;
     private LocalTime departureTime;
-
-
-
     private LocalTime arrivalTime;
     private String classeChaise;
     private String airline;
-    private int prix;
+    private BigDecimal prix;
     private int availableSeats;
     private int totalSeats;
     private String description;
@@ -25,7 +23,7 @@ public class Flight {
     public Flight(String flightId, String departureAirport, String destination,
                   LocalTime departureTime, LocalTime arrivalTime,
                   String classeChaise, String airline,
-                  int prix, int availableSeats, int totalSeats, String description) {
+                  BigDecimal prix, int availableSeats, int totalSeats, String description) {
 
         this.flightId = flightId;
         this.departureAirport = departureAirport;
@@ -96,11 +94,11 @@ public class Flight {
         this.airline = airline;
     }
 
-    public int getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(int prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 

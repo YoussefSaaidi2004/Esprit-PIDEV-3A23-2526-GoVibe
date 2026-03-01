@@ -35,7 +35,7 @@ class FlightEntityTest {
             assertNull(f.getArrivalTime());
             assertNull(f.getClasseChaise());
             assertNull(f.getAirline());
-            assertEquals(0, f.getPrix());
+            assertNull(f.getPrix());   // BigDecimal: null until explicitly set
             assertEquals(0, f.getAvailableSeats());
             assertEquals(0, f.getTotalSeats());
             assertNull(f.getDescription());
@@ -62,7 +62,7 @@ class FlightEntityTest {
                 LocalTime.of(12, 0),
                 "Economy",
                 "Tunisair",
-                250,
+                java.math.BigDecimal.valueOf(250),
                 120,
                 180,
                 "Direct flight"
@@ -91,7 +91,7 @@ class FlightEntityTest {
         void airline() { assertEquals("Tunisair", flight.getAirline()); }
 
         @Test @DisplayName("prix correctly assigned")
-        void prix() { assertEquals(250, flight.getPrix()); }
+        void prix() { assertEquals(java.math.BigDecimal.valueOf(250), flight.getPrix()); }
 
         @Test @DisplayName("availableSeats correctly assigned")
         void availableSeats() { assertEquals(120, flight.getAvailableSeats()); }
@@ -133,10 +133,10 @@ class FlightEntityTest {
 
         @Test @DisplayName("setPrix / getPrix — various prices")
         void prixRoundTrip() {
-            flight.setPrix(0);
-            assertEquals(0, flight.getPrix());
-            flight.setPrix(9999);
-            assertEquals(9999, flight.getPrix());
+            flight.setPrix(java.math.BigDecimal.ZERO);
+            assertEquals(java.math.BigDecimal.ZERO, flight.getPrix());
+            flight.setPrix(java.math.BigDecimal.valueOf(9999));
+            assertEquals(java.math.BigDecimal.valueOf(9999), flight.getPrix());
         }
 
         @Test @DisplayName("setAvailableSeats / getAvailableSeats")

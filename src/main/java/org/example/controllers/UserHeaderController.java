@@ -77,6 +77,12 @@ public class UserHeaderController {
     }
 
     @FXML
+    private void handleMyReservations() {
+        System.out.println("[Nav] My Reservations clicked");
+        org.example.mains.MainApp.switchScene("/views/user-checkouts.fxml", "Mes Réservations");
+    }
+
+    @FXML
     private void handleForums() {
         System.out.println("[Nav] Forums clicked");
         SceneNavigator.switchTo("/poste-forumviews/ListForum.fxml", getContextNode());
@@ -102,12 +108,6 @@ public class UserHeaderController {
     private void handleProfile() {
         System.out.println("[Nav] Profile clicked - navigating to UserProfileView.fxml");
         org.example.mains.MainApp.switchScene("/org/example/UserProfileView.fxml", "Mon Profil");
-    }
-
-    @FXML
-    private void handleMyReservations() {
-        System.out.println("[Nav] My Reservations clicked");
-        SceneNavigator.switchTo("/views/room-booking.fxml", getContextNode());
     }
 
     @FXML

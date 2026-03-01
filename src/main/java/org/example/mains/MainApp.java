@@ -55,33 +55,61 @@ public class MainApp extends Application {
     }
 
     private static void initGlobalVoiceAssistant() {
+        // Safe-mode check to bypass initialization if it causes native crashes
+        if ("true".equalsIgnoreCase(System.getProperty("govibe.voice.disabled"))) {
+            System.err.println("[VoiceAssistant] Voice Assistant DISABLED via system property.");
+            return;
+        }
+
         Thread t = new Thread(() -> {
             System.out.println("[VoiceAssistant] Initialising global assistant...");
-            voiceAssistant = VoiceAssistantService.getInstance();
-            // Default no-op proxy until a controller registers itself.
-            globalRouter = new CommandRouter(voiceAssistant, null);
-            // Apply any proxy that was registered before the router was ready
-            // (e.g. LoginController.initialize() fires before this thread finishes).
-            CommandRouter.ControllerProxy pending = pendingProxy;
-            if (pending != null) {
-                globalRouter.setProxy(pending);
-                pendingProxy = null;
-                System.out.println("[VoiceAssistant] Applied pending proxy to router.");
+            try {
+                voiceAssistant = VoiceAssistantService.getInstance();
+                // Default no-op proxy until a controller registers itself.
+                globalRouter = new CommandRouter(voiceAssistant, null);
+                // Apply any proxy that was registered before the router was ready
+                // (e.g. LoginController.initialize() fires before this thread finishes).
+                CommandRouter.ControllerProxy pending = pendingProxy;
+                if (pending != null) {
+                    globalRouter.setProxy(pending);
+                    pendingProxy = null;
+                    System.out.println("[VoiceAssistant] Applied pending proxy to router.");
+                }
+                voiceAssistant.setCommandListener(globalRouter);
+                // NOTE: startListening() is now called INSIDE VoiceAssistantService.initVosk()
+                // after the Vosk model has fully loaded, to avoid a race condition where
+                // the Recognizer JNI was constructed before the model was ready (causing a
+                // Windows native heap corruption crash, exit code -805306369).
+                // For SAPI-only mode (no Vosk model), startListening() is called from
+                // VoiceAssistantService.detectSapi() once SAPI availability is confirmed.
+                System.out.println("[VoiceAssistant] Global assistant ready. STT=deferred-until-model-load");
+                // Welcome message — spoken by Vivian (queued if she isn't ready yet,
+                // delivered automatically once the Python TTS worker loads).
+                voiceAssistant.vivianSpeak("GoVibe is online! This is Echo speaking — Vivian is still warming up and will join us shortly. Say 'Hey Go' whenever you need us!");
+            } catch (Throwable e) {
+                System.err.println("[VoiceAssistant] FATAL failure during initialization: " + e.getMessage());
+                e.printStackTrace();
             }
-            voiceAssistant.setCommandListener(globalRouter);
-            voiceAssistant.startListening();   // noop if model missing; TTS still works
-            System.out.println("[VoiceAssistant] Global assistant ready. STT=" +
-                    voiceAssistant.isSttAvailable());
-            // Welcome message — spoken by Vivian (queued if she isn't ready yet,
-            // delivered automatically once the Python TTS worker loads).
-            voiceAssistant.vivianSpeak("GoVibe is online! This is Echo speaking — Vivian is still warming up and will join us shortly. Say 'Hey Go' whenever you need us!");
         }, "VoiceAssistant-Init");
         t.setDaemon(true);
         t.start();
     }
 
+
     public static void main(String[] args) {
         launch(args);
+    }
+
+    /**
+     * Called by the JavaFX runtime when the application window is closed.
+     * Kills all voice-assistant subprocesses (edge-tts, SAPI) so they do not
+     * linger as zombie OS processes after the JVM exits.
+     */
+    @Override
+    public void stop() {
+        if (voiceAssistant != null) {
+            voiceAssistant.shutdown();
+        }
     }
 
     private static Stage primaryStage;

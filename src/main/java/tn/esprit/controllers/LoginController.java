@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import tn.esprit.entities.Personne;
 import tn.esprit.services.ServicePersonne;
+import org.example.services.FaceRecognitionService;
 
 import java.io.IOException;
 
@@ -24,6 +25,7 @@ public class LoginController {
     private PasswordField passwordField;
 
     private final ServicePersonne servicePersonne = new ServicePersonne();
+    private final FaceRecognitionService faceService = new FaceRecognitionService();
 
     @FXML
     private void handleLogin(ActionEvent event) {
@@ -49,8 +51,39 @@ public class LoginController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
             showAlert(Alert.AlertType.ERROR, "Échec de connexion", "Email ou mot de passe incorrect.");
+        }
+    }
+
+    @FXML
+    private void handleLoginFaceID(ActionEvent event) {
+        String email = emailField.getText();
+        if (email.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Email requis", "Veuillez entrer votre email d'abord pour utiliser Face ID.");
+            return;
+        }
+
+        Personne user = servicePersonne.getOneByEmail(email);
+        if (user == null || user.getFaceEncoding() == null || user.getFaceEncoding().isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Non configuré", "Face ID n'est pas configuré pour cet utilisateur ou l'email est invalide.");
+            return;
+        }
+
+        showAlert(Alert.AlertType.INFORMATION, "Vérification Face ID", "La caméra va s'ouvrir. Regardez l'objectif.");
+        boolean isVerified = faceService.verifyFace(user.getFaceEncoding());
+
+        if (isVerified) {
+            tn.esprit.mains.MainApp.loggedInUser = user;
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Échec de connexion", "Visage non reconnu ou délai dépassé.");
         }
     }
 

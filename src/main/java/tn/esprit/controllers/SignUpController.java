@@ -1,5 +1,6 @@
 package tn.esprit.controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,11 +9,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import tn.esprit.entities.Personne;
 import tn.esprit.services.ServicePersonne;
+import org.example.services.FaceRecognitionService;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -35,6 +38,8 @@ public class SignUpController {
     private ComboBox<String> roleComboBox;
 
     private final ServicePersonne servicePersonne = new ServicePersonne();
+    private final FaceRecognitionService faceService = new FaceRecognitionService();
+    private String configuredFaceEncoding = null;
 
     @FXML
     public void initialize() {
@@ -61,6 +66,10 @@ public class SignUpController {
         }
 
         Personne p = new Personne(nom, prenom, email, password, role);
+        if (configuredFaceEncoding != null) {
+            p.setFaceEncoding(configuredFaceEncoding);
+        }
+
         try {
             servicePersonne.ajouter(p);
             showAlert(Alert.AlertType.INFORMATION, "Succès", "Inscription réussie ! Veuillez vous connecter.");
@@ -68,6 +77,24 @@ public class SignUpController {
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de l'inscription : " + e.getMessage());
         }
+    }
+
+    @FXML
+    private void handleConfigureFaceID(ActionEvent event) {
+        showAlert(Alert.AlertType.INFORMATION, "Configuration Face ID",
+                "La caméra va s'ouvrir. Regardez l'objectif et appuyez sur 'c' pour capturer.");
+        // Run off the FX thread so the camera window can be interacted with
+        new Thread(() -> {
+            String encoding = faceService.registerFaceEncoding();
+            Platform.runLater(() -> {
+                if (encoding != null && !encoding.isEmpty()) {
+                    configuredFaceEncoding = encoding;
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Visage enregistré avec succès !");
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "L'enregistrement du visage a échoué ou a été annulé.");
+                }
+            });
+        }, "FaceID-Register").start();
     }
 
     @FXML

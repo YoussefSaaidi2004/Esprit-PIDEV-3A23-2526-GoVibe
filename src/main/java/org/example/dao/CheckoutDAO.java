@@ -7,7 +7,10 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Data Access Object for Checkout entity
@@ -36,7 +39,7 @@ public class CheckoutDAO {
             ps.setTimestamp(3, Timestamp.valueOf(checkout.getReservationDate()));
             ps.setInt(4, checkout.getPassengerNbr());
             ps.setString(5, checkout.getStatusReservation());
-            ps.setInt(6, checkout.getTotalPrix() != null ? checkout.getTotalPrix().intValue() : 0);
+            ps.setBigDecimal(6, checkout.getTotalPrix() != null ? checkout.getTotalPrix() : BigDecimal.ZERO);
             ps.setString(7, checkout.getPassengerName());
             ps.setString(8, checkout.getPassengerEmail());
             ps.setString(9, checkout.getPassengerPhone());
@@ -61,6 +64,26 @@ public class CheckoutDAO {
         }
         
         return false;
+    }
+
+    /**
+     * Retrieve all checkouts for a specific user
+     * @param userId The user ID to filter by
+     * @return List of checkouts belonging to the user
+     */
+    public List<Checkout> findByUserId(int userId) {
+        String sql = "SELECT * FROM checkout WHERE user_id = ? ORDER BY reservation_date DESC";
+        List<Checkout> list = new ArrayList<>();
+        try (Connection conn = UnifiedDatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(extractCheckoutFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading checkouts for user " + userId + ": " + e.getMessage());
+        }
+        return list;
     }
 
     /**
@@ -137,7 +160,7 @@ public class CheckoutDAO {
             ps.setTimestamp(3, Timestamp.valueOf(checkout.getReservationDate()));
             ps.setInt(4, checkout.getPassengerNbr());
             ps.setString(5, checkout.getStatusReservation());
-            ps.setInt(6, checkout.getTotalPrix() != null ? checkout.getTotalPrix().intValue() : 0);
+            ps.setBigDecimal(6, checkout.getTotalPrix() != null ? checkout.getTotalPrix() : BigDecimal.ZERO);
             ps.setString(7, checkout.getPassengerName());
             ps.setString(8, checkout.getPassengerEmail());
             ps.setString(9, checkout.getPassengerPhone());
@@ -184,64 +207,65 @@ public class CheckoutDAO {
      * @throws SQLException if database error occurs
      */
     private Checkout extractCheckoutFromResultSet(ResultSet rs) throws SQLException {
+        // Build column set ONCE — repeated rs.getMetaData() calls inside the
+        // while-loop corrupt MySQL JDBC's internal columnDefinition state and
+        // cause NullPointerException on the next rs.getXxx() invocation.
+        Set<String> cols = buildColumnSet(rs);
+
         Checkout checkout = new Checkout();
         checkout.setCheckoutId(rs.getInt("checkout_id"));
         checkout.setFlightId(rs.getString("flight_id"));
-        
+
         // Handle user_id vs id_user
-        if (hasColumn(rs, "user_id")) {
+        if (cols.contains("user_id")) {
             checkout.setIdUser(rs.getInt("user_id"));
-        } else if (hasColumn(rs, "id_user")) {
+        } else if (cols.contains("id_user")) {
             checkout.setIdUser(rs.getInt("id_user"));
         }
-        
+
         Timestamp timestamp = rs.getTimestamp("reservation_date");
         checkout.setReservationDate(timestamp != null ? timestamp.toLocalDateTime() : LocalDateTime.now());
-        
+
         checkout.setPassengerNbr(rs.getInt("passenger_nbr"));
         checkout.setStatusReservation(rs.getString("status_reservation"));
-        if (hasColumn(rs, "passenger_name")) {
-            checkout.setPassengerName(rs.getString("passenger_name"));
-        }
-        if (hasColumn(rs, "passenger_email")) {
-            checkout.setPassengerEmail(rs.getString("passenger_email"));
-        }
-        if (hasColumn(rs, "passenger_phone")) {
-            checkout.setPassengerPhone(rs.getString("passenger_phone"));
-        }
-        if (hasColumn(rs, "payment_method")) {
-            checkout.setPaymentMethod(rs.getString("payment_method"));
-        }
-        if (hasColumn(rs, "seat_preference")) {
-            checkout.setSeatPreference(rs.getString("seat_preference"));
-        }
-        if (hasColumn(rs, "travel_class")) {
-            checkout.setTravelClass(rs.getString("travel_class"));
-        }
-        
+        if (cols.contains("passenger_name"))  checkout.setPassengerName(rs.getString("passenger_name"));
+        if (cols.contains("passenger_email")) checkout.setPassengerEmail(rs.getString("passenger_email"));
+        if (cols.contains("passenger_phone")) checkout.setPassengerPhone(rs.getString("passenger_phone"));
+        if (cols.contains("payment_method"))  checkout.setPaymentMethod(rs.getString("payment_method"));
+        if (cols.contains("seat_preference")) checkout.setSeatPreference(rs.getString("seat_preference"));
+        if (cols.contains("travel_class"))    checkout.setTravelClass(rs.getString("travel_class"));
+
         // Handle total_prix vs total_price vs price
         BigDecimal price = BigDecimal.ZERO;
-        if (hasColumn(rs, "total_prix")) {
-            price = rs.getBigDecimal("total_prix");
-        } else if (hasColumn(rs, "total_price")) {
-            price = rs.getBigDecimal("total_price");
-        } else if (hasColumn(rs, "price")) {
-            price = rs.getBigDecimal("price");
+        if (cols.contains("total_prix")) {
+            BigDecimal v = rs.getBigDecimal("total_prix");
+            if (v != null) price = v;
+        } else if (cols.contains("total_price")) {
+            BigDecimal v = rs.getBigDecimal("total_price");
+            if (v != null) price = v;
+        } else if (cols.contains("price")) {
+            BigDecimal v = rs.getBigDecimal("price");
+            if (v != null) price = v;
         }
         checkout.setTotalPrix(price);
 
         return checkout;
     }
 
-    private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
-        ResultSetMetaData metaData = rs.getMetaData();
-        int count = metaData.getColumnCount();
-        for (int i = 1; i <= count; i++) {
-            if (columnName.equalsIgnoreCase(metaData.getColumnName(i))) {
-                return true;
-            }
+    /**
+     * Reads all column names from the ResultSet's metadata exactly once and
+     * returns them as a lower-case Set.  Use this Set for column presence checks
+     * instead of calling rs.getMetaData() repeatedly, which corrupts MySQL JDBC's
+     * internal columnDefinition and causes NullPointerException.
+     */
+    private static Set<String> buildColumnSet(ResultSet rs) throws SQLException {
+        ResultSetMetaData meta = rs.getMetaData();
+        int n = meta.getColumnCount();
+        Set<String> cols = new HashSet<>(n * 2);
+        for (int i = 1; i <= n; i++) {
+            cols.add(meta.getColumnName(i).toLowerCase(Locale.ROOT));
         }
-        return false;
+        return cols;
     }
 
     /**

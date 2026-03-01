@@ -1,67 +1,146 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<VBox prefWidth="800.0" spacing="0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ForumItemController">
-    <padding><Insets bottom="20" left="0" right="0" top="0" /></padding>
-    <HBox alignment="CENTER_LEFT" spacing="18" styleClass="forum-card" style="-fx-background-color: rgba(255,255,255,0.85); -fx-background-radius: 18px; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.15), 20, 0, 0, 5);">
-        <padding><Insets bottom="15" left="25" right="25" top="20" /></padding>
-        <!-- Avatar/Profile -->
-        <VBox alignment="CENTER" styleClass="avatar">
-            <ImageView fx:id="forumImageView" fitHeight="48" fitWidth="48" pickOnBounds="true" preserveRatio="true" styleClass="avatar-image">
-                <image><Image url="@images/logo.png" /></image>
+<VBox prefWidth="860.0" spacing="0"
+      style="-fx-background-color: transparent;"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.ForumItemController">
+    <padding><Insets bottom="10" left="0" right="0" top="0"/></padding>
+
+    <!-- ═══════════════ PREMIUM GLASS FORUM CARD ═══════════════ -->
+    <HBox alignment="CENTER_LEFT" spacing="0"
+          style="-fx-background-color: rgba(4,24,14,0.82);
+                 -fx-background-radius: 20; -fx-border-color: rgba(80,200,120,0.22);
+                 -fx-border-radius: 20; -fx-border-width: 1;
+                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.45),22,0,0,6);
+                 -fx-cursor: hand;">
+
+        <!-- Colored Left Accent Strip -->
+        <VBox prefWidth="5" style="-fx-background-color: linear-gradient(to bottom,#50C878,rgba(80,200,120,0.25));
+                                   -fx-background-radius: 20 0 0 20;"/>
+
+        <!-- Avatar Column -->
+        <StackPane style="-fx-padding: 20 18 20 20;">
+            <Circle radius="32" fill="rgba(80,200,120,0.15)"
+                    style="-fx-stroke: rgba(80,200,120,0.3); -fx-stroke-width: 1.5;"/>
+            <ImageView fx:id="forumImageView" fitHeight="48" fitWidth="48"
+                       pickOnBounds="true" preserveRatio="true"
+                       style="-fx-background-radius: 50; -fx-clip: null;">
+                <image><Image url="@images/logo.png"/></image>
             </ImageView>
-        </VBox>
+        </StackPane>
+
         <!-- Main Content -->
-        <VBox spacing="4" HBox.hgrow="ALWAYS">
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label fx:id="nameLabel" style="-fx-text-fill: #013220; -fx-font-size: 20px; -fx-font-weight: bold;" text="Nom du Forum" />
-                <Label fx:id="privateBadge" style="-fx-background-color: rgba(231,76,60,0.1); -fx-text-fill: #e74c3c; -fx-font-size: 11px; -fx-font-weight: bold; -fx-padding: 2 8; -fx-background-radius: 10;" text="PRIVÉ" visible="false" />
+        <VBox spacing="8" HBox.hgrow="ALWAYS" style="-fx-padding: 18 14 18 0;">
+
+            <!-- Name row -->
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label fx:id="nameLabel" text="Nom du Forum"
+                       style="-fx-text-fill: white; -fx-font-size: 17; -fx-font-weight: 900;"/>
+                <Label fx:id="privateBadge" text="🔒 PRIVÉ" visible="false" managed="false"
+                       style="-fx-background-color: rgba(231,76,60,0.18); -fx-text-fill: #ff7675;
+                              -fx-font-size: 9; -fx-font-weight: 800; -fx-padding: 3 9;
+                              -fx-background-radius: 10; -fx-letter-spacing: 1;"/>
             </HBox>
-            <Label fx:id="descriptionLabel" style="-fx-text-fill: #555; -fx-font-size: 15px; -fx-font-weight: 400;" text="Description du forum..." wrapText="true" />
-            <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 5 0 0 0;">
-                <HBox alignment="CENTER_LEFT" spacing="5">
-                    <Label style="-fx-text-fill: #50C878; -fx-font-weight: bold;" text="👥" />
-                    <Label fx:id="membersLabel" style="-fx-text-fill: #50C878; -fx-font-size: 13px;" text="0 Membres" />
+
+            <!-- Description -->
+            <Label fx:id="descriptionLabel" text="Description du forum..." wrapText="true"
+                   maxWidth="560"
+                   style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 13;"/>
+
+            <!-- Meta chips row -->
+            <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-padding: 4 0 0 0;">
+
+                <HBox alignment="CENTER_LEFT" spacing="6"
+                      style="-fx-background-color: rgba(80,200,120,0.12); -fx-background-radius: 10; -fx-padding: 4 10;">
+                    <Label text="👥" style="-fx-font-size: 12;"/>
+                    <Label fx:id="membersLabel" text="0 Membres"
+                           style="-fx-text-fill: #50C878; -fx-font-size: 12; -fx-font-weight: 700;"/>
                 </HBox>
-                <HBox alignment="CENTER_LEFT" spacing="5">
-                    <Label style="-fx-text-fill: #50C878; -fx-font-weight: bold;" text="📝" />
-                    <Label fx:id="postsLabel" style="-fx-text-fill: #50C878; -fx-font-size: 13px;" text="0 Publications" />
+
+                <Label text="·" style="-fx-text-fill: rgba(255,255,255,0.2); -fx-font-size: 16;"/>
+
+                <HBox alignment="CENTER_LEFT" spacing="6"
+                      style="-fx-background-color: rgba(80,200,120,0.12); -fx-background-radius: 10; -fx-padding: 4 10;">
+                    <Label text="💬" style="-fx-font-size: 12;"/>
+                    <Label fx:id="postsLabel" text="0 Publications"
+                           style="-fx-text-fill: #50C878; -fx-font-size: 12; -fx-font-weight: 700;"/>
                 </HBox>
-                <Label style="-fx-text-fill: #A0E0C9;" text="•" />
-                <Label fx:id="creatorLabel" style="-fx-text-fill: #084E36; -fx-font-size: 12px; -fx-font-weight: bold;" text="Par Admin" />
-                <Label style="-fx-text-fill: #A0E0C9;" text="•" />
-                <Label fx:id="dateLabel" style="-fx-text-fill: #A0E0C9; -fx-font-size: 12px;" text="Créé le 01/01/2024" />
+
+                <Label text="·" style="-fx-text-fill: rgba(255,255,255,0.2); -fx-font-size: 16;"/>
+
+                <Label fx:id="creatorLabel" text="Par Admin"
+                       style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 12; -fx-font-style: italic;"/>
+
+                <Label text="·" style="-fx-text-fill: rgba(255,255,255,0.2); -fx-font-size: 16;"/>
+
+                <Label fx:id="dateLabel" text="Créé le —"
+                       style="-fx-text-fill: rgba(255,255,255,0.35); -fx-font-size: 12;"/>
             </HBox>
         </VBox>
-        <!-- Actions -->
-        <VBox alignment="CENTER_RIGHT" spacing="10">
+
+        <!-- Right: Actions -->
+        <VBox alignment="CENTER" spacing="10" style="-fx-padding: 18 20 18 10;">
             <HBox spacing="10" alignment="CENTER_RIGHT">
-                <Button fx:id="leaveButton" onAction="#handleLeaveForum" styleClass="leave-btn" text="Quitter" visible="false" managed="false" />
-                <Button onAction="#handleViewDetails" styleClass="button-primary action-btn" text="Voir" />
-                <Button fx:id="editButton" onAction="#handleEditForum" styleClass="icon-btn">
+
+                <!-- Leave (conditional) -->
+                <Button fx:id="leaveButton" onAction="#handleLeaveForum"
+                        visible="false" managed="false"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ff7675;
+                               -fx-font-weight: 700; -fx-font-size: 12; -fx-padding: 8 16;
+                               -fx-cursor: hand; -fx-background-radius: 18;
+                               -fx-border-color: rgba(231,76,60,0.5); -fx-border-radius: 18; -fx-border-width: 1;">
+                    <tooltip><Tooltip text="Quitter le forum"/></tooltip>
                     <graphic>
-                        <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@images/write.png" />
-                            </image>
-                        </ImageView>
+                        <HBox alignment="CENTER" spacing="5">
+                            <SVGPath fill="#ff7675" scaleX="0.75" scaleY="0.75"
+                                     content="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                            <Label text="Quitter" style="-fx-text-fill: #ff7675; -fx-font-weight: 700; -fx-font-size: 12;"/>
+                        </HBox>
                     </graphic>
                 </Button>
-                <Button fx:id="deleteButton" onAction="#handleDeleteForum" styleClass="icon-btn">
+
+                <!-- View -->
+                <Button onAction="#handleViewDetails"
+                        style="-fx-background-color: linear-gradient(to right,#50C878,#3DAF62);
+                               -fx-background-radius: 20; -fx-padding: 9 20; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian,rgba(80,200,120,0.45),12,0,0,4);">
+                    <tooltip><Tooltip text="Voir les détails du forum"/></tooltip>
                     <graphic>
-                        <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@images/delete.png" />
-                            </image>
-                        </ImageView>
+                        <HBox alignment="CENTER" spacing="7">
+                            <SVGPath fill="white" scaleX="0.8" scaleY="0.8"
+                                     content="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            <Label text="Voir" style="-fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 13;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+                <!-- Edit icon btn -->
+                <Button fx:id="editButton" onAction="#handleEditForum"
+                        style="-fx-background-color: rgba(255,255,255,0.08); -fx-background-radius: 50%;
+                               -fx-padding: 9; -fx-cursor: hand;
+                               -fx-border-color: rgba(255,255,255,0.12); -fx-border-radius: 50%; -fx-border-width: 1;">
+                    <tooltip><Tooltip text="Modifier le forum"/></tooltip>
+                    <graphic>
+                        <SVGPath fill="rgba(255,255,255,0.75)" scaleX="0.85" scaleY="0.85"
+                                 content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </graphic>
+                </Button>
+
+                <!-- Delete icon btn -->
+                <Button fx:id="deleteButton" onAction="#handleDeleteForum"
+                        style="-fx-background-color: rgba(231,76,60,0.1); -fx-background-radius: 50%;
+                               -fx-padding: 9; -fx-cursor: hand;
+                               -fx-border-color: rgba(231,76,60,0.25); -fx-border-radius: 50%; -fx-border-width: 1;">
+                    <tooltip><Tooltip text="Supprimer le forum"/></tooltip>
+                    <graphic>
+                        <SVGPath fill="rgba(231,76,60,0.85)" scaleX="0.85" scaleY="0.85"
+                                 content="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                     </graphic>
                 </Button>
             </HBox>

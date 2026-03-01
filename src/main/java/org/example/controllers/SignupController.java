@@ -1,5 +1,7 @@
 package org.example.controllers;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.example.entities.personne;
 import org.example.services.ServicePersonne;
+import org.example.services.FaceRecognitionService;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -19,12 +22,16 @@ public class SignupController {
     @FXML private TextField tfEmail;
     @FXML private PasswordField tfPassword;
     @FXML private Label errorLabel;
+    @FXML private Button btnSignup;
+    @FXML private Button btnFaceID;
     
     @FXML private RadioButton rbUser;
     @FXML private RadioButton rbAdmin;
     @FXML private ToggleGroup roleGroup;
 
     private final ServicePersonne servicePersonne = new ServicePersonne();
+    private final FaceRecognitionService faceService = new FaceRecognitionService();
+    private String configuredFaceEncoding = null;
 
     @FXML
     private void handleSignup() {
@@ -57,34 +64,85 @@ public class SignupController {
             return;
         }
 
-        try {
-            // Validation: Email uniqueness
-            if (servicePersonne.emailExists(email)) {
-                showError("Cet email est deja utilise.", true);
-                return;
+        btnSignup.setDisable(true);
+        showError("Traitement en cours...", false);
+
+        Task<Void> signupTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                // Validation: Email uniqueness
+                if (servicePersonne.emailExists(email)) {
+                    throw new RuntimeException("Cet email est deja utilise.");
+                }
+
+                // Get selected role
+                String role = rbAdmin.isSelected() ? "admin" : "user";
+                
+                // Create new user
+                personne newUser = new personne(nom, prenom, email, password, role);
+                if (configuredFaceEncoding != null) {
+                    newUser.setFaceEncoding(configuredFaceEncoding);
+                }
+                servicePersonne.ajouter(newUser);
+                return null;
             }
+        };
 
-            // Get selected role
-            String role = "user"; // Default
-            if (rbAdmin.isSelected()) {
-                role = "admin";
-            } else if (rbUser.isSelected()) {
-                role = "user";
+        signupTask.setOnSucceeded(e -> {
+            btnSignup.setDisable(false);
+            showError("Compte cree avec succes ! Redirection...", false);
+            
+            // Wait a bit so user can see the message
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1500);
+                    Platform.runLater(() -> handleLoginLink());
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }).start();
+        });
+
+        signupTask.setOnFailed(e -> {
+            btnSignup.setDisable(false);
+            Throwable ex = signupTask.getException();
+            String msg = (ex instanceof RuntimeException) ? ex.getMessage() : "Erreur lors de la creation du compte.";
+            showError(msg, true);
+            ex.printStackTrace();
+        });
+
+        new Thread(signupTask).start();
+    }
+
+    @FXML
+    private void handleConfigureFaceID() {
+        showError("La caméra va s'ouvrir. Regardez l'objectif.", false);
+        btnFaceID.setDisable(true);
+
+        Task<String> faceTask = new Task<>() {
+            @Override
+            protected String call() {
+                return faceService.registerFaceEncoding();
             }
-            
-            // Create new user
-            personne newUser = new personne(nom, prenom, email, password, role);
-            servicePersonne.ajouter(newUser);
+        };
 
-            showError("Compte cree avec succes ! Connectez-vous.", false);
-            
-            // Navigate to Login
-            handleLoginLink();
+        faceTask.setOnSucceeded(e -> {
+            btnFaceID.setDisable(false);
+            String encoding = faceTask.getValue();
+            if (encoding != null && !encoding.isEmpty()) {
+                configuredFaceEncoding = encoding;
+                showError("Visage enregistré avec succès !", false);
+            } else {
+                showError("L'enregistrement du visage a échoué.", true);
+            }
+        });
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showError("Erreur lors de la creation du compte.", true);
-        }
+        faceTask.setOnFailed(e -> {
+            btnFaceID.setDisable(false);
+            showError("Erreur lors de l'accès à la caméra.", true);
+        });
+
+        new Thread(faceTask).start();
     }
 
     @FXML
@@ -94,7 +152,6 @@ public class SignupController {
             Parent root = loader.load();
             Stage stage = (Stage) tfEmail.getScene().getWindow();
 
-            // Swap root — smooth transition, no flicker
             if (stage.getScene() != null) {
                 stage.getScene().setRoot(root);
             } else {
@@ -107,8 +164,11 @@ public class SignupController {
     }
 
     private void showError(String message, boolean isError) {
-        errorLabel.setText(message);
-        errorLabel.setStyle(isError ? "-fx-text-fill: #ff6b6b;" : "-fx-text-fill: #50C878;");
-        errorLabel.setVisible(true);
+        Platform.runLater(() -> {
+            errorLabel.setText(message);
+            errorLabel.setStyle(isError ? "-fx-text-fill: #ff6b6b;" : "-fx-text-fill: #50C878;");
+            errorLabel.setVisible(true);
+        });
     }
 }
+

@@ -14,9 +14,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -61,6 +63,10 @@ public class VoitureListController {
 
     @FXML
     private BorderPane root;
+    @FXML
+    private StackPane rootStack;
+    @FXML
+    private ImageView bgImageView;
     @FXML
     private ListView<Voiture> voitureList;
     @FXML
@@ -115,6 +121,21 @@ public class VoitureListController {
             Platform.runLater(() -> SceneNavigator.switchTo("/LocationListView.fxml", root));
             return;
         }
+        // Hero background
+        try {
+            var heroUrl = getClass().getResource("/messages/home-hero5.png");
+            if (heroUrl != null && bgImageView != null && rootStack != null) {
+                javafx.scene.image.Image heroImage = new javafx.scene.image.Image(heroUrl.toExternalForm());
+                bgImageView.setImage(heroImage);
+                bgImageView.setPreserveRatio(false);
+                bgImageView.setEffect(new GaussianBlur(30));
+                bgImageView.fitWidthProperty().bind(rootStack.widthProperty());
+                bgImageView.fitHeightProperty().bind(rootStack.heightProperty());
+            }
+        } catch (Exception e) {
+            System.err.println("[VoitureListController] Hero image load error: " + e.getMessage());
+        }
+
         adminLocationButton.setVisible(true);
         adminLocationButton.setManaged(true);
         if (locationListButton != null) {

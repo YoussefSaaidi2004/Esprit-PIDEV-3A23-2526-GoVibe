@@ -129,4 +129,80 @@ public class ServicePoste implements iPoste<Poste> {
         }
         return postes;
     }
+
+    /**
+     * Returns the top N posts sorted by likes descending.
+     */
+    public List<Poste> getTopPostsByLikes(int limit) throws SQLException {
+        List<Poste> postes = new ArrayList<>();
+        String sql = "SELECT * FROM poste ORDER BY likes DESC LIMIT ?";
+        Connection cnx = UnifiedDatabaseManager.getConnection();
+        PreparedStatement ps = cnx.prepareStatement(sql);
+        ps.setInt(1, limit);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Poste p = new Poste();
+            p.setPost_id(rs.getInt("post_id"));
+            p.setUser_id(rs.getInt("user_id"));
+            p.setLikes(rs.getInt("likes"));
+            p.setDate_creation(rs.getTimestamp("date_creation"));
+            p.setDate_modification(rs.getTimestamp("date_modification"));
+            p.setUrl(rs.getString("url"));
+            p.setType(rs.getString("type"));
+            p.setContenu(rs.getString("contenu"));
+            int forumId = rs.getInt("forum_id");
+            p.setForum_id(rs.wasNull() ? null : forumId);
+            postes.add(p);
+        }
+        return postes;
+    }
+
+    /**
+     * Increments the like count of a post by 1.
+     */
+    public void likePost(int postId) throws SQLException {
+        String sql = "UPDATE poste SET likes = likes + 1 WHERE post_id = ?";
+        Connection cnx = UnifiedDatabaseManager.getConnection();
+        PreparedStatement ps = cnx.prepareStatement(sql);
+        ps.setInt(1, postId);
+        ps.executeUpdate();
+    }
+
+    /**
+     * Decrements the like count of a post by 1 (minimum 0).
+     */
+    public void unlikePost(int postId) throws SQLException {
+        String sql = "UPDATE poste SET likes = GREATEST(likes - 1, 0) WHERE post_id = ?";
+        Connection cnx = UnifiedDatabaseManager.getConnection();
+        PreparedStatement ps = cnx.prepareStatement(sql);
+        ps.setInt(1, postId);
+        ps.executeUpdate();
+    }
+
+    /**
+     * Full-text search across all posts by content keyword.
+     */
+    public List<Poste> searchByContenu(String keyword) throws SQLException {
+        List<Poste> postes = new ArrayList<>();
+        String sql = "SELECT * FROM poste WHERE contenu LIKE ?";
+        Connection cnx = UnifiedDatabaseManager.getConnection();
+        PreparedStatement ps = cnx.prepareStatement(sql);
+        ps.setString(1, "%" + keyword + "%");
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Poste p = new Poste();
+            p.setPost_id(rs.getInt("post_id"));
+            p.setUser_id(rs.getInt("user_id"));
+            p.setLikes(rs.getInt("likes"));
+            p.setDate_creation(rs.getTimestamp("date_creation"));
+            p.setDate_modification(rs.getTimestamp("date_modification"));
+            p.setUrl(rs.getString("url"));
+            p.setType(rs.getString("type"));
+            p.setContenu(rs.getString("contenu"));
+            int forumId = rs.getInt("forum_id");
+            p.setForum_id(rs.wasNull() ? null : forumId);
+            postes.add(p);
+        }
+        return postes;
+    }
 }

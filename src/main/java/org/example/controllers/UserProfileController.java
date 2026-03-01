@@ -15,6 +15,10 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
+import javafx.scene.layout.*;
+import javafx.geometry.Pos;
+import org.example.entities.UserSession;
 
 public class UserProfileController {
 
@@ -60,8 +64,12 @@ public class UserProfileController {
     @FXML
     private StackPane avatarContainer;
 
+    @FXML
+    private VBox sessionsContainer;
+
     private personne currentUser;
     private final ServicePersonne servicePersonne = new ServicePersonne();
+    private final org.example.services.UserSessionService userSessionService = new org.example.services.UserSessionService();
 
     @FXML
     public void initialize() {
@@ -69,6 +77,7 @@ public class UserProfileController {
         if (currentUser != null) {
             loadUserData();
             updateProfileInitials();
+            loadSessions();
         } else {
             showError("Veuillez vous connecter pour accéder à votre profil");
         }
@@ -214,7 +223,11 @@ public class UserProfileController {
 
     @FXML
     private void handleHome() {
-        org.example.mains.MainApp.switchScene("/org/example/UserHomeView.fxml", "Accueil");
+        if (currentUser != null && "admin".equalsIgnoreCase(currentUser.getRole())) {
+            org.example.mains.MainApp.switchScene("/org/example/AdminDashboardView.fxml", "Administration");
+        } else {
+            org.example.mains.MainApp.switchScene("/org/example/UserHomeView.fxml", "Accueil");
+        }
     }
 
     @FXML
@@ -334,5 +347,69 @@ public class UserProfileController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void loadSessions() {
+        if (sessionsContainer == null || currentUser == null) return;
+        sessionsContainer.getChildren().clear();
+        
+        List<UserSession> activeSessions = userSessionService.getActiveSessions(currentUser.getId());
+        String currentSessionId = SessionManager.getSessionId();
+        
+        for (UserSession session : activeSessions) {
+            HBox row = new HBox(15);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15;");
+            
+            StackPane iconPane = new StackPane();
+            iconPane.setStyle("-fx-background-color: rgba(80,200,120,0.2); -fx-background-radius: 10; -fx-min-width: 40; -fx-min-height: 40;");
+            Label icon = new Label("💻");
+            icon.setStyle("-fx-font-size: 20;");
+            iconPane.getChildren().add(icon);
+            
+            VBox infoBox = new VBox(5);
+            HBox.setHgrow(infoBox, Priority.ALWAYS);
+            Label deviceLabel = new Label(session.getDeviceName() != null ? session.getDeviceName() : "Appareil Inconnu");
+            deviceLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #013220;");
+            
+            String city = session.getCity() != null ? session.getCity() + ", " : "";
+            String country = session.getCountry() != null ? session.getCountry() : "Inconnu";
+            Label locationLabel = new Label("📍 " + city + country + " • IP: " + session.getIpAddress());
+            locationLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #7f8c8d;");
+            
+            String loginDateStr = session.getLoginDate() != null ? session.getLoginDate().toLocalDateTime().toString().replace("T", " ") : "Inconnue";
+            Label dateLabel = new Label("Connecté depuis: " + loginDateStr);
+            dateLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #7f8c8d;");
+            infoBox.getChildren().addAll(deviceLabel, locationLabel, dateLabel);
+            
+            VBox actionBox = new VBox();
+            actionBox.setAlignment(Pos.CENTER_RIGHT);
+            if (session.getId().equals(currentSessionId)) {
+                Label currentLabel = new Label("Cet appareil");
+                currentLabel.setStyle("-fx-background-color: #e8f5e9; -fx-text-fill: #2e7d32; -fx-padding: 5 10; -fx-background-radius: 15; -fx-font-weight: bold; -fx-font-size: 12;");
+                actionBox.getChildren().add(currentLabel);
+            } else {
+                Button revokeBtn = new Button("Déconnecter");
+                revokeBtn.setStyle("-fx-background-color: #ffebee; -fx-text-fill: #c62828; -fx-border-color: transparent; -fx-border-radius: 5; -fx-background-radius: 5; -fx-cursor: hand;");
+                revokeBtn.setOnAction(e -> handleRevokeSession(session.getId()));
+                actionBox.getChildren().add(revokeBtn);
+            }
+            
+            row.getChildren().addAll(iconPane, infoBox, actionBox);
+            sessionsContainer.getChildren().add(row);
+        }
+        
+        if (activeSessions.isEmpty()) {
+            Label noSessions = new Label("Aucune session active trouvée.");
+            noSessions.setStyle("-fx-text-fill: #7f8c8d; -fx-font-style: italic;");
+            sessionsContainer.getChildren().add(noSessions);
+        }
+    }
+
+    private void handleRevokeSession(String sessionId) {
+        userSessionService.deactivateSession(sessionId);
+        showSuccess("La session a été déconnectée avec succès.");
+        loadSessions();
     }
 }

@@ -69,7 +69,7 @@ public class BookingController {
     private void updatePrice() {
         if (selectedFlight == null) return;
         
-        int basePrice = selectedFlight.getPrix();
+        java.math.BigDecimal basePrice = selectedFlight.getPrix() != null ? selectedFlight.getPrix() : java.math.BigDecimal.ZERO;
         int passengers = passengerSpinner.getValue();
         
         double multiplier = 1.0;
@@ -77,8 +77,8 @@ public class BookingController {
         if ("Business".equals(travelClass)) multiplier = 1.5;
         else if ("First Class".equals(travelClass)) multiplier = 2.0;
 
-        int total = (int) (basePrice * passengers * multiplier);
-        totalPrice.setText(total + " DT");
+        java.math.BigDecimal total = basePrice.multiply(java.math.BigDecimal.valueOf(passengers)).multiply(java.math.BigDecimal.valueOf(multiplier));
+        totalPrice.setText(total.setScale(0, java.math.RoundingMode.HALF_UP).toPlainString() + " DT");
     }
 
     @FXML

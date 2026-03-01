@@ -1,8 +1,7 @@
 package org.example.controllers;
 
 import javafx.animation.PauseTransition;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,8 +9,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.entities.personne;
@@ -25,54 +26,56 @@ import java.util.ResourceBundle;
 
 public class PersonneController implements Initializable {
 
+    @FXML private StackPane rootStack;
+    @FXML private ImageView bgImageView;
+
     @FXML private TextField tfNom;
     @FXML private TextField tfPrenom;
     @FXML private TextField tfEmail;
     @FXML private PasswordField tfPassword;
     @FXML private ComboBox<String> cbRole;
 
-    @FXML private TableView<personne> tablePersonnes;
-    @FXML private TableColumn<personne, Integer> colId;
-    @FXML private TableColumn<personne, String> colNom;
-    @FXML private TableColumn<personne, String> colPrenom;
-    @FXML private TableColumn<personne, String> colEmail;
-    @FXML private TableColumn<personne, String> colRole;
-    @FXML private TableColumn<personne, Void> colActions;
+    @FXML private FlowPane personnesContainer;
+    @FXML private Label cardCountLabel;
 
     @FXML private Label notificationLabel;
     @FXML private Label countLabel;
     @FXML private Label statusLabel;
 
     private final ServicePersonne servicePersonne = new ServicePersonne();
-    private final ObservableList<personne> personneList = FXCollections.observableArrayList();
+    private final java.util.List<personne> personneList = new java.util.ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         if (!SessionManager.isAuthenticated()) {
-            SceneNavigator.switchTo("/org/example/LoginView.fxml", tablePersonnes);
+            SceneNavigator.switchTo("/org/example/LoginView.fxml", tfNom);
             return;
         }
         if (!SessionManager.isAdmin()) {
-            SceneNavigator.switchTo("/LocationListView.fxml", tablePersonnes);
+            SceneNavigator.switchTo("/LocationListView.fxml", tfNom);
             return;
         }
-        // Setup columns
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
-        colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
-        colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
+        // Hero background
+        try {
+            String resourcePath = "/messages/home-hero5.png";
+            var heroUrl = getClass().getResource(resourcePath);
+            if (heroUrl != null && bgImageView != null && rootStack != null) {
+                Image heroImage = new Image(heroUrl.toExternalForm());
+                bgImageView.setImage(heroImage);
+                bgImageView.setPreserveRatio(false);
+                bgImageView.setEffect(new GaussianBlur(30));
+                bgImageView.fitWidthProperty().bind(rootStack.widthProperty());
+                bgImageView.fitHeightProperty().bind(rootStack.heightProperty());
+            }
+        } catch (Exception e) {
+            System.err.println("[PersonneController] Hero image load error: " + e.getMessage());
+        }
 
         // Setup role ComboBox
         cbRole.getItems().addAll("user", "admin");
         cbRole.setValue("user");
 
-        // Setup action column with edit/delete buttons
-        setupActionColumn();
-
-        tablePersonnes.setItems(personneList);
-
-        // Load data
+        // Load data as cards
         loadPersonnes();
 
         statusLabel.setText("Connecte");
@@ -86,13 +89,11 @@ public class PersonneController implements Initializable {
         String password = tfPassword.getText().trim();
         String role = cbRole.getValue();
 
-        // Validation
         if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty()) {
             showNotification("Veuillez remplir tous les champs", true);
             return;
         }
 
-        // Basic email validation
         if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
             showNotification("Veuillez entrer un email valide", true);
             return;
@@ -103,20 +104,25 @@ public class PersonneController implements Initializable {
             return;
         }
 
-        // Add to database
-        try {
-            servicePersonne.ajouter(new personne(nom, prenom, email, password, role));
-            showNotification("Personne ajoutee avec succes - " + prenom + " " + nom, false);
-            clearFields();
-            loadPersonnes();
-        } catch (RuntimeException e) {
-            String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
-            if (message != null && message.contains("Duplicate")) {
-                showNotification("Cet email est deja utilise", true);
-            } else {
-                showNotification("Erreur: " + message, true);
+        new Thread(() -> {
+            try {
+                servicePersonne.ajouter(new personne(nom, prenom, email, password, role));
+                Platform.runLater(() -> {
+                    showNotification("Personne ajoutee avec succes - " + prenom + " " + nom, false);
+                    clearFields();
+                    loadPersonnes();
+                });
+            } catch (Exception e) {
+                String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+                Platform.runLater(() -> {
+                    if (message != null && message.contains("Duplicate")) {
+                        showNotification("Cet email est deja utilise", true);
+                    } else {
+                        showNotification("Erreur: " + message, true);
+                    }
+                });
             }
-        }
+        }, "Personne-Add-Thread").start();
     }
 
     @FXML
@@ -131,64 +137,127 @@ public class PersonneController implements Initializable {
     }
 
     private void loadPersonnes() {
-        try {
-            personneList.clear();
-            personneList.addAll(servicePersonne.afficher());
-            countLabel.setText(personneList.size() + " personne" + (personneList.size() > 1 ? "s" : "") + " enregistree" + (personneList.size() > 1 ? "s" : ""));
-        } catch (RuntimeException e) {
-            String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
-            showNotification("Erreur de chargement: " + message, true);
+        new Thread(() -> {
+            try {
+                java.util.List<personne> list = servicePersonne.afficher();
+                Platform.runLater(() -> {
+                    personneList.clear(); personneList.addAll(list);
+                    int n = list.size();
+                    String countText = n + " personne" + (n > 1 ? "s" : "") + " enregistree" + (n > 1 ? "s" : "");
+                    countLabel.setText(countText);
+                    if (cardCountLabel != null) cardCountLabel.setText(n + " utilisateur" + (n > 1 ? "s" : ""));
+                    buildCards(list);
+                });
+            } catch (Exception e) {
+                String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+                Platform.runLater(() -> showNotification("Erreur de chargement: " + message, true));
+            }
+        }, "Personne-Load-Thread").start();
+    }
+
+    private void buildCards(java.util.List<personne> list) {
+        if (personnesContainer == null) return;
+        personnesContainer.getChildren().clear();
+        for (personne p : list) {
+            personnesContainer.getChildren().add(createPersonneCard(p));
         }
     }
 
-    private void setupActionColumn() {
-        colActions.setCellFactory(param -> new TableCell<>() {
-            private final Button btnEdit = new Button("Modifier");
-            private final Button btnDelete = new Button("Supprimer");
-            private final HBox container = new HBox(8, btnEdit, btnDelete);
+    private VBox createPersonneCard(personne p) {
+        // Avatar circle with initials
+        boolean isAdmin = "admin".equalsIgnoreCase(p.getRole());
+        String initials = ((p.getPrenom() != null && !p.getPrenom().isEmpty() ? p.getPrenom().substring(0, 1) : "?")
+                + (p.getNom() != null && !p.getNom().isEmpty() ? p.getNom().substring(0, 1) : "?")).toUpperCase();
 
-            {
-                btnEdit.getStyleClass().add("btn-edit");
-                btnDelete.getStyleClass().add("btn-danger");
-                container.setAlignment(Pos.CENTER);
+        StackPane avatarPane = new StackPane();
+        avatarPane.setMinSize(56, 56);
+        avatarPane.setMaxSize(56, 56);
+        avatarPane.setStyle("-fx-background-color: " + (isAdmin ? "rgba(80,200,120,0.28)" : "rgba(255,255,255,0.12)") +
+                "; -fx-background-radius: 28;");
+        Label initialsLabel = new Label(initials);
+        initialsLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: 900; -fx-text-fill: " + (isAdmin ? "#50C878" : "rgba(255,255,255,0.85)") + ";");
+        avatarPane.getChildren().add(initialsLabel);
 
-                btnEdit.setOnAction(event -> {
-                    personne p = getTableView().getItems().get(getIndex());
-                    tfNom.setText(p.getNom());
-                    tfPrenom.setText(p.getPrenom());
-                    tfEmail.setText(p.getEmail());
-                    tfPassword.setText(p.getPassword());
-                    cbRole.setValue(p.getRole());
-                    showNotification("Modification de " + p.getPrenom() + " " + p.getNom() + " - editez les champs puis cliquez Ajouter", false);
-                });
+        // Role badge
+        Label roleBadge = new Label(isAdmin ? "ADMIN" : "USER");
+        roleBadge.setStyle("-fx-background-color: " + (isAdmin ? "rgba(80,200,120,0.22)" : "rgba(255,255,255,0.08)") +
+                "; -fx-border-color: " + (isAdmin ? "rgba(80,200,120,0.5)" : "rgba(255,255,255,0.18)") +
+                "; -fx-border-width: 1; -fx-border-radius: 6; -fx-background-radius: 6;"
+                + "-fx-padding: 3 10; -fx-font-size: 10px; -fx-font-weight: 800;"
+                + "-fx-text-fill: " + (isAdmin ? "#50C878" : "rgba(200,230,220,0.85)") + ";");
 
-                btnDelete.setOnAction(event -> {
-                    personne p = getTableView().getItems().get(getIndex());
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Confirmation");
-                    alert.setHeaderText("Supprimer cette personne ?");
-                    alert.setContentText(p.getPrenom() + " " + p.getNom() + " sera supprime definitivement.");
-                    alert.showAndWait().ifPresent(response -> {
-                        if (response == ButtonType.OK) {
-                            try {
-                                servicePersonne.supprimer(p.getId());
+        HBox badgeRow = new HBox();
+        badgeRow.getChildren().add(roleBadge);
+
+        // Name
+        Label nameLabel = new Label(p.getPrenom() + " " + p.getNom());
+        nameLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: 800; -fx-text-fill: white; -fx-wrap-text: true;");
+        nameLabel.setMaxWidth(220);
+
+        // Email
+        Label emailLabel = new Label(p.getEmail());
+        emailLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: rgba(180,220,200,0.65); -fx-wrap-text: true;");
+        emailLabel.setMaxWidth(220);
+
+        // Action buttons
+        Button btnEdit = new Button("Modifier");
+        btnEdit.setStyle("-fx-background-color: rgba(80,200,120,0.18); -fx-text-fill: #50C878; -fx-font-size: 12px;"
+                + "-fx-font-weight: 700; -fx-background-radius: 8; -fx-border-color: rgba(80,200,120,0.40);"
+                + "-fx-border-width: 1; -fx-border-radius: 8; -fx-padding: 7 16; -fx-cursor: hand;");
+        btnEdit.setOnAction(e -> {
+            tfNom.setText(p.getNom());
+            tfPrenom.setText(p.getPrenom());
+            tfEmail.setText(p.getEmail());
+            tfPassword.setText(p.getPassword());
+            cbRole.setValue(p.getRole());
+            showNotification("Edition de " + p.getPrenom() + " " + p.getNom() + " – modifiez puis cliquez Enregistrer", false);
+        });
+
+        Button btnDelete = new Button("Supprimer");
+        btnDelete.setStyle("-fx-background-color: rgba(220,60,60,0.18); -fx-text-fill: #ff6b6b; -fx-font-size: 12px;"
+                + "-fx-font-weight: 700; -fx-background-radius: 8; -fx-border-color: rgba(220,60,60,0.40);"
+                + "-fx-border-width: 1; -fx-border-radius: 8; -fx-padding: 7 16; -fx-cursor: hand;");
+        btnDelete.setOnAction(e -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation");
+            alert.setHeaderText("Supprimer " + p.getPrenom() + " " + p.getNom() + " ?");
+            alert.setContentText("Cette action est irreversible.");
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    new Thread(() -> {
+                        try {
+                            servicePersonne.supprimer(p.getId());
+                            Platform.runLater(() -> {
                                 showNotification(p.getPrenom() + " " + p.getNom() + " supprime", false);
                                 loadPersonnes();
-                            } catch (RuntimeException e) {
-                                String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
-                                showNotification("Erreur: " + message, true);
-                            }
+                            });
+                        } catch (Exception ex) {
+                            String msg = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+                            Platform.runLater(() -> showNotification("Erreur: " + msg, true));
                         }
-                    });
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : container);
-            }
+                    }, "Personne-Delete-Thread").start();
+                }
+            });
         });
+
+        HBox actionsRow = new HBox(8, btnEdit, btnDelete);
+        actionsRow.setAlignment(Pos.CENTER);
+
+        // Separator line
+        Region sep = new Region();
+        sep.setPrefHeight(1);
+        sep.setStyle("-fx-background-color: rgba(255,255,255,0.10);");
+
+        VBox card = new VBox(12);
+        card.setAlignment(Pos.TOP_CENTER);
+        card.setPrefWidth(240);
+        card.setMaxWidth(240);
+        card.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
+                + "-fx-border-color: " + (isAdmin ? "rgba(80,200,120,0.30)" : "rgba(255,255,255,0.12)") + ";"
+                + "-fx-border-width: 1.5; -fx-border-radius: 18; -fx-background-radius: 18;"
+                + "-fx-padding: 22; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.38),18,0,0,6);");
+        card.getChildren().addAll(avatarPane, nameLabel, emailLabel, badgeRow, sep, actionsRow);
+        return card;
     }
 
     @FXML

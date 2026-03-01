@@ -2,6 +2,7 @@ package org.example.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -272,10 +273,18 @@ public class AdminLocationListController {
     }
 
     private void refreshList() {
-        List<Location> locations = locationService.getAll();
-        masterItems.setAll(locations);
-        updateVoitureOptions();
-        applyFiltersAndSort();
+        new Thread(() -> {
+            try {
+                List<Location> locations = locationService.getAll();
+                Platform.runLater(() -> {
+                    masterItems.setAll(locations);
+                    updateVoitureOptions();
+                    applyFiltersAndSort();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, "Admin-Location-Refresh-Thread").start();
     }
 
     private void setupFilters() {

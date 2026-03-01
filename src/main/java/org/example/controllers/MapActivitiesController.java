@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
@@ -13,9 +14,12 @@ import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -24,10 +28,13 @@ import netscape.javascript.JSObject;
 
 import com.google.gson.reflect.TypeToken;
 import org.example.entities.Activity;
+import org.example.entities.Activite;
+import org.example.services.ServiceActivite;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -41,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class MapActivitiesController {
 
@@ -66,6 +74,28 @@ public class MapActivitiesController {
     @FXML private Label emptyTitle;
     @FXML private Button aiInsightsBtn;
     @FXML private Label emptySubtitle;
+
+    // --- DB Activities & Propose Popup ---
+    @FXML private VBox root;
+    @FXML private Label activityCountLabel;
+    @FXML private Label activitySubtitle;
+    @FXML private TextField activitySearchField;
+    @FXML private TilePane dbActivitiesPane;
+    @FXML private VBox emptyActivities;
+    @FXML private HBox activitiesLoading;
+    @FXML private Button proposeBtn;
+    @FXML private StackPane modalOverlay;
+    @FXML private VBox popupCard;
+    @FXML private TextField popupName;
+    @FXML private TextField popupType;
+    @FXML private TextField popupPrix;
+    @FXML private ComboBox<String> popupLocCombo;
+    @FXML private TextArea popupDesc;
+    @FXML private Label popupFeedback;
+    @FXML private Button submitPopupBtn;
+
+    private final ServiceActivite serviceActivite = new ServiceActivite();
+    private List<Activite> allDbActivities = new ArrayList<>();
 
     private WebEngine engine;
     private final HttpClient httpClient = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
@@ -137,6 +167,9 @@ public class MapActivitiesController {
         
         // Load AI Activities for all countries
         loadActivities();
+
+        // Load DB activities and setup popup
+        loadDbActivities();
         
         // Disable context menu for snappier feel
         mapWebView.setContextMenuEnabled(false);
@@ -381,7 +414,7 @@ public class MapActivitiesController {
         Task<String> aiTask = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String prompt = "Donne-moi 3 conseils de voyage uniques et secrets (hidden gems) pour " + country + ". " +
+                String prompt = "Agis comme un guide de voyage indépendant et passionné. Donne-moi 3 conseils de voyage uniques et secrets (hidden gems) pour " + country + ". " +
                         "Sois concis et passionnant. Réponds en français.";
                 
                 JsonObject root = new JsonObject();
@@ -397,7 +430,7 @@ public class MapActivitiesController {
                 
                 // --- Phase 1: Try Gemini (New Primary) ---
                 try {
-                    String geminiPrompt = "Donne-moi 3 conseils de voyage uniques et secrets (hidden gems) pour " + country + 
+                    String geminiPrompt = "Agis comme un guide de voyage indépendant et passionné. Donne-moi 3 conseils de voyage uniques et secrets (hidden gems) pour " + country + 
                                          ". Sois concis et passionnant. Réponds en français.";
                     
                     JsonObject geminiRoot = new JsonObject();
@@ -674,6 +707,282 @@ public class MapActivitiesController {
             System.err.println("[Wikipedia] Fallback failed: " + ex.getMessage());
         }
     }
+
+    // ==================== DB ACTIVITIES ====================
+
+    private void loadDbActivities() {
+        if (activitiesLoading != null) {
+            activitiesLoading.setVisible(true);
+            activitiesLoading.setManaged(true);
+        }
+        Thread t = new Thread(() -> {
+            List<Activite> list;
+            try {
+                list = serviceActivite.getAll();
+                // Show only confirmed activities to users
+                list = list.stream()
+                    .filter(a -> Activite.STATUS_CONFIRMED.equalsIgnoreCase(a.getStatus()))
+                    .collect(Collectors.toList());
+            } catch (Exception e) {
+                System.err.println("[DB Activities] Failed to load: " + e.getMessage());
+                list = new ArrayList<>();
+            }
+            final List<Activite> result = list;
+            Platform.runLater(() -> {
+                allDbActivities = result;
+                if (activitiesLoading != null) {
+                    activitiesLoading.setVisible(false);
+                    activitiesLoading.setManaged(false);
+                }
+                if (activityCountLabel != null) activityCountLabel.setText(String.valueOf(result.size()));
+                if (activitySubtitle != null)
+                    activitySubtitle.setText(result.size() + " activit" + (result.size() != 1 ? "és" : "é")
+                        + " disponible" + (result.size() != 1 ? "s" : ""));
+                refreshActivitiesGrid(result);
+
+                // Wire up search filter
+                if (activitySearchField != null) {
+                    activitySearchField.textProperty().addListener((obs, old, val) -> {
+                        String q = val == null ? "" : val.toLowerCase();
+                        List<Activite> filtered = allDbActivities.stream()
+                            .filter(a -> safe(a.getName()).contains(q)
+                                || safe(a.getType()).contains(q)
+                                || safe(a.getLocalisation()).contains(q))
+                            .collect(Collectors.toList());
+                        refreshActivitiesGrid(filtered);
+                    });
+                }
+            });
+        }, "DB-Activities-Loader");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private String safe(String s) {
+        return s == null ? "" : s.toLowerCase();
+    }
+
+    private void refreshActivitiesGrid(List<Activite> list) {
+        if (dbActivitiesPane == null) return;
+        dbActivitiesPane.getChildren().clear();
+        if (list.isEmpty()) {
+            if (emptyActivities != null) { emptyActivities.setVisible(true); emptyActivities.setManaged(true); }
+        } else {
+            if (emptyActivities != null) { emptyActivities.setVisible(false); emptyActivities.setManaged(false); }
+            for (Activite a : list) {
+                dbActivitiesPane.getChildren().add(createDbActivityCard(a));
+            }
+        }
+    }
+
+    private javafx.scene.Node createDbActivityCard(Activite a) {
+        // Outer card
+        VBox card = new VBox(12);
+        card.setPrefWidth(410);
+        card.setMinHeight(170);
+        card.setStyle(
+            "-fx-background-color: rgba(255,255,255,0.06);" +
+            "-fx-background-radius: 18;" +
+            "-fx-border-color: rgba(80,200,120,0.22);" +
+            "-fx-border-radius: 18;" +
+            "-fx-border-width: 1;" +
+            "-fx-padding: 18 20 16 20;" +
+            "-fx-effect: dropshadow(gaussian,rgba(0,0,0,0.4),14,0,0,4);"
+        );
+
+        // Header row: icon + name + type badge
+        HBox header = new HBox(14);
+        header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+        StackPane iconCircle = new StackPane();
+        iconCircle.setMinSize(44, 44);
+        iconCircle.setMaxSize(44, 44);
+        iconCircle.setStyle("-fx-background-color: rgba(80,200,120,0.18); -fx-background-radius: 50%;");
+        String emoji = typeEmoji(a.getType());
+        Label iconLbl = new Label(emoji);
+        iconLbl.setStyle("-fx-font-size: 20;");
+        iconCircle.getChildren().add(iconLbl);
+
+        VBox nameBox = new VBox(4);
+        HBox.setHgrow(nameBox, Priority.ALWAYS);
+
+        Label nameLbl = new Label(a.getName() != null ? a.getName() : "Activité");
+        nameLbl.setStyle("-fx-font-size: 15; -fx-font-weight: 900; -fx-text-fill: white;");
+        nameLbl.setWrapText(true);
+
+        Label typeBadge = new Label(a.getType() != null ? a.getType().toUpperCase() : "");
+        typeBadge.setStyle(
+            "-fx-background-color: rgba(80,200,120,0.2);" +
+            "-fx-text-fill: #50C878;" +
+            "-fx-font-size: 9;" +
+            "-fx-font-weight: 900;" +
+            "-fx-padding: 3 9;" +
+            "-fx-background-radius: 8;"
+        );
+
+        nameBox.getChildren().addAll(nameLbl, typeBadge);
+        header.getChildren().addAll(iconCircle, nameBox);
+
+        // Description
+        Label desc = new Label(a.getDescription() != null ? a.getDescription() : "");
+        desc.setStyle("-fx-text-fill: rgba(255,255,255,0.62); -fx-font-size: 12.5;");
+        desc.setWrapText(true);
+        desc.setMaxWidth(Double.MAX_VALUE);
+
+        // Footer row: location + price
+        HBox footer = new HBox();
+        footer.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+        Label locLbl = new Label("\uD83D\uDCCD " + (a.getLocalisation() != null ? a.getLocalisation() : "-"));
+        locLbl.setStyle("-fx-text-fill: rgba(255,255,255,0.45); -fx-font-size: 12;");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        String prixStr = a.getPrix() != null ? a.getPrix().setScale(0, java.math.RoundingMode.HALF_UP) + " DT" : "Gratuit";
+        Label prixLbl = new Label(prixStr);
+        prixLbl.setStyle("-fx-text-fill: #50C878; -fx-font-size: 14; -fx-font-weight: 900;");
+
+        footer.getChildren().addAll(locLbl, spacer, prixLbl);
+        card.getChildren().addAll(header, desc, footer);
+
+        // Fade-in on creation
+        card.setOpacity(0);
+        FadeTransition ft = new FadeTransition(Duration.millis(400), card);
+        ft.setFromValue(0); ft.setToValue(1);
+        ft.play();
+
+        // Hover effect
+        card.setOnMouseEntered(e -> {
+            card.setStyle(card.getStyle().replace("rgba(80,200,120,0.22)", "rgba(80,200,120,0.5)"));
+            ScaleTransition st = new ScaleTransition(Duration.millis(150), card);
+            st.setToX(1.025); st.setToY(1.025); st.play();
+        });
+        card.setOnMouseExited(e -> {
+            card.setStyle(card.getStyle().replace("rgba(80,200,120,0.5)", "rgba(80,200,120,0.22)"));
+            ScaleTransition st = new ScaleTransition(Duration.millis(150), card);
+            st.setToX(1.0); st.setToY(1.0); st.play();
+        });
+
+        return card;
+    }
+
+    private String typeEmoji(String type) {
+        if (type == null) return "\uD83C\uDF0D";
+        String t = type.toLowerCase();
+        if (t.contains("sport") || t.contains("outdoor")) return "⚽";
+        if (t.contains("cultur") || t.contains("museum") || t.contains("heritage")) return "\uD83C\uDFDB\uFE0F";
+        if (t.contains("food") || t.contains("gastro") || t.contains("degustation")) return "\uD83C\uDF7D\uFE0F";
+        if (t.contains("music") || t.contains("concert") || t.contains("festival")) return "\uD83C\uDFB5";
+        if (t.contains("art") || t.contains("peinture") || t.contains("craft")) return "\uD83C\uDFA8";
+        if (t.contains("aventure") || t.contains("adventure")) return "\uD83E\uDDD7";
+        if (t.contains("relax") || t.contains("spa") || t.contains("bien")) return "\uD83E\uDDD8";
+        if (t.contains("nature") || t.contains("eco") || t.contains("randonnee")) return "\uD83C\uDF3F";
+        return "\uD83C\uDF1F";
+    }
+
+    // ==================== PROPOSE POPUP ====================
+
+    @FXML
+    private void openProposePopup() {
+        if (root != null) root.setEffect(new GaussianBlur(16));
+        if (popupLocCombo != null) {
+            popupLocCombo.getItems().setAll(
+                "Tunis (Medina)", "Nabeul", "Sidi Bou Said",
+                "Ghar El Melh", "Cap Bon", "Degustation Huile d'Olive",
+                "Hammamet", "Sousse", "Sfax", "Djerba"
+            );
+        }
+        clearPopupForm();
+        if (modalOverlay != null) {
+            modalOverlay.setVisible(true);
+            modalOverlay.setManaged(true);
+        }
+    }
+
+    @FXML
+    private void closeProposePopup() {
+        if (root != null) root.setEffect(null);
+        if (modalOverlay != null) {
+            modalOverlay.setVisible(false);
+            modalOverlay.setManaged(false);
+        }
+    }
+
+    @FXML
+    private void consumePopupClick(MouseEvent e) {
+        e.consume();
+    }
+
+    private void clearPopupForm() {
+        if (popupName != null) popupName.clear();
+        if (popupType != null) popupType.clear();
+        if (popupPrix != null) popupPrix.clear();
+        if (popupDesc != null) popupDesc.clear();
+        if (popupLocCombo != null) popupLocCombo.setValue(null);
+        if (popupFeedback != null) { popupFeedback.setVisible(false); popupFeedback.setManaged(false); popupFeedback.setText(""); }
+        if (submitPopupBtn != null) submitPopupBtn.setDisable(false);
+    }
+
+    @FXML
+    private void submitProposalPopup() {
+        // Basic validation
+        String name = popupName != null ? popupName.getText().trim() : "";
+        String type = popupType != null ? popupType.getText().trim() : "";
+        String prixStr = popupPrix != null ? popupPrix.getText().trim() : "";
+        String loc = popupLocCombo != null ? popupLocCombo.getValue() : null;
+        String desc = popupDesc != null ? popupDesc.getText().trim() : "";
+
+        if (name.isEmpty() || type.isEmpty() || loc == null) {
+            showPopupFeedback("Veuillez remplir le nom, le type et la localisation.", true);
+            return;
+        }
+
+        BigDecimal prix;
+        try {
+            prix = prixStr.isEmpty() ? BigDecimal.ZERO : new BigDecimal(prixStr.replace(",", "."));
+        } catch (NumberFormatException ex) {
+            showPopupFeedback("Le prix doit être un nombre valide (ex: 25.00).", true);
+            return;
+        }
+
+        if (submitPopupBtn != null) submitPopupBtn.setDisable(true);
+
+        Activite activite = new Activite(name, desc, type, loc, prix, Activite.STATUS_PENDING);
+        Thread t = new Thread(() -> {
+            try {
+                serviceActivite.ajouter(activite);
+                Platform.runLater(() -> {
+                    showPopupFeedback("✔ Proposition envoyée ! Elle sera validée par un administrateur.", false);
+                    // Reload grid (pending wont show for users, but admin will see it)
+                    loadDbActivities();
+                    // Auto-close after brief delay
+                    javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.seconds(2.2));
+                    pause.setOnFinished(ev -> closeProposePopup());
+                    pause.play();
+                });
+            } catch (Exception ex) {
+                Platform.runLater(() -> {
+                    showPopupFeedback("Erreur lors de l'envoi: " + ex.getMessage(), true);
+                    if (submitPopupBtn != null) submitPopupBtn.setDisable(false);
+                });
+            }
+        }, "Submit-Activity-Thread");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private void showPopupFeedback(String msg, boolean isError) {
+        if (popupFeedback == null) return;
+        popupFeedback.setText(msg);
+        popupFeedback.setStyle(isError
+            ? "-fx-font-size: 12; -fx-text-fill: #E74C3C;"
+            : "-fx-font-size: 12; -fx-text-fill: #50C878;");
+        popupFeedback.setVisible(true);
+        popupFeedback.setManaged(true);
+    }
+
+    // ==================== DATA MODELS ====================
 
     // Data Models
     private static class CountryData {

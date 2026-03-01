@@ -1,140 +1,200 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.shape.SVGPath?>
 
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
            fx:controller="org.example.controllers.FlightFormController"
-           stylesheets="@../styles/unified-styles.css"
-           styleClass="main-bg">
-    
-    <!-- Background Hero Image -->
+           stylesheets="@../styles/unified-styles.css, @../styles.css"
+           style="-fx-background-color: transparent;">
+
+    <!-- Blurred hero bg + dark overlay (simulates glassmorphism backdrop) -->
     <StackPane fx:id="rootStackPane">
         <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" />
-        <Region style="-fx-background-color: rgba(245, 243, 231, 0.7);" />
+        <Region style="-fx-background-color: linear-gradient(to bottom right, rgba(0,6,3,0.68) 0%, rgba(1,16,9,0.62) 40%, rgba(1,22,13,0.65) 100%);"/>
     </StackPane>
-    
-    <VBox spacing="0" alignment="CENTER" styleClass="form-container">
-        <VBox styleClass="glass-card" spacing="30" style="-fx-max-width: 750px;">
-            <VBox spacing="10" alignment="CENTER">
-                <HBox spacing="15" alignment="CENTER">
-                    <Text text="✈️" style="-fx-font-size: 32px; -fx-fill: #50C878;"/>
-                    <Text fx:id="formTitle" text="Flight Configuration" styleClass="title" style="-fx-font-size: 28;"/>
+
+    <!-- Centered glass form panel -->
+    <VBox alignment="CENTER" style="-fx-padding: 30 20;">
+        <VBox spacing="28" style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 28; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.5; -fx-border-radius: 28; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 60, 0, 0, 20), dropshadow(gaussian, rgba(80,200,120,0.12), 90, 0, 0, 0); -fx-padding: 40; -fx-max-width: 760px;">
+
+            <!-- Title -->
+            <VBox spacing="8" alignment="CENTER">
+                <HBox spacing="14" alignment="CENTER">
+                    <StackPane style="-fx-background-color: rgba(80,200,120,0.18); -fx-background-radius: 14; -fx-padding: 12; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.45), 18, 0, 0, 2);">
+                        <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
+                                 style="-fx-fill: #50C878;" scaleX="1.3" scaleY="1.3"/>
+                    </StackPane>
+                    <Text fx:id="formTitle" text="Add New Flight"
+                          style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2);"/>
                 </HBox>
-                <Text text="Complete the details for this scheduled flight" styleClass="subtitle" style="-fx-font-size: 15;"/>
+                <Text text="Complete the details for this scheduled flight"
+                      style="-fx-font-size: 14px; -fx-fill: rgba(180,230,210,0.68);"/>
             </VBox>
 
-            <Separator style="-fx-opacity: 0.3;"/>
+            <!-- Glow separator -->
+            <Region prefHeight="1" style="-fx-background-color: linear-gradient(to right, transparent, rgba(80,200,120,0.45), transparent);"/>
 
-            <GridPane hgap="25" vgap="25">
+            <!-- Form Fields -->
+            <GridPane hgap="22" vgap="20">
                 <columnConstraints>
                     <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
                     <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
                 </columnConstraints>
 
+                <!-- Flight ID -->
                 <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                    <Label text="FLIGHT ID" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="🔹" style="-fx-font-size: 16px; -fx-fill: #8D99AE;"/>
-                        <TextField fx:id="txtFlightId" promptText="e.g. GV-101" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    <Text text="FLIGHT ID" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 0 14;">
+                        <SVGPath content="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"
+                                 style="-fx-fill: rgba(80,200,120,0.65);" scaleX="0.85" scaleY="0.85"/>
+                        <TextField fx:id="txtFlightId" promptText="e.g. GV-101" HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.42); -fx-font-size: 14; -fx-padding: 14 6;"/>
                     </HBox>
                 </VBox>
 
+                <!-- Airline -->
                 <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                    <Label text="AIRLINE" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="✈️" style="-fx-font-size: 16px; -fx-fill: #8D99AE;"/>
-                        <TextField fx:id="txtAirline" promptText="e.g. GoVibe Air" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    <Text text="AIRLINE" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 0 14;">
+                        <SVGPath content="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
+                                 style="-fx-fill: rgba(80,200,120,0.65);" scaleX="0.85" scaleY="0.85"/>
+                        <TextField fx:id="txtAirline" promptText="e.g. GoVibe Air" HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.42); -fx-font-size: 14; -fx-padding: 14 6;"/>
                     </HBox>
                 </VBox>
 
+                <!-- Departure -->
                 <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                    <Label text="DEPARTURE" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="🛫" style="-fx-font-size: 16px; -fx-fill: #8D99AE;"/>
-                        <TextField fx:id="txtDepartureAirport" promptText="Departure City/Airport" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    <Text text="DEPARTURE" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 0 14;">
+                        <SVGPath content="M2.5 19h19v2h-19v-2zm7.18-1.73l4.35 1.16 5.31-1.42c.27-.07.47-.32.47-.6 0-.36-.32-.65-.69-.65-.04 0-.07 0-.11.01l-3.5.93-2.65-.7L8.56 7H5.31L8.3 15.67l1.38.6zM2.5 3.5l.94 2.97L6 6v13h2V6.55l2.15-.53L8 3.5H2.5z"
+                                 style="-fx-fill: rgba(80,200,120,0.65);" scaleX="0.85" scaleY="0.85"/>
+                        <TextField fx:id="txtDepartureAirport" promptText="Departure City/Airport" HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.42); -fx-font-size: 14; -fx-padding: 14 6;"/>
                     </HBox>
                 </VBox>
 
+                <!-- Destination -->
                 <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                    <Label text="DESTINATION" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="🛬" style="-fx-font-size: 16px; -fx-fill: #8D99AE;"/>
-                        <TextField fx:id="txtDestination" promptText="Destination City/Airport" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    <Text text="DESTINATION" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 0 14;">
+                        <SVGPath content="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                                 style="-fx-fill: rgba(80,200,120,0.65);" scaleX="0.85" scaleY="0.85"/>
+                        <TextField fx:id="txtDestination" promptText="Destination City/Airport" HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.42); -fx-font-size: 14; -fx-padding: 14 6;"/>
                     </HBox>
                 </VBox>
 
+                <!-- Departure Time -->
                 <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="2">
-                    <Label text="DEPARTURE TIME" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="🕐" style="-fx-font-size: 16px; -fx-fill: #8D99AE;"/>
-                        <TextField fx:id="txtDepartureTime" promptText="HH:mm" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    <Text text="DEPARTURE TIME" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 0 14;">
+                        <SVGPath content="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+                                 style="-fx-fill: rgba(80,200,120,0.65);" scaleX="0.85" scaleY="0.85"/>
+                        <TextField fx:id="txtDepartureTime" promptText="HH:mm" HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.42); -fx-font-size: 14; -fx-padding: 14 6;"/>
                     </HBox>
                 </VBox>
 
+                <!-- Arrival Time -->
                 <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                    <Label text="ARRIVAL TIME" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="🕐" style="-fx-font-size: 16px; -fx-fill: #8D99AE;"/>
-                        <TextField fx:id="txtArrivalTime" promptText="HH:mm" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    <Text text="ARRIVAL TIME" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 0 14;">
+                        <SVGPath content="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+                                 style="-fx-fill: rgba(80,200,120,0.65);" scaleX="0.85" scaleY="0.85"/>
+                        <TextField fx:id="txtArrivalTime" promptText="HH:mm" HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.42); -fx-font-size: 14; -fx-padding: 14 6;"/>
                     </HBox>
                 </VBox>
 
+                <!-- Travel Class -->
                 <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="3">
-                    <Label text="TRAVEL CLASS" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="⭐" style="-fx-font-size: 16px; -fx-fill: #8D99AE;"/>
-                        <ComboBox fx:id="cmbClass" promptText="Select class" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS" prefWidth="250"/>
+                    <Text text="TRAVEL CLASS" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 0 14;">
+                        <SVGPath content="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                                 style="-fx-fill: rgba(255,210,0,0.75);" scaleX="0.85" scaleY="0.85"/>
+                        <ComboBox fx:id="cmbClass" promptText="Select class" HBox.hgrow="ALWAYS" prefWidth="250"
+                                  style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: white; -fx-font-size: 14; -fx-padding: 8 0;"/>
                     </HBox>
                 </VBox>
 
+                <!-- Total Seats -->
                 <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                    <Label text="TOTAL SEATS" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="🎫" style="-fx-font-size: 16px; -fx-fill: #8D99AE;"/>
-                        <TextField fx:id="txtSeats" promptText="e.g. 180" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    <Text text="TOTAL SEATS" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 0 14;">
+                        <SVGPath content="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"
+                                 style="-fx-fill: rgba(80,200,120,0.65);" scaleX="0.85" scaleY="0.85"/>
+                        <TextField fx:id="txtSeats" promptText="e.g. 180" HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.42); -fx-font-size: 14; -fx-padding: 14 6;"/>
                     </HBox>
                 </VBox>
 
+                <!-- Price -->
                 <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="4">
-                    <Label text="PRICE (DT)" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="💴" style="-fx-font-size: 16px; -fx-fill: #50C878;"/>
-                        <TextField fx:id="txtPrice" promptText="e.g. 450" style="-fx-background-color: transparent; -fx-border-width: 0;" HBox.hgrow="ALWAYS"/>
+                    <Text text="PRICE (DT)" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 0 14;">
+                        <SVGPath content="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12.29,18.09V20h-2.67v-1.93c-1.71-0.36-3.15-1.46-3.27-3.4h1.96c0.1,1.05,1.18,1.91,2.53,1.91c1.29,0,2.13-0.72,2.13-1.55c0-0.8-0.68-1.38-2.6-1.92c-2-0.57-4.14-1.23-4.14-3.79c0-2.02,1.38-3.32,3.39-3.79V3.5h2.67v1.93c1.45,0.32,2.77,1.21,3.11,2.97h-1.96c-0.19-0.96-0.99-1.57-2.18-1.57c-1.28,0-2.06,0.73-2.06,1.48c0,0.85,0.7,1.42,2.71,1.95c2.19,0.58,4.03,1.35,4.03,3.74C15.6,15.93,14.35,17.73,12.29,18.09z"
+                                 style="-fx-fill: rgba(80,200,120,0.85);" scaleX="0.85" scaleY="0.85"/>
+                        <TextField fx:id="txtPrice" promptText="e.g. 450" HBox.hgrow="ALWAYS"
+                                   style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.42); -fx-font-size: 14; -fx-padding: 14 6;"/>
                     </HBox>
                 </VBox>
-                
-                <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                </VBox>
-                
+
+                <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+                <!-- Description -->
                 <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2">
-                    <Label text="DESCRIPTION" styleClass="subtitle" style="-fx-font-weight: bold; -fx-font-size: 10; -fx-text-fill: #8D99AE;"/>
-                    <HBox styleClass="input-with-icon" spacing="12" alignment="TOP_LEFT" style="-fx-padding: 15; -fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 12; -fx-border-color: rgba(80, 200, 120, 0.2);">
-                        <Text text="📝" style="-fx-font-size: 16px; -fx-fill: #8D99AE;"/>
-                        <TextArea fx:id="txtDescription" prefHeight="90" promptText="Optional flight description..." style="-fx-background-color: transparent; -fx-border-width: 0;" wrapText="true" VBox.vgrow="ALWAYS"/>
+                    <Text text="DESCRIPTION" style="-fx-fill: rgba(180,220,200,0.8); -fx-font-size: 10px; -fx-font-weight: 800;"/>
+                    <HBox spacing="12" alignment="TOP_LEFT"
+                          style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14; -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-padding: 14;">
+                        <SVGPath content="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
+                                 style="-fx-fill: rgba(80,200,120,0.58);" scaleX="0.85" scaleY="0.85"/>
+                        <TextArea fx:id="txtDescription" prefHeight="85" promptText="Optional flight description..."
+                                  style="-fx-background-color: transparent; -fx-border-width: 0; -fx-text-fill: rgba(230,250,240,0.9); -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-font-size: 14;"
+                                  wrapText="true" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>
                     </HBox>
                 </VBox>
             </GridPane>
 
-            <Separator style="-fx-opacity: 0.3;"/>
+            <!-- Glow separator -->
+            <Region prefHeight="1" style="-fx-background-color: linear-gradient(to right, transparent, rgba(80,200,120,0.45), transparent);"/>
 
+            <!-- Action Buttons -->
             <HBox spacing="20" alignment="CENTER">
-                <Button onAction="#handleCancel" prefWidth="180" prefHeight="50" style="-fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-background-radius: 25; -fx-font-weight: bold; -fx-cursor: hand;">
-                    <graphic><HBox spacing="12" alignment="CENTER">
-                        <SVGPath content="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" style="-fx-fill: #64748B;" scaleX="1.2" scaleY="1.2"/>
-                        <Text text="CANCEL" style="-fx-fill: #64748B; -fx-font-weight: bold;"/>
-                    </HBox></graphic>
+                <Button onAction="#handleCancel" prefWidth="180" prefHeight="52"
+                        style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 14; -fx-border-color: rgba(255,255,255,0.22); -fx-border-width: 1.5; -fx-border-radius: 14; -fx-cursor: hand;">
+                    <graphic>
+                        <HBox spacing="10" alignment="CENTER">
+                            <SVGPath content="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                     style="-fx-fill: rgba(220,240,230,0.82);" scaleX="1.05" scaleY="1.05"/>
+                            <Text text="ANNULER" style="-fx-fill: rgba(220,240,230,0.88); -fx-font-weight: 700; -fx-font-size: 13;"/>
+                        </HBox>
+                    </graphic>
                 </Button>
-                <Button onAction="#handleSave" styleClass="btn-primary" prefWidth="250" prefHeight="50" style="-fx-background-radius: 25; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(1, 50, 32, 0.2), 10, 0, 0, 5);">
-                    <graphic><HBox spacing="12" alignment="CENTER">
-                        <SVGPath content="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" style="-fx-fill: white;" scaleX="1.2" scaleY="1.2"/>
-                        <Text text="CONFIRM &amp; SAVE" style="-fx-fill: white; -fx-font-weight: bold;"/>
-                    </HBox></graphic>
+                <Button onAction="#handleSave" prefWidth="260" prefHeight="52"
+                        style="-fx-background-color: linear-gradient(to bottom right, #50C878, #2d9c52); -fx-background-radius: 14; -fx-border-width: 0; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.65), 24, 0, 0, 6);">
+                    <graphic>
+                        <HBox spacing="10" alignment="CENTER">
+                            <SVGPath content="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                                     style="-fx-fill: white;" scaleX="1.2" scaleY="1.2"/>
+                            <Text text="ENREGISTRER" style="-fx-fill: white; -fx-font-weight: 900; -fx-font-size: 13;"/>
+                        </HBox>
+                    </graphic>
                 </Button>
             </HBox>
         </VBox>
     </VBox>
 </StackPane>
-

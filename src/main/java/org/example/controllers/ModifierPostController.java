@@ -198,14 +198,7 @@ public class ModifierPostController {
             parentController.hideFormOverlay();
             return;
         }
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        org.example.mains.MainApp.switchScene("/poste-forumviews/ListPost.fxml", "GoVibe - Publications");
     }
 
     private void showAlert(Alert.AlertType type, String title, String content) {
@@ -227,14 +220,7 @@ public class ModifierPostController {
 
     @FXML
     private void handleGoToForums(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        org.example.mains.MainApp.switchScene("/poste-forumviews/ListForum.fxml", "GoVibe - Forums");
     }
 
     @FXML

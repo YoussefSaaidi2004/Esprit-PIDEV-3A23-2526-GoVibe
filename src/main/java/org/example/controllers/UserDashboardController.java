@@ -97,10 +97,21 @@ public class UserDashboardController {
     /** Reference to the active booking-form confirm button so triggerPayment() can submit it. */
     private volatile Button activePayConfirmBtn = null;
 
+    /**
+     * Single-thread executor for debounced flight searches.
+     * Replaces on every search trigger so only the last pending search wins.
+     */
+    private final java.util.concurrent.ExecutorService flightSearchExecutor =
+            java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+                Thread t = new Thread(r, "Flight-Search-Thread");
+                t.setDaemon(true);
+                return t;
+            });
+
     @FXML
     public void initialize() {
         System.out.println("[UserDashboard] initialize");
-        ensureSchemaUpToDate();
+        
         if (SessionManager.getCurrentUser() == null) {
             System.out.println("[UserDashboard] User not authenticated, redirecting to login");
             Platform.runLater(() -> {
@@ -116,37 +127,55 @@ public class UserDashboardController {
             });
             return;
         }
-        System.out.println("[UserDashboard] User ID: " + userId);
-        // Pre-warm the webcam immediately after login so it is ready
-        // before the user reaches the gesture confirmation screen.
-        WebcamManager.prewarm();
-        // Initialise the offline voice assistant (Vosk STT + Windows SAPI TTS).
-        initVoiceAssistant();
+
+        // Section tabs setup
         ToggleGroup sectionTabs = new ToggleGroup();
-        if (bookTab != null) {
-            bookTab.setToggleGroup(sectionTabs);
-        }
-        if (bookingsTab != null) {
-            bookingsTab.setToggleGroup(sectionTabs);
-        }
-        if (bookTab != null) {
-            bookTab.setSelected(true);
-        }
+        if (bookTab != null) bookTab.setToggleGroup(sectionTabs);
+        if (bookingsTab != null) bookingsTab.setToggleGroup(sectionTabs);
+        if (bookTab != null) bookTab.setSelected(true);
         sectionTabs.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
-            showSection(newVal == bookTab);
+            boolean showFlights = (newVal == bookTab);
+            showSection(showFlights);
+            // Reload bookings every time the user switches to that tab so new
+            // reservations made during this session appear immediately.
+            if (!showFlights) {
+                loadMyBookings();
+            }
         });
         showSection(true);
-        priceSlider.valueProperty().addListener((obs, old, val) -> {
-            priceLabel.setText(String.format("%.0f DT", val.doubleValue()));
-            loadAvailableFlights();
-        });
-        searchField.textProperty().addListener((obs, old, val) -> loadAvailableFlights());
-        loadAvailableFlights();
-        loadMyBookings();
+
+        // UI Listeners
+        if (priceSlider != null) {
+            priceSlider.valueProperty().addListener((obs, old, val) -> {
+                if (priceLabel != null) priceLabel.setText(String.format("%.0f DT", val.doubleValue()));
+                loadAvailableFlights();
+            });
+        }
+        if (searchField != null) {
+            searchField.textProperty().addListener((obs, old, val) -> loadAvailableFlights());
+        }
+
         setupHeroBackground();
         setupFilterListeners();
-        loadFilters();
-        updateFlightStats();
+
+        // Heavyweight background initialization
+        new Thread(() -> {
+            try {
+                ensureSchemaUpToDate();
+                // Pre-warm webcam
+                WebcamManager.prewarm();
+                
+                Platform.runLater(() -> {
+                    initVoiceAssistant();
+                    loadFilters();
+                    loadAvailableFlights(); // This itself should ideally be async inside
+                    loadMyBookings();
+                    updateFlightStats();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, "Dashboard-Init-Thread").start();
     }
 
     // ── Voice Assistant ───────────────────────────────────────────────────────
@@ -203,6 +232,7 @@ public class UserDashboardController {
                 if (bookingsTab != null) {
                     bookingsTab.setSelected(true);
                     showSection(false);
+                    loadMyBookings();
                 }
             }
 
@@ -416,38 +446,65 @@ public class UserDashboardController {
     }
 
     private void loadAvailableFlights() {
-        flightGrid.getChildren().clear();
-        List<Flight> flights = flightService.getAvailableFlights();
+        if (flightGrid == null) return;
 
-        String rawFilter = (searchField != null && searchField.getText() != null)
-                ? searchField.getText().toLowerCase().trim()
-                : "";
-        double maxPrice = (priceSlider != null) ? priceSlider.getValue() : Double.MAX_VALUE;
-        String destSel = (destinationFilter != null) ? destinationFilter.getValue() : "Toutes";
-        String classSel = (classFilter != null) ? classFilter.getValue() : "Toutes";
+        // Snapshot filter values on the FX thread before handing off to background
+        final String rawFilter = (searchField != null && searchField.getText() != null)
+                ? searchField.getText().toLowerCase().trim() : "";
+        final double maxPrice = (priceSlider != null) ? priceSlider.getValue() : Double.MAX_VALUE;
+        final String destSel  = (destinationFilter != null) ? destinationFilter.getValue() : "Toutes";
+        final String classSel = (classFilter   != null) ? classFilter.getValue()   : "Toutes";
 
-        for (Flight f : flights) {
-            boolean matchesSearch = rawFilter.isEmpty() ||
-                    containsIgnoreCase(f.getDestination(), rawFilter) ||
-                    containsIgnoreCase(f.getAirline(), rawFilter) ||
-                    containsIgnoreCase(f.getFlightId(), rawFilter) ||
-                    containsIgnoreCase(f.getDepartureAirport(), rawFilter);
-            
-            boolean matchesDest = destSel == null || destSel.equals("Toutes") || f.getDestination().equals(destSel);
-            boolean matchesClass = classSel == null || classSel.equals("Toutes") || f.getClasseChaise().equals(classSel);
+        // FIX (Smoothness): Run DB IO on background thread — never block the FX thread.
+        // A single-thread executor ensures only the latest search request wins (natural debounce).
+        flightSearchExecutor.submit(() -> {
+            List<Flight> flights = flightService.getAvailableFlights();
+            System.out.println("[UserDashboard] Loading available flights. Found in DB: " + flights.size());
 
-            if (f.getPrix() <= maxPrice && matchesSearch && matchesDest && matchesClass) {
+            // Pre-load FXML cards on the BG thread (IO work)
+            List<javafx.util.Pair<VBox, FlightCardController>> cards = new java.util.ArrayList<>();
+            for (Flight f : flights) {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-card.fxml"));
-                    VBox card = loader.load();
-                    FlightCardController ctrl = loader.getController();
-                    ctrl.setData(f, false, this::handleBook, null, null, null);
-                    flightGrid.getChildren().add(card);
+                    boolean matchesSearch = rawFilter.isEmpty() ||
+                            containsIgnoreCase(f.getDestination(), rawFilter) ||
+                            containsIgnoreCase(f.getAirline(), rawFilter) ||
+                            containsIgnoreCase(f.getFlightId(), rawFilter) ||
+                            containsIgnoreCase(f.getDepartureAirport(), rawFilter);
+                    boolean matchesDest  = destSel  == null || destSel.equals("Toutes") ||
+                                         (f.getDestination()  != null && f.getDestination().equals(destSel));
+                    boolean matchesClass = classSel == null || classSel.equals("Toutes") ||
+                                         (f.getClasseChaise() != null && f.getClasseChaise().equals(classSel));
+
+                    if (f.getPrix() != null && f.getPrix().doubleValue() <= maxPrice
+                            && matchesSearch && matchesDest && matchesClass) {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-card.fxml"));
+                        VBox card = loader.load();
+                        FlightCardController ctrl = loader.getController();
+                        if (ctrl != null) {
+                            ctrl.setData(f, false, this::handleBook, null, null, null);
+                            cards.add(new javafx.util.Pair<>(card, ctrl));
+                        }
+                    }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.err.println("[UserDashboard] Error loading flight card for " + f.getFlightId() + ": " + e.getMessage());
                 }
             }
-        }
+
+            // Dispatch UI update on FX thread
+            Platform.runLater(() -> {
+                flightGrid.getChildren().clear();
+                for (javafx.util.Pair<VBox, FlightCardController> pair : cards) {
+                    flightGrid.getChildren().add(pair.getKey());
+                }
+                int displayedCount = cards.size();
+                System.out.println("[UserDashboard] Displayed " + displayedCount + " flights after filtering");
+                if (emptyFlightsState != null) {
+                    emptyFlightsState.setVisible(displayedCount == 0);
+                    emptyFlightsState.setManaged(displayedCount == 0);
+                }
+                updateFlightStats();
+            });
+        });
     }
 
     private boolean containsIgnoreCase(String source, String filter) {
@@ -455,6 +512,14 @@ public class UserDashboardController {
     }
 
     private void loadMyBookings() {
+        // FIX Crash #4: Always run UI modifications on the JavaFX Application Thread.
+        // loadMyBookings() may be called from CheckoutCardController.setOnPaymentSuccess()
+        // callbacks that originate from background threads — we must guard the FX work.
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(this::loadMyBookings);
+            return;
+        }
+
         bookingGrid.getChildren().clear();
         if (userId <= 0) {
             if (emptyBookingsState != null) {
@@ -463,36 +528,42 @@ public class UserDashboardController {
             }
             return;
         }
-        List<Checkout> bookings = checkoutService.getAllCheckouts().stream()
-                .filter(c -> c.getIdUser() == userId)
-                .collect(Collectors.toList());
 
-        if (bookings.isEmpty()) {
-            if (emptyBookingsState != null) {
-                emptyBookingsState.setVisible(true);
-                emptyBookingsState.setManaged(true);
-            }
-        } else {
-            if (emptyBookingsState != null) {
-                emptyBookingsState.setVisible(false);
-                emptyBookingsState.setManaged(false);
-            }
-            for (Checkout c : bookings) {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-card.fxml"));
-                    VBox card = loader.load();
-                    CheckoutCardController ctrl = loader.getController();
-                    ctrl.setData(c, false, null, null, this::handleCancel);
-                    ctrl.setOnPaymentSuccess(() -> {
-                        loadMyBookings();
-                        loadAvailableFlights();
-                    });
-                    bookingGrid.getChildren().add(card);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        // Fetch from DB on a background thread so the UI never freezes
+        new Thread(() -> {
+            List<Checkout> bookings = checkoutService.getAllCheckouts().stream()
+                    .filter(c -> c.getIdUser() == userId)
+                    .collect(Collectors.toList());
+
+            Platform.runLater(() -> {
+                if (bookings.isEmpty()) {
+                    if (emptyBookingsState != null) {
+                        emptyBookingsState.setVisible(true);
+                        emptyBookingsState.setManaged(true);
+                    }
+                } else {
+                    if (emptyBookingsState != null) {
+                        emptyBookingsState.setVisible(false);
+                        emptyBookingsState.setManaged(false);
+                    }
+                    for (Checkout c : bookings) {
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-card.fxml"));
+                            VBox card = loader.load();
+                            CheckoutCardController ctrl = loader.getController();
+                            ctrl.setData(c, false, null, null, this::handleCancel);
+                            ctrl.setOnPaymentSuccess(() -> {
+                                loadMyBookings();
+                                loadAvailableFlights();
+                            });
+                            bookingGrid.getChildren().add(card);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-            }
-        }
+            });
+        }, "Bookings-Load-Thread").start();
     }
 
     private void handleBook(Flight f) {
@@ -556,7 +627,7 @@ public class UserDashboardController {
         routeLabel.setStyle("-fx-font-size: 19; -fx-font-weight: 800; -fx-text-fill: #0d2b1a;");
         Label detailsLabel = new Label(flight.getAirline() + "  |  " + flight.getDepartureTime() + " - " + flight.getArrivalTime() + "  |  " + flight.getClasseChaise());
         detailsLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #2d6b47;");
-        Label pricePerTicket = new Label(flight.getPrix() + " DT / personne");
+        Label pricePerTicket = new Label((flight.getPrix() != null ? flight.getPrix().toPlainString() : "0") + " DT / personne");
         pricePerTicket.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #007a4d;");
         flightSummary.getChildren().addAll(routeLabel, detailsLabel, pricePerTicket);
 
@@ -611,15 +682,17 @@ public class UserDashboardController {
         prefGrid.add(fieldBox("MODE PAIEMENT", paymentCombo), 1, 0);
 
         // === Price ===
-        Label totalPriceLabel = new Label(flight.getPrix() + " DT");
+        Label totalPriceLabel = new Label((flight.getPrix() != null ? flight.getPrix().toPlainString() : "0") + " DT");
         totalPriceLabel.setStyle("-fx-font-size: 32; -fx-font-weight: 900; -fx-text-fill: #007a4d;" +
             "-fx-effect: dropshadow(gaussian,rgba(0,150,80,0.18),4,0,0,0);");
 
         Runnable updatePrice = () -> {
-            int base = flight.getPrix(); int pax = passengerSpinner.getValue();
+            java.math.BigDecimal base = flight.getPrix() != null ? flight.getPrix() : java.math.BigDecimal.ZERO;
+            int pax = passengerSpinner.getValue();
             double mul = "Business".equals(classCombo.getValue()) ? 1.5 :
                          "First Class".equals(classCombo.getValue()) ? 2.0 : 1.0;
-            totalPriceLabel.setText((int)(base * pax * mul) + " DT");
+            java.math.BigDecimal total = base.multiply(java.math.BigDecimal.valueOf(pax)).multiply(java.math.BigDecimal.valueOf(mul));
+            totalPriceLabel.setText(total.setScale(0, java.math.RoundingMode.HALF_UP).toPlainString() + " DT");
         };
         passengerSpinner.valueProperty().addListener((o, a, b) -> updatePrice.run());
         classCombo.valueProperty().addListener((o, a, b) -> updatePrice.run());

@@ -14,7 +14,7 @@ public class UnifiedDatabaseManager {
     private static UnifiedDatabaseManager instance;
     
     // Database configuration - unified for all packages
-    private static final String URL = "jdbc:mysql://localhost:3306/GoVibe_Project?useSSL=false&serverTimezone=UTC&autoReconnect=true";
+    private static final String URL = "jdbc:mysql://localhost:3306/govibe_project?useSSL=false&serverTimezone=UTC&autoReconnect=true";
     private static final String USER = "root";
     private static final String PASSWORD = "";
     
@@ -48,27 +48,40 @@ public class UnifiedDatabaseManager {
      * Implements retry logic for resilience
      * @return Connection object, null if connection fails after retries
      */
-    private Connection getConnectionInternal() {
+    private Connection connection;
+
+    /**
+     * Get a database connection (singleton/cached)
+     * Implements retry logic for resilience
+     * @return Connection object, null if connection fails after retries
+     */
+    private synchronized Connection getConnectionInternal() {
+        try {
+            if (connection != null && !connection.isClosed() && connection.isValid(CONNECTION_TIMEOUT)) {
+                return connection;
+            }
+        } catch (SQLException e) {
+            System.err.println("⚠️ [UnifiedDB] Cached connection invalid: " + e.getMessage());
+            connection = null;
+        }
+
         int attempts = 0;
         SQLException lastException = null;
 
         while (attempts < MAX_RETRIES) {
             try {
-                Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-                if (conn != null) {
-                    System.out.println("✅ [UnifiedDB] Connected to govibe database (Attempt " + (attempts + 1) + ")");
-                    // Verify connection is valid
-                    conn.isValid(CONNECTION_TIMEOUT);
-                    return conn;
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                if (connection != null) {
+                    System.out.println("✅ [UnifiedDB] Connected to govibe_project database (Attempt " + (attempts + 1) + ")");
+                    return connection;
                 }
             } catch (SQLException e) {
                 attempts++;
                 lastException = e;
-                System.err.println("⚠️  [UnifiedDB] Connection attempt " + attempts + " failed: " + e.getMessage());
+                System.err.println("⚠️ [UnifiedDB] Connection attempt " + attempts + " failed: " + e.getMessage());
                 
                 if (attempts < MAX_RETRIES) {
                     try {
-                        // Wait before retry with exponential backoff
                         Thread.sleep(1000 * attempts);
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
@@ -78,7 +91,6 @@ public class UnifiedDatabaseManager {
             }
         }
 
-        // All retries exhausted
         System.err.println("❌ [UnifiedDB] Failed to connect after " + MAX_RETRIES + " attempts");
         if (lastException != null) {
             lastException.printStackTrace();

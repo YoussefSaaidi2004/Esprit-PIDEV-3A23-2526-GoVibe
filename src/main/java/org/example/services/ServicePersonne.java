@@ -16,7 +16,7 @@ public class ServicePersonne implements IService<personne> {
     }
 
     public void ajouter(personne personne) {
-        String req = "INSERT INTO `personne`(`nom`, `prenom`, `email`, `password`, `role`) VALUES (?,?,?,?,?)";
+        String req = "INSERT INTO `personne`(`nom`, `prenom`, `email`, `password`, `role`, `face_encoding`) VALUES (?,?,?,?,?,?)";
         try (PreparedStatement ps = connection.prepareStatement(req)) {
             ps.setString(1, personne.getNom());
             ps.setString(2, personne.getPrenom());
@@ -26,6 +26,7 @@ public class ServicePersonne implements IService<personne> {
             ps.setString(4, hashedPassword);
 
             ps.setString(5, personne.getRole());
+            ps.setString(6, personne.getFaceEncoding());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Erreur lors de l'ajout de la personne", e);
@@ -73,13 +74,7 @@ public class ServicePersonne implements IService<personne> {
         try (Statement statement = connection.createStatement();
                 ResultSet rs = statement.executeQuery(req)) {
             while (rs.next()) {
-                personne p = new personne();
-                p.setId(rs.getInt("id"));
-                p.setNom(rs.getString("nom"));
-                p.setPrenom(rs.getString("prenom"));
-                p.setEmail(rs.getString("email"));
-                p.setPassword(rs.getString("password"));
-                p.setRole(rs.getString("role"));
+                personne p = mapResultSetToPersonne(rs);
                 personnes.add(p);
             }
         } catch (SQLException e) {
@@ -140,13 +135,7 @@ public class ServicePersonne implements IService<personne> {
             }
 
             if (passwordMatch) {
-                personne p = new personne();
-                p.setId(rs.getInt("id"));
-                p.setNom(rs.getString("nom"));
-                p.setPrenom(rs.getString("prenom"));
-                p.setEmail(rs.getString("email"));
-                p.setPassword(storedPassword);
-                p.setRole(rs.getString("role"));
+                personne p = mapResultSetToPersonne(rs);
                 return p;
             }
         }
@@ -181,13 +170,7 @@ public class ServicePersonne implements IService<personne> {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                p = new personne();
-                p.setId(rs.getInt("id"));
-                p.setNom(rs.getString("nom"));
-                p.setPrenom(rs.getString("prenom"));
-                p.setEmail(rs.getString("email"));
-                p.setPassword(rs.getString("password"));
-                p.setRole(rs.getString("role"));
+                p = mapResultSetToPersonne(rs);
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération de la personne : " + e.getMessage());
@@ -203,17 +186,102 @@ public class ServicePersonne implements IService<personne> {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                p = new personne();
-                p.setId(rs.getInt("id"));
-                p.setNom(rs.getString("nom"));
-                p.setPrenom(rs.getString("prenom"));
-                p.setEmail(rs.getString("email"));
-                p.setPassword(rs.getString("password"));
-                p.setRole(rs.getString("role"));
+                p = mapResultSetToPersonne(rs);
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération par email : " + e.getMessage());
         }
         return p;
+    }
+
+    /**
+     * Ajoute un utilisateur OAuth2 (sans mot de passe).
+     */
+    public void ajouterOAuth2(personne p) {
+        String req = "INSERT INTO `personne`(`nom`, `prenom`, `email`, `password`, `role`, `provider`, `provider_id`, `photo_url`) VALUES (?,?,?,NULL,?,?,?,?)";
+        try (PreparedStatement ps = connection.prepareStatement(req)) {
+            ps.setString(1, p.getNom());
+            ps.setString(2, p.getPrenom());
+            ps.setString(3, p.getEmail());
+            ps.setString(4, p.getRole() != null ? p.getRole() : "USER");
+            ps.setString(5, p.getProvider());
+            ps.setString(6, p.getProviderId());
+            ps.setString(7, p.getPhotoUrl());
+            ps.executeUpdate();
+            System.out.println("✅ [ServicePersonne] Utilisateur OAuth2 ajouté : " + p.getEmail());
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de l'ajout de l'utilisateur OAuth2", e);
+        }
+    }
+
+    /**
+     * Mappe un ResultSet vers un objet personne (avec champs OAuth2 si présents).
+     */
+    private personne mapResultSetToPersonne(ResultSet rs) throws SQLException {
+        personne p = new personne();
+        p.setId(rs.getInt("id"));
+        p.setNom(rs.getString("nom"));
+        p.setPrenom(rs.getString("prenom"));
+        p.setEmail(rs.getString("email"));
+        p.setPassword(rs.getString("password"));
+        p.setRole(rs.getString("role"));
+
+        // Champs OAuth2 (avec gestion d'absence pour compatibilité)
+        try {
+            p.setProvider(rs.getString("provider"));
+            p.setProviderId(rs.getString("provider_id"));
+            p.setPhotoUrl(rs.getString("photo_url"));
+        } catch (SQLException ignored) {
+            // Les colonnes OAuth2 n'existent peut-être pas encore (avant migration)
+            p.setProvider("local");
+        }
+
+        // Champs MFA (avec gestion d'absence pour compatibilité)
+        try {
+            p.setAccountLocked(rs.getBoolean("is_account_locked"));
+            p.setPreferredMfa(rs.getString("preferred_mfa"));
+            p.setLockoutUntil(rs.getTimestamp("lockout_until"));
+        } catch (SQLException ignored) {
+            p.setAccountLocked(false);
+            p.setPreferredMfa("NONE");
+            p.setLockoutUntil(null);
+        }
+
+        try {
+            p.setFaceEncoding(rs.getString("face_encoding"));
+        } catch (SQLException ignored) {
+            p.setFaceEncoding(null);
+        }
+
+        return p;
+    }
+
+    /**
+     * Verrouille le compte d'un utilisateur pour un certain nombre de minutes.
+     */
+    public void lockAccount(int userId, int minutes) {
+        String sql = "UPDATE personne SET is_account_locked = TRUE, lockout_until = DATE_ADD(NOW(), INTERVAL ? MINUTE) WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, minutes);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+            System.out.println("🔒 [ServicePersonne] Compte " + userId + " verrouillé pour " + minutes + " minutes.");
+        } catch (SQLException e) {
+            System.err.println("❌ [ServicePersonne] Erreur lors du verrouillage: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Déverrouille le compte d'un utilisateur.
+     */
+    public void unlockAccount(int userId) {
+        String sql = "UPDATE personne SET is_account_locked = FALSE, lockout_until = NULL WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+            System.out.println("🔓 [ServicePersonne] Compte " + userId + " déverrouillé.");
+        } catch (SQLException e) {
+            System.err.println("❌ [ServicePersonne] Erreur lors du déverrouillage: " + e.getMessage());
+        }
     }
 }

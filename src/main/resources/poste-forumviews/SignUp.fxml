@@ -50,6 +50,11 @@
                   <ComboBox fx:id="roleComboBox" prefWidth="300.0" style="-fx-background-radius: 5; -fx-border-color: #dadce0; -fx-border-radius: 5;" />
                </children>
             </VBox>
+            <Button mnemonicParsing="false" onAction="#handleConfigureFaceID" prefWidth="300.0" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="📸 Configurer Face ID (Optionnel)">
+               <padding>
+                  <Insets bottom="10.0" top="10.0" />
+               </padding>
+            </Button>
             <Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegister" prefWidth="300.0" style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="S'inscrire">
                <padding>
                   <Insets bottom="10.0" top="10.0" />

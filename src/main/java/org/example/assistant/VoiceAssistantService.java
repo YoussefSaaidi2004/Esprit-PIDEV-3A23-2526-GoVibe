@@ -37,8 +37,12 @@ public class VoiceAssistantService {
     // ── Singleton ─────────────────────────────────────────────────────────────
     private static VoiceAssistantService instance;
 
-    public static synchronized VoiceAssistantService getInstance() {
-        if (instance == null) instance = new VoiceAssistantService();
+    public static VoiceAssistantService getInstance() {
+        if (instance == null) {
+            synchronized (VoiceAssistantService.class) {
+                if (instance == null) instance = new VoiceAssistantService();
+            }
+        }
         return instance;
     }
 
@@ -125,9 +129,11 @@ public class VoiceAssistantService {
             new java.util.concurrent.atomic.AtomicBoolean(false);
     private volatile long ttsFinishedAtMs = 0L;
     // Reduced from 1500→600 ms: 1500ms was too long and was catching real user
-    // commands spoken right after Jenny finished speaking. 600ms is still enough
-    // to block speaker-echo bleed while letting intentional commands through.
-    private static final long TTS_MUTE_WINDOW_MS = 600L;
+    // commands spoken right after Jenny finished speaking. However 600ms lets
+    // room-echo bleed through in typical home/office environments. 1500ms is
+    // the right balance — blocks speaker-echo reliably while still allowing
+    // a quick follow-up command after the voice response ends.
+    private static final long TTS_MUTE_WINDOW_MS = 1500L;
 
     private static final AudioFormat AUDIO_FORMAT =
             new AudioFormat(16_000f, 16, 1, true, false);
@@ -254,11 +260,27 @@ public class VoiceAssistantService {
     }
 
     private VoiceAssistantService() {
-        initVosk();
-        detectSapi();
-        initPythonAgent(); // non-blocking — starts in daemon thread
-        warmupTts();       // pre-warm PowerShell TTS so first real speak is instant
-        initNoiseOrchestrator(); // wire orchestrator callbacks
+        // Start heavy component initialization in a background daemon thread
+        // to prevent the JavaFX Application Thread from ever blocking on Vosk
+        // model loading or SAPI detection.
+        Thread initThread = new Thread(() -> {
+            try {
+                System.out.println("[VoiceAssistant] Initializing internal core (background)...");
+                initVosk();
+                detectSapi();
+                warmupTts();
+                initNoiseOrchestrator();
+                System.out.println("[VoiceAssistant] Core initialization complete.");
+            } catch (Throwable t) {
+                System.err.println("[VoiceAssistant] Core initialization failed: " + t.getMessage());
+                t.printStackTrace();
+            }
+        }, "VoiceAssistant-CoreInit");
+        initThread.setDaemon(true);
+        initThread.start();
+
+        // Already non-blocking (has its own thread)
+        initPythonAgent();
     }
 
     private void initNoiseOrchestrator() {
@@ -296,14 +318,19 @@ public class VoiceAssistantService {
             printEnglishModelTip();
             return;
         }
-        // Always load the English Vosk model regardless of OS locale.
-        // All GoVibe voice commands are English — Vosk en-US gives far better
-        // accuracy than SAPI fr-FR for words like 'book', 'log in', 'pay', etc.
         try {
             System.out.println("[VoiceAssistant] Loading Vosk English model from: " + modelPath);
             voskModel = new Model(modelPath);
             voskAvailable = true;
             System.out.println("[VoiceAssistant] Vosk English model loaded OK — high-accuracy STT active.");
+            // FIX race condition: auto-start STT as soon as Vosk is ready.
+            // Previously startListening() was called from MainApp before this thread
+            // finished — so voskAvailable was still false at that point. Now we
+            // self-start here to avoid a Vosk JNI crash from premature Recognizer init.
+            if (!listening.get()) {
+                System.out.println("[VoiceAssistant] Auto-starting Vosk STT after model load.");
+                startListening();
+            }
         } catch (Exception e) {
             System.err.println("[VoiceAssistant] Vosk model load failed: " + e.getMessage());
         }
@@ -378,6 +405,12 @@ public class VoiceAssistantService {
                 (sapiAvailable ? "available" : "NOT available") + " (" + PS_EXE + ").");
         System.out.println("[VoiceAssistant] Active STT engine: " +
                 (voskAvailable ? "Vosk (primary)" : sapiAvailable ? "Windows SAPI" : "NONE"));
+        
+        // FIX: Auto-start SAPI fallback if Vosk is not available
+        if (!voskAvailable && sapiAvailable && !listening.get()) {
+            System.out.println("[VoiceAssistant] Auto-starting SAPI STT (Vosk disabled/missing).");
+            startListening();
+        }
     }
 
     /**
@@ -418,6 +451,23 @@ public class VoiceAssistantService {
         Thread t = new Thread(() -> {
             try {
                 System.out.println("[VoiceAssistant] Initialising Python ML agent...");
+
+                // Register boot-phase mic-gate callback BEFORE getInstance() blocks.
+                // Python emits tts_status signals during startup TTS (before the
+                // ready signal). Without this, the boot reader skips those signals,
+                // the mic stays open, and the startup greeting is picked up by Vosk
+                // as fake user commands (self-echo feedback loop).
+                PythonVoiceAgent.setBootTtsCallback(speaking -> {
+                    if (speaking) {
+                        micDiscardUntilMs = Long.MAX_VALUE;
+                        ttsSpeaking.set(true);
+                    } else {
+                        ttsFinishedAtMs   = System.currentTimeMillis();
+                        micDiscardUntilMs = ttsFinishedAtMs + TTS_MUTE_WINDOW_MS;
+                        ttsSpeaking.set(false);
+                    }
+                });
+
                 pythonAgent = PythonVoiceAgent.getInstance();
                 System.out.println("[VoiceAssistant] Python ML agent ready. Engine: "
                         + pythonAgent.getEngineName());
@@ -1691,5 +1741,47 @@ public class VoiceAssistantService {
             }
         }
         System.err.println("[VoiceAssistant-TTS] All TTS paths failed.");
+    }
+
+    // ── Shutdown ──────────────────────────────────────────────────────────────
+
+    /**
+     * Cleanly shuts down all voice-assistant subsystems.
+     * Called by {@link org.example.mains.MainApp#stop()} when the JavaFX
+     * application window is closed, ensuring no subprocess (edge-tts Python,
+     * Qwen3 voice agent) lingers as a zombie OS process after the JVM exits.
+     */
+    public void shutdown() {
+        System.out.println("[VoiceAssistant] Shutting down all subsystems...");
+
+        // 1. Stop the STT loop
+        listening.set(false);
+
+        // 2. Kill the persistent edge-tts Python process
+        Process ttsProc = ttsPersistentProcess;
+        if (ttsProc != null && ttsProc.isAlive()) {
+            System.out.println("[VoiceAssistant] Killing persistent TTS process...");
+            ttsProc.destroyForcibly();
+            ttsPersistentProcess = null;
+        }
+
+        // 3. Close the writer/reader streams so the TTS process stdin pipe unblocks
+        try { if (ttsProcWriter != null) ttsProcWriter.close(); } catch (Exception ignored) {}
+        try { if (ttsProcReader != null) ttsProcReader.close(); } catch (Exception ignored) {}
+        ttsProcWriter = null;
+        ttsProcReader = null;
+
+        // 4. Shut down the TTS executor (drains queued tasks then terminates)
+        ttsExecutor.shutdownNow();
+
+        // 5. Stop the Python ML voice agent (Qwen3-TTS / voice_agent.py)
+        PythonVoiceAgent agent = pythonAgent;
+        if (agent != null) {
+            System.out.println("[VoiceAssistant] Stopping Python ML agent...");
+            agent.stop();
+            pythonAgent = null;
+        }
+
+        System.out.println("[VoiceAssistant] All subsystems stopped.");
     }
 }

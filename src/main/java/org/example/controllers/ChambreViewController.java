@@ -12,9 +12,13 @@ import org.example.entities.Chambre;
 import org.example.entities.Hotel;
 import org.example.services.ServiceChambre;
 import org.example.services.ServiceHotel;
+import org.example.services.ServiceAutoAssignment;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -26,12 +30,15 @@ import java.io.IOException;
 
 public class ChambreViewController implements Initializable {
 
+    @FXML private StackPane rootStack;
+    @FXML private ImageView bgImageView;
     @FXML private FlowPane chambreCardsContainer;
     @FXML private TextField searchField;
     @FXML private ComboBox<String> filterHotelCombo;
 
     private ServiceChambre serviceChambre;
     private ServiceHotel serviceHotel;
+    private ServiceAutoAssignment serviceAutoAssign;
     private ObservableList<Chambre> chambreList;
     private ObservableList<Hotel> hotelList;
 
@@ -39,11 +46,24 @@ public class ChambreViewController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         serviceChambre = new ServiceChambre();
         serviceHotel = new ServiceHotel();
+        serviceAutoAssign = new ServiceAutoAssignment();
         chambreList = FXCollections.observableArrayList();
         hotelList = FXCollections.observableArrayList();
 
+        setupBackground();
         loadHotels();
         loadChambres();
+    }
+
+    private void setupBackground() {
+        if (bgImageView != null && rootStack != null) {
+            bgImageView.fitWidthProperty().bind(rootStack.widthProperty());
+            bgImageView.fitHeightProperty().bind(rootStack.heightProperty());
+            var url = getClass().getResource("/messages/home-hero5.png");
+            if (url != null) {
+                bgImageView.setImage(new Image(url.toExternalForm(), true));
+            }
+        }
     }
 
     private void loadHotels() {
@@ -84,93 +104,115 @@ public class ChambreViewController implements Initializable {
     }
 
     private VBox createChambreCard(Chambre chambre) {
-        VBox card = new VBox(12);
-        card.setPrefWidth(300);
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 15; " +
-                     "-fx-effect: dropshadow(gaussian, rgba(1,50,32,0.15), 15, 0, 0, 5); " +
-                     "-fx-padding: 20; -fx-cursor: hand;");
+        VBox card = new VBox(15);
+        card.setPrefWidth(320);
+        card.getStyleClass().add("glass-card");
+        card.setPadding(new Insets(20));
 
-        // Header
+        // Header: Type + Capacity
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
         Label typeLabel = new Label(chambre.getType());
-        typeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #013220;");
+        typeLabel.getStyleClass().add("card-title");
+        typeLabel.setStyle("-fx-font-size: 18px;");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Label capacityLabel = new Label("👥 " + chambre.getCapacite() + " pers");
-        capacityLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #0B6E4F; -fx-font-weight: bold;");
+        Label capacityLabel = new Label("👥 " + chambre.getCapacite());
+        capacityLabel.setStyle("-fx-text-fill: #50C878; -fx-font-weight: bold; -fx-font-size: 13px;");
 
         header.getChildren().addAll(typeLabel, spacer, capacityLabel);
 
-        // Hotel name
+        // Hotel Badge
         String hotelName = getHotelName(chambre.getHotelId());
         Label hotelLabel = new Label("🏨 " + hotelName);
-        hotelLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+        hotelLabel.setStyle("-fx-background-color: rgba(160,224,201,0.1); -fx-text-fill: #A0E0C9; " +
+                           "-fx-padding: 4 10; -fx-background-radius: 10; -fx-font-size: 11px;");
 
         // Equipments
-        Label equipLabel = new Label("🛋️ " + chambre.getEquipements());
-        equipLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #555; -fx-wrap-text: true;");
+        Label equipLabel = new Label("✨ " + chambre.getEquipements());
+        equipLabel.getStyleClass().add("card-description");
         equipLabel.setWrapText(true);
-        equipLabel.setMaxWidth(260);
+        equipLabel.setMaxHeight(50);
 
-        // Prices
-        VBox pricesBox = new VBox(6);
-        pricesBox.setStyle("-fx-background-color: #D1F2EB; -fx-background-radius: 10; -fx-padding: 12;");
+        // Pricing Grid
+        GridPane priceGrid = new GridPane();
+        priceGrid.setHgap(15);
+        priceGrid.setVgap(8);
+        priceGrid.setPadding(new Insets(5, 0, 5, 0));
 
-        Label priceTitle = new Label("💰 Tarifs");
-        priceTitle.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #013220;");
+        priceGrid.add(createPriceLabel("Standard", "#A0E0C9"), 0, 0);
+        priceGrid.add(createPriceValue(chambre.getPrixStandard(), "#50C878"), 1, 0);
 
-        HBox standardBox = new HBox(8);
-        standardBox.setAlignment(Pos.CENTER_LEFT);
-        Label standardLabel = new Label("Standard:");
-        standardLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #555;");
-        Label standardPrice = new Label(String.format("%.2f DT", chambre.getPrixStandard()));
-        standardPrice.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #0B6E4F;");
-        standardBox.getChildren().addAll(standardLabel, standardPrice);
+        priceGrid.add(createPriceLabel("Haute Saison", "#A0E0C9"), 0, 1);
+        priceGrid.add(createPriceValue(chambre.getPrixHauteSaison(), "#FF7F50"), 1, 1);
 
-        HBox hauteBox = new HBox(8);
-        hauteBox.setAlignment(Pos.CENTER_LEFT);
-        Label hauteLabel = new Label("Haute saison:");
-        hauteLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #555;");
-        Label hautePrice = new Label(String.format("%.2f DT", chambre.getPrixHauteSaison()));
-        hautePrice.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #D84E36;");
-        hauteBox.getChildren().addAll(hauteLabel, hautePrice);
+        priceGrid.add(createPriceLabel("Basse Saison", "#A0E0C9"), 0, 2);
+        priceGrid.add(createPriceValue(chambre.getPrixBasseSaison(), "#D1F2EB"), 1, 2);
 
-        HBox basseBox = new HBox(8);
-        basseBox.setAlignment(Pos.CENTER_LEFT);
-        Label basseLabel = new Label("Basse saison:");
-        basseLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #555;");
-        Label bassePrice = new Label(String.format("%.2f DT", chambre.getPrixBasseSaison()));
-        bassePrice.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #50C878;");
-        basseBox.getChildren().addAll(basseLabel, bassePrice);
-
-        pricesBox.getChildren().addAll(priceTitle, standardBox, hauteBox, basseBox);
+        // 🔴 Availability Badge (checked for today → tomorrow)
+        HBox availabilityBox = new HBox(8);
+        availabilityBox.setAlignment(Pos.CENTER_LEFT);
+        Label availBadge = new Label();
+        availBadge.setStyle("-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px; -fx-font-weight: bold;");
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDate tomorrow = today.plusDays(1);
+            boolean dispo = serviceAutoAssign.isChambreDisponible(chambre.getId(), today, tomorrow);
+            if (dispo) {
+                availBadge.setText("✅ Disponible");
+                availBadge.setStyle("-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #50C878; " +
+                    "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px; -fx-font-weight: bold;");
+            } else {
+                availBadge.setText("🔴 Occupée");
+                availBadge.setStyle("-fx-background-color: rgba(216,78,54,0.15); -fx-text-fill: #D84E36; " +
+                    "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px; -fx-font-weight: bold;");
+            }
+        } catch (Exception ex) {
+            availBadge.setText("⚪ Statut inconnu");
+            availBadge.setStyle("-fx-background-color: rgba(160,224,201,0.1); -fx-text-fill: #A0E0C9; " +
+                "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px;");
+        }
+        availabilityBox.getChildren().add(availBadge);
 
         Separator sep = new Separator();
-        sep.setStyle("-fx-background-color: #E0E0E0;");
+        sep.setOpacity(0.1);
 
         // Action buttons
-        HBox actionButtons = new HBox(10);
-        actionButtons.setAlignment(Pos.CENTER);
+        HBox footer = new HBox(10);
+        footer.setAlignment(Pos.CENTER_RIGHT);
 
-        Button editBtn = new Button("✏️ Modifier");
-        editBtn.setStyle("-fx-background-color: #50C878; -fx-text-fill: white; -fx-background-radius: 8; " +
-                        "-fx-padding: 8 16; -fx-font-size: 12px; -fx-cursor: hand; -fx-font-weight: bold;");
+        Button editBtn = new Button("✎");
+        editBtn.getStyleClass().add("card-action-btn");
         editBtn.setOnAction(e -> editChambre(chambre));
 
-        Button deleteBtn = new Button("🗑️");
-        deleteBtn.setStyle("-fx-background-color: #D84E36; -fx-text-fill: white; -fx-background-radius: 8; " +
-                          "-fx-padding: 8 12; -fx-font-size: 12px; -fx-cursor: hand;");
+        Button deleteBtn = new Button("🗑");
+        deleteBtn.getStyleClass().add("card-action-btn-danger");
         deleteBtn.setOnAction(e -> deleteChambre(chambre));
 
-        actionButtons.getChildren().addAll(editBtn, deleteBtn);
+        footer.getChildren().addAll(editBtn, deleteBtn);
 
-        card.getChildren().addAll(header, hotelLabel, equipLabel, pricesBox, sep, actionButtons);
+        card.getChildren().addAll(header, hotelLabel, equipLabel, priceGrid, availabilityBox, sep, footer);
+
+        // Hover Effect
+        card.setOnMouseEntered(e -> card.setStyle("-fx-border-color: #50C878; -fx-border-width: 1; -fx-border-radius: 20;"));
+        card.setOnMouseExited(e -> card.setStyle(""));
 
         return card;
+    }
+
+    private Label createPriceLabel(String text, String color) {
+        Label l = new Label(text + " :");
+        l.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 11px;");
+        return l;
+    }
+
+    private Label createPriceValue(double price, String color) {
+        Label l = new Label(String.format("%.2f DT", price));
+        l.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12px; -fx-font-weight: bold;");
+        return l;
     }
 
     private String getHotelName(int hotelId) {
@@ -199,9 +241,9 @@ public class ChambreViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.getStyleClass().add("form-button-primary");
+        saveButton.getStyleClass().add("premium-button");
         Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-        cancelButton.getStyleClass().add("form-button-secondary");
+        cancelButton.getStyleClass().add("card-action-btn-danger");
 
         ScrollPane form = createChambreForm(null);
         dialog.getDialogPane().setContent(form);
@@ -249,9 +291,9 @@ public class ChambreViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.getStyleClass().add("form-button-primary");
+        saveButton.getStyleClass().add("premium-button");
         Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-        cancelButton.getStyleClass().add("form-button-secondary");
+        cancelButton.getStyleClass().add("card-action-btn-danger");
 
         ScrollPane form = createChambreForm(chambre);
         dialog.getDialogPane().setContent(form);
@@ -302,13 +344,14 @@ public class ChambreViewController implements Initializable {
     }
 
     private ScrollPane createChambreForm(Chambre chambre) {
-        VBox container = new VBox(15);
-        container.setPadding(new Insets(25));
-        container.setPrefWidth(480);
-        container.getStyleClass().add("form-card");
+        VBox container = new VBox(20);
+        container.setPadding(new Insets(30));
+        container.setPrefWidth(500);
+        container.getStyleClass().add("form-card-glass");
 
-        Label titleLabel = new Label("Informations de la chambre");
-        titleLabel.getStyleClass().add("form-title");
+        Label titleLabel = new Label("✨ Détails de la Chambre");
+        titleLabel.getStyleClass().add("hero-title");
+        titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: #0B6E4F;");
 
         // Type
         VBox typeBox = new VBox(5);
@@ -430,9 +473,9 @@ public class ChambreViewController implements Initializable {
         // Wrap in ScrollPane
         ScrollPane scrollPane = new ScrollPane(container);
         scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background: #F5F3E7; -fx-background-color: #F5F3E7;");
-        scrollPane.setPrefHeight(500);
-        scrollPane.setMaxHeight(500);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setPrefHeight(550);
+        scrollPane.setMaxHeight(550);
 
         return scrollPane;
     }

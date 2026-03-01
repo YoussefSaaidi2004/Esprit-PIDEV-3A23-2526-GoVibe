@@ -1,89 +1,78 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Text?>
 
-<StackPane fx:id="mainStack" prefHeight="900" prefWidth="1400" stylesheets="@styles/unified-styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.DashboardActiviteController">
-    <!-- Premium Hero Background -->
-    <ImageView fx:id="bgImageView" fitHeight="900" fitWidth="1400" pickOnBounds="true" preserveRatio="false" />
-    
-    <!-- Sophisticated Overlay Layer -->
-    <Region styleClass="premium-bg-overlay" />
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.DashboardActiviteController"
+            stylesheets="@styles/unified-styles.css, @styles.css">
 
-    <VBox fx:id="contentRoot" spacing="0">
-        <!-- Main Application Header -->
-        <VBox spacing="0">
-            <fx:include source="components/UserHeader.fxml" />
-            
-            <!-- Glassmorphism Hero Section -->
-            <VBox spacing="10" styleClass="header-glass" style="-fx-padding: 40 60;">
+    <left>
+        <fx:include fx:id="adminSidebar" source="org/example/AdminSidebar.fxml"/>
+    </left>
+
+    <center>
+        <StackPane fx:id="mainStack">
+            <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false"/>
+            <Region style="-fx-background-color: linear-gradient(to bottom right, rgba(0,8,4,0.58) 0%, rgba(1,20,11,0.52) 40%, rgba(1,30,16,0.60) 100%);"/>
+
+            <VBox fx:id="contentRoot" spacing="24" style="-fx-padding: 40;">
+
+                <!-- Header -->
                 <HBox alignment="CENTER_LEFT" spacing="20">
-                    <StackPane styleClass="icon-circle-emerald" prefWidth="60" prefHeight="60">
-                        <Label text="🎒" style="-fx-font-size: 32;" />
+                    <StackPane style="-fx-background-color: rgba(80,200,120,0.18); -fx-background-radius: 16; -fx-padding: 14; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.45), 20, 0, 0, 0);">
+                        <Text text="🎒" style="-fx-font-size: 28px;"/>
                     </StackPane>
-                    <VBox spacing="5">
-                        <Label text="Gestion des Activités" style="-fx-font-size: 36; -fx-font-weight: 900; -fx-text-fill: white;" />
-                        <Label text="Supervisez et validez les meilleures expériences GoVibe" style="-fx-font-size: 16; -fx-text-fill: rgba(255,255,255,0.7);" />
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Text text="Gestion des Activités"
+                              style="-fx-font-size: 30px; -fx-font-weight: 900; -fx-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 12, 0, 0, 2);"/>
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <Label fx:id="lblCount" text=""
+                                   style="-fx-background-color: rgba(80,200,120,0.22); -fx-background-radius: 20; -fx-text-fill: #50C878; -fx-font-weight: 800; -fx-font-size: 13; -fx-padding: 3 12;"/>
+                            <Label fx:id="lblMsg" text="" style="-fx-text-fill: rgba(200,240,220,0.60); -fx-font-size: 12;"/>
+                        </HBox>
                     </VBox>
-                    <Region HBox.hgrow="ALWAYS" />
-                    <!-- Sub-Navigation: Activités -->
-                    <HBox alignment="CENTER_LEFT" spacing="12">
-                        <Button onAction="#rafraichir" styleClass="icon-btn-ghost" text="🔄" />
-                        <Button onAction="#goBackToDashboard" styleClass="btn-outline-white-mini" text="Retour Admin" />
-                    </HBox>
+                    <Button onAction="#rafraichir" prefHeight="42"
+                            style="-fx-background-color: rgba(255,255,255,0.08); -fx-background-radius: 11; -fx-border-color: rgba(255,255,255,0.2); -fx-border-width: 1.5; -fx-border-radius: 11; -fx-padding: 10 18; -fx-cursor: hand;">
+                        <graphic><Text text="↻  Rafraîchir" style="-fx-fill: rgba(220,250,235,0.88); -fx-font-weight: 700; -fx-font-size: 13;"/></graphic>
+                    </Button>
+                    <Button onAction="#openSessionsDashboard" prefHeight="42"
+                            style="-fx-background-color: rgba(80,200,120,0.14); -fx-background-radius: 11; -fx-border-color: rgba(80,200,120,0.40); -fx-border-width: 1.5; -fx-border-radius: 11; -fx-padding: 10 18; -fx-cursor: hand;">
+                        <graphic><Text text="📅  Sessions" style="-fx-fill: #50C878; -fx-font-weight: 700; -fx-font-size: 13;"/></graphic>
+                    </Button>
+                    <Button onAction="#openAjout" prefHeight="42"
+                            style="-fx-background-color: linear-gradient(to bottom right, #50C878, #2e9952); -fx-background-radius: 11; -fx-border-width: 0; -fx-padding: 10 24; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.65), 22, 0, 0, 5);">
+                        <graphic><Text text="＋  NOUVELLE ACTIVITÉ" style="-fx-fill: white; -fx-font-weight: 900; -fx-font-size: 13;"/></graphic>
+                    </Button>
                 </HBox>
+
+                <!-- Search bar -->
+                <HBox spacing="14" alignment="CENTER_LEFT"
+                      style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 18; -fx-border-color: rgba(80,200,120,0.30); -fx-border-width: 1.5; -fx-border-radius: 18; -fx-padding: 8 20;">
+                    <SVGPath content="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                             style="-fx-fill: rgba(80,200,120,0.65);" scaleX="0.85" scaleY="0.85"/>
+                    <TextField fx:id="searchField" promptText="Filtrer par nom ou localisation..." HBox.hgrow="ALWAYS"
+                               style="-fx-background-color: transparent; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.42); -fx-font-size: 14; -fx-border-width: 0; -fx-padding: 10 6;"/>
+                </HBox>
+
+                <!-- Activity Cards Grid -->
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-width: 0; -fx-padding: 0;">
+                    <FlowPane fx:id="activitesContainer" hgap="22" vgap="22"
+                              style="-fx-padding: 4 4 24 4; -fx-background-color: transparent;"/>
+                </ScrollPane>
+
             </VBox>
 
-            <!-- Sophisticated Action Bar -->
-            <HBox alignment="CENTER_LEFT" spacing="15" styleClass="glass-panel" style="-fx-padding: 15 60; -fx-background-radius: 0;">
-                <HBox alignment="CENTER_LEFT" spacing="10" styleClass="search-box-glass" HBox.hgrow="ALWAYS" maxWidth="450">
-                    <Label text="🔍" style="-fx-padding: 0 0 0 10;" />
-                    <TextField fx:id="searchField" promptText="Filtrer par nom ou localisation..." styleClass="transparent-field" HBox.hgrow="ALWAYS" />
-                </HBox>
-                
-                <Region HBox.hgrow="ALWAYS" />
-                
-                <HBox spacing="10">
-                    <Button onAction="#openAjout" styleClass="btn-primary-emerald" text="➕ Nouvelle Activité" />
-                    <Button onAction="#validerActivite" styleClass="btn-outline-white-mini" text="✅ Valider Sélection" />
-                    <Button onAction="#openModifier" styleClass="btn-outline-white-mini" text="✏️ Modifier" />
-                    <Button onAction="#openSuppression" styleClass="btn-outline-white-mini" text="🗑️ Supprimer" />
-                </HBox>
-            </HBox>
-        </VBox>
+            <!-- Modal overlay (top layer) -->
+            <StackPane fx:id="modalOverlay" visible="false"
+                       style="-fx-background-color: rgba(0,0,0,0.60);">
+                <VBox fx:id="modalContent" alignment="CENTER" maxWidth="800" maxHeight="750"/>
+            </StackPane>
 
-        <!-- Main Content Area -->
-        <VBox VBox.vgrow="ALWAYS" style="-fx-padding: 30 60;">
-            <VBox spacing="20" styleClass="glass-panel" style="-fx-padding: 25;" VBox.vgrow="ALWAYS">
-                <HBox alignment="CENTER_LEFT" spacing="15">
-                    <Label text="Liste Active" style="-fx-font-size: 20; -fx-font-weight: 800; -fx-text-fill: white;" />
-                    <Label fx:id="lblCount" styleClass="tile-value-emerald" style="-fx-font-size: 18;" />
-                    <Region HBox.hgrow="ALWAYS" />
-                    <Button onAction="#openSessionsDashboard" styleClass="btn-pagination-premium" text="📅 Gérer les Sessions" />
-                </HBox>
-
-                <TableView fx:id="tableActivite" prefHeight="500" VBox.vgrow="ALWAYS" styleClass="transparent-listview">
-                    <columns>
-                        <TableColumn fx:id="colId" text="ID" prefWidth="60" />
-                        <TableColumn fx:id="colName" text="Nom de l'Activité" prefWidth="200" />
-                        <TableColumn fx:id="colDesc" text="Description" prefWidth="300" />
-                        <TableColumn fx:id="colType" text="Type" prefWidth="120" />
-                        <TableColumn fx:id="colLoc" text="Localisation" prefWidth="150" />
-                        <TableColumn fx:id="colPrix" text="Prix (TND)" prefWidth="100" />
-                        <TableColumn fx:id="colStatus" text="Statut" prefWidth="120" />
-                    </columns>
-                </TableView>
-
-                <Label fx:id="lblMsg" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 12;" />
-            </VBox>
-        </VBox>
-    </VBox>
-
-    <!-- Modal Overlay Layer -->
-    <StackPane fx:id="modalOverlay" style="-fx-background-color: rgba(0,0,0,0.6);" visible="false">
-        <VBox fx:id="modalContent" alignment="CENTER" maxWidth="800" maxHeight="750" />
-    </StackPane>
-</StackPane>
+        </StackPane>
+    </center>
+</BorderPane>

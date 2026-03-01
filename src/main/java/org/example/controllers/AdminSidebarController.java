@@ -123,19 +123,7 @@ public class AdminSidebarController {
     @FXML
     private void handleGoHotels() {
         if ("hotels".equals(currentPage)) return;
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/main-layout.fxml"));
-            Parent root = loader.load();
-            MainLayoutController controller = loader.getController();
-            if (controller != null) {
-                controller.loadHotels();
-            }
-            Stage stage = getCurrentStage();
-            stage.setScene(new Scene(root));
-            stage.setMaximized(true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        navigateTo("/hotel-view.fxml");
     }
 
     @FXML
@@ -147,7 +135,7 @@ public class AdminSidebarController {
     @FXML
     private void handleGoForums() {
         if ("forums".equals(currentPage)) return;
-        navigateTo("/poste-forumviews/ListForum.fxml");
+        navigateTo("/org/example/AdminForumView.fxml");
     }
 
     @FXML

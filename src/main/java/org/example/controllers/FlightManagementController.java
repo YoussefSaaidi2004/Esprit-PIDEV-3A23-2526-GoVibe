@@ -2,6 +2,7 @@ package org.example.controllers;
 
 import org.example.entities.Flight;
 import org.example.services.FlightService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -71,7 +72,7 @@ public class FlightManagementController {
             bgImageView.fitWidthProperty().bind(rootStackPane.widthProperty());
             bgImageView.fitHeightProperty().bind(rootStackPane.heightProperty());
             
-            var resourcePath = "/messages/go_vibe.jpg";
+            var resourcePath = "/messages/home-hero5.png";
             var url = getClass().getResource(resourcePath);
             if (url != null) {
                 Image img = new Image(url.toExternalForm(), true);
@@ -82,68 +83,80 @@ public class FlightManagementController {
     }
 
     private void loadFlights() {
+        if (flightGrid == null) return;
         flightGrid.getChildren().clear();
-        allFlights = flightService.getAllFlights();
-        String filter = (searchField != null && searchField.getText() != null) ? searchField.getText().toLowerCase().trim() : "";
-
-        // Filter flights
-        List<Flight> filteredFlights = allFlights.stream()
-            .filter(f -> filter.isEmpty() || 
-                        (f.getDestination() != null && f.getDestination().toLowerCase().contains(filter)) || 
-                        (f.getAirline() != null && f.getAirline().toLowerCase().contains(filter)) ||
-                        (f.getFlightId() != null && f.getFlightId().toLowerCase().contains(filter)) ||
-                        (f.getDepartureAirport() != null && f.getDepartureAirport().toLowerCase().contains(filter)))
-            .collect(Collectors.toList());
         
-        // Sort flights
-        String sortOption = sortCombo.getValue();
-        if (sortOption != null) {
-            Comparator<Flight> comparator = null;
-            
-            switch (sortOption) {
-                case "Destination (A-Z)":
-                    comparator = Comparator.comparing(Flight::getDestination, String.CASE_INSENSITIVE_ORDER);
-                    break;
-                case "Destination (Z-A)":
-                    comparator = Comparator.comparing(Flight::getDestination, String.CASE_INSENSITIVE_ORDER).reversed();
-                    break;
-                case "Price (Low to High)":
-                    comparator = Comparator.comparingDouble(Flight::getPrix);
-                    break;
-                case "Price (High to Low)":
-                    comparator = Comparator.comparingDouble(Flight::getPrix).reversed();
-                    break;
-                case "Occupancy (Low to High)":
-                    comparator = Comparator.comparingDouble((Flight f) -> 
-                        f.getTotalSeats() > 0 ? (double)(f.getTotalSeats() - f.getAvailableSeats()) / f.getTotalSeats() : 0);
-                    break;
-                case "Occupancy (High to Low)":
-                    comparator = Comparator.comparingDouble((Flight f) -> 
-                        f.getTotalSeats() > 0 ? (double)(f.getTotalSeats() - f.getAvailableSeats()) / f.getTotalSeats() : 0).reversed();
-                    break;
-                case "Airline (A-Z)":
-                    comparator = Comparator.comparing(Flight::getAirline, String.CASE_INSENSITIVE_ORDER);
-                    break;
-            }
-            
-            if (comparator != null) {
-                filteredFlights.sort(comparator);
-            }
-        }
-        
-        // Update statistics
-        updateStats(filteredFlights);
-        
-        // Display flight cards
-        for (Flight f : filteredFlights) {
+        new Thread(() -> {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-card.fxml"));
-                VBox card = loader.load();
-                FlightCardController controller = loader.getController();
-                controller.setData(f, true, null, this::handleEdit, this::handleCopy, this::handleDelete);
-                flightGrid.getChildren().add(card);
-            } catch (Exception e) { e.printStackTrace(); }
-        }
+                final List<Flight> flights = flightService.getAllFlights();
+                allFlights = flights;
+                
+                String filter = (searchField != null && searchField.getText() != null) 
+                                ? searchField.getText().toLowerCase().trim() : "";
+
+                // Filter flights
+                List<Flight> filteredFlights = flights.stream()
+                    .filter(f -> filter.isEmpty() || 
+                                (f.getDestination() != null && f.getDestination().toLowerCase().contains(filter)) || 
+                                (f.getAirline() != null && f.getAirline().toLowerCase().contains(filter)) ||
+                                (f.getFlightId() != null && f.getFlightId().toLowerCase().contains(filter)) ||
+                                (f.getDepartureAirport() != null && f.getDepartureAirport().toLowerCase().contains(filter)))
+                    .collect(Collectors.toList());
+                
+                // Sort flights
+                String sortOption = sortCombo.getValue();
+                if (sortOption != null) {
+                    Comparator<Flight> comparator = null;
+                    switch (sortOption) {
+                        case "Destination (A-Z)":
+                            comparator = Comparator.comparing(Flight::getDestination, String.CASE_INSENSITIVE_ORDER);
+                            break;
+                        case "Destination (Z-A)":
+                            comparator = Comparator.comparing(Flight::getDestination, String.CASE_INSENSITIVE_ORDER).reversed();
+                            break;
+                        case "Price (Low to High)":
+                            comparator = Comparator.comparing(Flight::getPrix, Comparator.nullsLast(Comparator.naturalOrder()));
+                            break;
+                        case "Price (High to Low)":
+                            comparator = Comparator.comparing(Flight::getPrix, Comparator.nullsLast(Comparator.naturalOrder())).reversed();
+                            break;
+                        case "Occupancy (Low to High)":
+                            comparator = Comparator.comparingDouble((Flight f) -> 
+                                f.getTotalSeats() > 0 ? (double)(f.getTotalSeats() - f.getAvailableSeats()) / f.getTotalSeats() : 0);
+                            break;
+                        case "Occupancy (High to Low)":
+                            comparator = Comparator.comparingDouble((Flight f) -> 
+                                f.getTotalSeats() > 0 ? (double)(f.getTotalSeats() - f.getAvailableSeats()) / f.getTotalSeats() : 0).reversed();
+                            break;
+                        case "Airline (A-Z)":
+                            comparator = Comparator.comparing(Flight::getAirline, String.CASE_INSENSITIVE_ORDER);
+                            break;
+                    }
+                    if (comparator != null) {
+                        filteredFlights.sort(comparator);
+                    }
+                }
+
+                final List<Flight> finalFiltered = filteredFlights;
+                
+                Platform.runLater(() -> {
+                    updateStats(finalFiltered);
+                    for (Flight f : finalFiltered) {
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-card.fxml"));
+                            VBox card = loader.load();
+                            FlightCardController controller = loader.getController();
+                            controller.setData(f, true, null, this::handleEdit, this::handleCopy, this::handleDelete);
+                            flightGrid.getChildren().add(card);
+                        } catch (Exception e) { 
+                            System.err.println("Error loading flight card: " + e.getMessage());
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, "Flight-Load-Thread").start();
     }
 
     private void updateStats(List<Flight> flights) {
@@ -155,7 +168,7 @@ public class FlightManagementController {
         totalSeatsText.setText(String.valueOf(totalSeats));
         
         double avgPrice = flights.isEmpty() ? 0 : flights.stream()
-            .mapToDouble(Flight::getPrix)
+            .mapToDouble(f -> f.getPrix() != null ? f.getPrix().doubleValue() : 0)
             .average()
             .orElse(0);
         avgPriceText.setText(String.format("%.0f DT", avgPrice));

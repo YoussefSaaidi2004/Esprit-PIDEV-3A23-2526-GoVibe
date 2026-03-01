@@ -43,9 +43,14 @@
                 <TextField fx:id="tfEmail" promptText="votre@email.com" styleClass="text-field"/>
             </VBox>
 
-            <VBox spacing="5">
+            <VBox spacing="5" maxWidth="320">
                 <Label text="Password" styleClass="label-text"/>
-                <PasswordField fx:id="tfPassword" promptText="Your password" styleClass="password-field"/>
+                <StackPane alignment="CENTER_RIGHT">
+                    <TextField fx:id="tfPasswordVisible" promptText="Your password" styleClass="text-field" visible="false"/>
+                    <PasswordField fx:id="tfPassword" promptText="Your password" styleClass="password-field"/>
+                    <Button fx:id="btnTogglePassword" text="👁" onAction="#togglePasswordVisibility" focusTraversable="false"
+                            style="-fx-background-color: transparent; -fx-cursor: hand; -fx-text-fill: #999999; -fx-font-size: 16px; -fx-padding: 0 10 0 0;"/>
+                </StackPane>
             </VBox>
 
             <HBox alignment="CENTER_RIGHT">
@@ -54,8 +59,20 @@
             
             <Label fx:id="errorLabel" text="" visible="false" styleClass="error-label" wrapText="true"/>
 
+            <Button text="📸 Se connecter avec Face ID" onAction="#handleLoginFaceID" maxWidth="Infinity" styleClass="btn-secondary" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
             <Button text="Sign In" onAction="#handleLogin" maxWidth="Infinity" styleClass="btn-primary"/>
-            
+
+            <!-- Séparateur OAuth2 -->
+            <HBox alignment="CENTER" spacing="10">
+                <Pane HBox.hgrow="ALWAYS" styleClass="separator-line" prefHeight="1" style="-fx-background-color: rgba(255,255,255,0.2);"/>
+                <Label text="ou" styleClass="label-text" style="-fx-text-fill: rgba(255,255,255,0.5);"/>
+                <Pane HBox.hgrow="ALWAYS" styleClass="separator-line" prefHeight="1" style="-fx-background-color: rgba(255,255,255,0.2);"/>
+            </HBox>
+
+            <!-- Bouton Google OAuth2 -->
+            <Button fx:id="btnGoogleLogin" text="🔵  Se connecter avec Google" onAction="#handleGoogleLogin" maxWidth="Infinity" styleClass="btn-google"
+                    style="-fx-background-color: #ffffff; -fx-text-fill: #444444; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
+
             <HBox alignment="CENTER">
                 <Hyperlink text="Create Account" onAction="#handleSignup" styleClass="link-text"/>
             </HBox>

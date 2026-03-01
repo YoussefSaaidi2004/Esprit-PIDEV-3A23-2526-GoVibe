@@ -76,7 +76,8 @@
             
             <Label fx:id="errorLabel" text="" visible="false" styleClass="error-label" wrapText="true"/>
 
-            <Button text="S'inscrire" onAction="#handleSignup" maxWidth="Infinity" styleClass="btn-primary"/>
+            <Button fx:id="btnFaceID" text="📸 Configurer Face ID (Optionnel)" onAction="#handleConfigureFaceID" maxWidth="Infinity" styleClass="btn-secondary" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+            <Button fx:id="btnSignup" text="S'inscrire" onAction="#handleSignup" maxWidth="Infinity" styleClass="btn-primary"/>
             
             <HBox alignment="CENTER">
                 <Hyperlink text="Déjà un compte ? Se connecter" onAction="#handleLoginLink" styleClass="link-text"/>

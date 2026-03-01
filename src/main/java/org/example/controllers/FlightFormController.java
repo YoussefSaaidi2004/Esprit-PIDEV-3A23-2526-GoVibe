@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -57,7 +58,7 @@ public class FlightFormController {
             bgImageView.fitWidthProperty().bind(rootStackPane.widthProperty());
             bgImageView.fitHeightProperty().bind(rootStackPane.heightProperty());
             
-            var resourcePath = "/messages/go_vibe.jpg";
+            var resourcePath = "/messages/home-hero5.png";
             var url = getClass().getResource(resourcePath);
             if (url != null) {
                 Image img = new Image(url.toExternalForm(), true);
@@ -83,7 +84,7 @@ public class FlightFormController {
         txtArrivalTime.setText(flight.getArrivalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
         cmbClass.setValue(flight.getClasseChaise());
         txtAirline.setText(flight.getAirline());
-        txtPrice.setText(String.valueOf(flight.getPrix()));
+        txtPrice.setText(flight.getPrix() != null ? flight.getPrix().toPlainString() : "0");
         txtSeats.setText(String.valueOf(flight.getTotalSeats())); // Use totalSeats
         txtDescription.setText(flight.getDescription());
     }
@@ -109,9 +110,9 @@ public class FlightFormController {
             flight.setAirline(txtAirline.getText().trim());
             
             try {
-                flight.setPrix(Integer.parseInt(txtPrice.getText().trim()));
+                flight.setPrix(new BigDecimal(txtPrice.getText().trim()));
             } catch (NumberFormatException e) {
-                showAlert("Invalid Input", "Price must be a valid integer.", Alert.AlertType.WARNING);
+                showAlert("Invalid Input", "Price must be a valid number.", Alert.AlertType.WARNING);
                 return;
             }
 

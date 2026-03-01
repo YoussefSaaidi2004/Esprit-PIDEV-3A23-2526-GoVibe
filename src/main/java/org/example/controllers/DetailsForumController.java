@@ -69,6 +69,9 @@ public class DetailsForumController {
     @FXML
     private Button leaveButton;
 
+    @FXML
+    private ImageView bgImageView;
+
     // Overlay Modal properties
     @FXML
     private StackPane formOverlay;
@@ -81,6 +84,7 @@ public class DetailsForumController {
 
     public void initData(Forum forum) {
         syncSidebarRole();
+        setupHeroBackground();
         this.currentForum = forum;
         forumNameLabel.setText(forum.getName());
         forumDescriptionLabel.setText(forum.getDescription());
@@ -148,6 +152,15 @@ public class DetailsForumController {
             } else {
                 roleLabel.setText("Espace client");
             }
+        }
+    }
+
+    private void setupHeroBackground() {
+        if (bgImageView != null && rootStackPane != null) {
+            bgImageView.fitWidthProperty().bind(rootStackPane.widthProperty());
+            bgImageView.fitHeightProperty().bind(rootStackPane.heightProperty());
+            var url = getClass().getResource("/messages/home-hero5.png");
+            if (url != null) bgImageView.setImage(new Image(url.toExternalForm(), true));
         }
     }
 
@@ -243,23 +256,23 @@ public class DetailsForumController {
                     card.setAlignment(Pos.CENTER_LEFT);
                     card.setSpacing(10);
                     card.setStyle(
-                            "-fx-background-color: #F8F9FA; -fx-padding: 8; -fx-background-radius: 8; -fx-border-color: #E0E0E0; -fx-border-radius: 8;");
+                            "-fx-background-color: rgba(255,255,255,0.07); -fx-padding: 10 12; -fx-background-radius: 12; -fx-border-color: rgba(80,200,120,0.2); -fx-border-radius: 12; -fx-border-width: 1;");
 
                     // Avatar placeholder
                     Label avatar = new Label(
                             p.getPrenom().substring(0, 1).toUpperCase());
                     avatar.setStyle(
-                            "-fx-background-color: #E0F2F1; -fx-text-fill: #00695C; -fx-font-weight: bold; -fx-min-width: 30; -fx-min-height: 30; -fx-max-width: 30; -fx-max-height: 30; -fx-alignment: center; -fx-background-radius: 15;");
+                            "-fx-background-color: rgba(80,200,120,0.25); -fx-text-fill: #50C878; -fx-font-weight: 900; -fx-min-width: 34; -fx-min-height: 34; -fx-max-width: 34; -fx-max-height: 34; -fx-alignment: center; -fx-background-radius: 17; -fx-font-size: 14px;");
 
                     VBox info = new VBox();
                     info.setAlignment(Pos.CENTER_LEFT);
                     info.setSpacing(2);
 
                     Label name = new Label(p.getPrenom() + " " + p.getNom());
-                    name.setStyle("-fx-font-weight: bold; -fx-text-fill: #333; -fx-font-size: 13px;");
+                    name.setStyle("-fx-font-weight: 800; -fx-text-fill: white; -fx-font-size: 13px;");
 
                     Label role = new Label(p.getEmail());
-                    role.setStyle("-fx-text-fill: #757575; -fx-font-size: 11px;");
+                    role.setStyle("-fx-text-fill: rgba(255,255,255,0.45); -fx-font-size: 11px;");
 
                     info.getChildren().addAll(name, role);
                     card.getChildren().addAll(avatar, info);
@@ -321,26 +334,12 @@ public class DetailsForumController {
 
     @FXML
     private void handleGoToPosts(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        org.example.mains.MainApp.switchScene("/poste-forumviews/ListPost.fxml", "GoVibe - Publications");
     }
 
     @FXML
     private void handleGoToForums(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListForum.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        org.example.mains.MainApp.switchScene("/poste-forumviews/ListForum.fxml", "GoVibe - Forums");
     }
 
     @FXML

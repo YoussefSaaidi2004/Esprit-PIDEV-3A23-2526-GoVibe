@@ -1,21 +1,33 @@
 package org.example.controllers;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.NodeOrientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 import org.example.entities.Hotel;
+import org.example.services.HotelChatbotRAG;
 import org.example.services.ServiceHotel;
+import org.example.services.TranslationService;
+import org.example.services.WeatherService;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.stage.FileChooser;
@@ -28,17 +40,42 @@ import java.io.IOException;
 
 public class HotelViewController implements Initializable {
 
+    @FXML private StackPane rootStack;
+    @FXML private ImageView bgImageView;
     @FXML private FlowPane hotelCardsContainer;
     @FXML private TextField searchField;
 
     private ServiceHotel serviceHotel;
     private ObservableList<Hotel> hotelList;
 
+    // New services
+    private final WeatherService weatherService = new WeatherService();
+    private final TranslationService translationService = new TranslationService();
+    private HotelChatbotRAG chatbotRAG;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         serviceHotel = new ServiceHotel();
         hotelList = FXCollections.observableArrayList();
+        setupBackground();
         loadHotels();
+        // Initialize chatbot in background
+        Task<HotelChatbotRAG> chatbotTask = new Task<>() {
+            @Override protected HotelChatbotRAG call() { return new HotelChatbotRAG(); }
+        };
+        chatbotTask.setOnSucceeded(e -> chatbotRAG = chatbotTask.getValue());
+        new Thread(chatbotTask, "chatbot-init").start();
+    }
+
+    private void setupBackground() {
+        if (bgImageView != null && rootStack != null) {
+            bgImageView.fitWidthProperty().bind(rootStack.widthProperty());
+            bgImageView.fitHeightProperty().bind(rootStack.heightProperty());
+            var url = getClass().getResource("/messages/home-hero5.png");
+            if (url != null) {
+                bgImageView.setImage(new Image(url.toExternalForm(), true));
+            }
+        }
     }
 
     private void loadHotels() {
@@ -61,125 +98,463 @@ public class HotelViewController implements Initializable {
     }
 
     private VBox createHotelCard(Hotel hotel) {
-        VBox card = new VBox(12);
+        // ── CARD SHELL ───────────────────────────────────────────────────────
+        VBox card = new VBox(0);
         card.setPrefWidth(320);
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 15; " +
-                     "-fx-effect: dropshadow(gaussian, rgba(1,50,32,0.15), 15, 0, 0, 5); " +
-                     "-fx-padding: 0; -fx-cursor: hand;");
+        card.setMaxWidth(320);
+        card.setStyle(
+            "-fx-background-color: #0b2a1c;" +
+            "-fx-background-radius: 18;" +
+            "-fx-border-radius: 18;" +
+            "-fx-border-color: rgba(50,180,100,0.22);" +
+            "-fx-border-width: 1;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 20, 0, 0, 6);" +
+            "-fx-cursor: hand;");
 
-        // IMAGE HEADER
+        // ── IMAGE HEADER (edge-to-edge, clipped to top radius) ───────────────
         StackPane imageWrapper = new StackPane();
-        imageWrapper.setPrefHeight(150);
-        imageWrapper.setMaxHeight(150);
-        imageWrapper.setStyle("-fx-background-radius: 15 15 0 0; -fx-overflow: hidden;");
+        imageWrapper.setPrefHeight(180);
+        imageWrapper.setMaxHeight(180);
+        // Clip image to top corners only
+        Rectangle clip = new Rectangle(320, 180);
+        clip.setArcWidth(36); clip.setArcHeight(36);
+        imageWrapper.setClip(clip);
 
         ImageView imageView = new ImageView();
-        imageView.setFitHeight(150);
+        imageView.setFitHeight(180);
         imageView.setFitWidth(320);
         imageView.setPreserveRatio(false);
         imageView.setSmooth(true);
-        imageView.setCache(true);
-        imageView.setStyle("-fx-background-radius: 15 15 0 0;");
 
-        // Try to load hotel image, fallback to placeholder
         String url = hotel.getPhotoUrl();
         Image image;
         try {
             if (url != null && !url.isBlank()) {
                 if (url.startsWith("http")) {
-                    image = new Image(url, 320, 150, false, true, true);
+                    image = new Image(url, 320, 180, false, true, true);
                 } else {
-                    // treat as local resource or file path
-                    if (url.startsWith("file:")) {
-                        image = new Image(url, 320, 150, false, true, true);
-                    } else {
-                        image = new Image("file:" + url, 320, 150, false, true, true);
-                    }
+                    image = new Image(url.startsWith("file:") ? url : "file:" + url, 320, 180, false, true, true);
                 }
             } else {
-                image = new Image(getClass().getResource("/images/hotel-placeholder.jpg").toExternalForm(),
-                                   320, 150, false, true, true);
+                image = new Image(getClass().getResource("/images/hotel-placeholder.jpg").toExternalForm());
             }
         } catch (Exception ex) {
-            image = new Image(getClass().getResource("/images/hotel-placeholder.jpg").toExternalForm(),
-                               320, 150, false, true, true);
+            image = new Image(getClass().getResource("/images/hotel-placeholder.jpg").toExternalForm());
         }
         imageView.setImage(image);
 
-        // Overlay gradient and hotel name
-        VBox imageOverlay = new VBox(4);
-        imageOverlay.setPadding(new Insets(10));
-        imageOverlay.setAlignment(Pos.BOTTOM_LEFT);
-        imageOverlay.setStyle("-fx-background-color: linear-gradient(to top, rgba(1,50,32,0.85), transparent);");
+        // Strong bottom gradient so name is always readable
+        Region overlay = new Region();
+        overlay.setStyle("-fx-background-color: linear-gradient(to top," +
+            "rgba(11,42,28,1.0) 0%," +
+            "rgba(11,42,28,0.55) 45%," +
+            "transparent 100%);");
+        overlay.setPrefHeight(180);
+
+        // Hotel name + stars pinned to bottom-left
+        VBox titleBox = new VBox(4);
+        titleBox.setPadding(new Insets(0, 14, 14, 14));
+        titleBox.setAlignment(Pos.BOTTOM_LEFT);
+        StackPane.setAlignment(titleBox, Pos.BOTTOM_LEFT);
 
         Label nameLabel = new Label(hotel.getNom());
-        nameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;");
-        nameLabel.setMaxWidth(260);
+        nameLabel.setStyle(
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 17px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 6, 0, 0, 1);");
         nameLabel.setWrapText(true);
 
-        Label citySmall = new Label("\uD83D\uDCCD " + hotel.getVille());
-        citySmall.setStyle("-fx-font-size: 12px; -fx-text-fill: #D1F2EB;");
+        HBox starsBox = new HBox(2);
+        starsBox.setAlignment(Pos.CENTER_LEFT);
+        int numStars = Math.max(0, Math.min(5, hotel.getNombreEtoiles()));
+        for (int i = 0; i < 5; i++) {
+            Label star = new Label(i < numStars ? "★" : "☆");
+            star.setStyle(i < numStars
+                ? "-fx-text-fill: #FFD700; -fx-font-size: 14px;"
+                : "-fx-text-fill: rgba(255,255,255,0.25); -fx-font-size: 14px;");
+            starsBox.getChildren().add(star);
+        }
 
-        imageOverlay.getChildren().addAll(nameLabel, citySmall);
+        titleBox.getChildren().addAll(nameLabel, starsBox);
+        imageWrapper.getChildren().addAll(imageView, overlay, titleBox);
 
-        imageWrapper.getChildren().addAll(imageView, imageOverlay);
+        // ── CONTENT SECTION ──────────────────────────────────────────────────
+        VBox content = new VBox(0);
+        content.setPadding(new Insets(14, 16, 16, 16));
 
-        // CONTENT SECTION
-        VBox content = new VBox(8);
-        content.setPadding(new Insets(12, 16, 16, 16));
+        // ── Location row ─────────────────────────────────────────────────────
+        HBox locRow = new HBox(5);
+        locRow.setAlignment(Pos.CENTER_LEFT);
+        VBox.setMargin(locRow, new Insets(0, 0, 12, 0));
+        Label locIcon = new Label("📍");
+        locIcon.setStyle("-fx-font-size: 11px; -fx-opacity: 0.85;");
+        String locText = hotel.getVille() != null ? hotel.getVille() : "";
+        if (hotel.getAdresse() != null && !hotel.getAdresse().isBlank())
+            locText += "  ·  " + hotel.getAdresse();
+        Label locLabel = new Label(locText);
+        locLabel.setStyle("-fx-text-fill: #7ecfa0; -fx-font-size: 12px;");
+        locLabel.setWrapText(true);
+        HBox.setHgrow(locLabel, Priority.ALWAYS);
+        locRow.getChildren().addAll(locIcon, locLabel);
 
-        // Stars row
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        Label starsLabel = new Label("\u2B50".repeat(Math.max(0, hotel.getNombreEtoiles())));
-        starsLabel.setStyle("-fx-font-size: 13px;");
-        header.getChildren().addAll(spacer, starsLabel);
+        // ── Price + weather row ───────────────────────────────────────────────
+        HBox metaRow = new HBox(10);
+        metaRow.setAlignment(Pos.CENTER_LEFT);
+        VBox.setMargin(metaRow, new Insets(0, 0, 14, 0));
 
-        // Address
-        Label addressLabel = new Label(hotel.getAdresse());
-        addressLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #000000; -fx-wrap-text: true;");
-        addressLabel.setWrapText(true);
-        addressLabel.setMaxWidth(260);
+        Label priceLabel = new Label(String.format("%.2f DT", hotel.getBudget()));
+        priceLabel.setStyle(
+            "-fx-background-color: rgba(50,200,100,0.15);" +
+            "-fx-text-fill: #4de88a;" +
+            "-fx-padding: 5 14 5 14;" +
+            "-fx-background-radius: 20;" +
+            "-fx-font-weight: bold;" +
+            "-fx-font-size: 13px;");
 
-        // Budget
-        HBox budgetBox = new HBox(8);
-        budgetBox.setAlignment(Pos.CENTER_LEFT);
-        budgetBox.setStyle("-fx-background-color: #D1F2EB; -fx-background-radius: 8; -fx-padding: 6 8;");
-        Label budgetLabel = new Label("\uD83D\uDCB0 Budget:");
-        budgetLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #013220; -fx-font-weight: bold;");
-        Label budgetValue = new Label(String.format("%.2f DT", hotel.getBudget()));
-        budgetValue.setStyle("-fx-font-size: 12px; -fx-text-fill: #0B6E4F; -fx-font-weight: bold;");
-        budgetBox.getChildren().addAll(budgetLabel, budgetValue);
+        Region metaSpacer = new Region();
+        HBox.setHgrow(metaSpacer, Priority.ALWAYS);
 
-        // Description
-        Label descLabel = new Label(hotel.getDescription());
-        descLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #555; -fx-wrap-text: true;");
+        Label weatherLabel = new Label("");
+        weatherLabel.setStyle("-fx-text-fill: #6bbf8a; -fx-font-size: 11px;");
+        metaRow.getChildren().addAll(priceLabel, metaSpacer, weatherLabel);
+
+        if (hotel.getVille() != null && !hotel.getVille().isBlank()) {
+            Task<WeatherService.WeatherData> wTask = new Task<>() {
+                @Override protected WeatherService.WeatherData call() {
+                    return weatherService.getWeather(hotel.getVille());
+                }
+            };
+            wTask.setOnSucceeded(ev -> {
+                WeatherService.WeatherData wd = wTask.getValue();
+                weatherLabel.setText(wd != null ? wd.getSummary() : "");
+            });
+            wTask.setOnFailed(ev -> weatherLabel.setText(""));
+            new Thread(wTask, "weather-" + hotel.getId()).start();
+        }
+
+        // ── Divider ──────────────────────────────────────────────────────────
+        Region divider = new Region();
+        divider.setPrefHeight(1);
+        divider.setStyle("-fx-background-color: rgba(80,200,120,0.12);");
+        VBox.setMargin(divider, new Insets(0, 0, 12, 0));
+
+        // ── Description (max 2 lines) ─────────────────────────────────────────
+        String originalDesc = hotel.getDescription() != null ? hotel.getDescription() : "";
+        Label descLabel = new Label(originalDesc.isBlank() ? "Aucune description disponible." : originalDesc);
+        descLabel.setStyle(
+            "-fx-text-fill: rgba(200,235,215,0.75);" +
+            "-fx-font-size: 12px;" +
+            "-fx-line-spacing: 2;");
         descLabel.setWrapText(true);
-        descLabel.setMaxWidth(260);
-        descLabel.setMaxHeight(40);
+        descLabel.setMaxHeight(38);
+        descLabel.setEllipsisString("…");
+        VBox.setMargin(descLabel, new Insets(0, 0, 10, 0));
 
-        Separator sep = new Separator();
-        sep.setStyle("-fx-background-color: #E0E0E0;");
+        // ── Language pills (right-aligned) ───────────────────────────────────
+        HBox langRow = new HBox(6);
+        langRow.setAlignment(Pos.CENTER_RIGHT);
+        VBox.setMargin(langRow, new Insets(0, 0, 14, 0));
+        String pillStyle =
+            "-fx-background-color: rgba(50,160,90,0.13);" +
+            "-fx-text-fill: rgba(100,220,150,0.85);" +
+            "-fx-font-size: 10px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-padding: 3 10;" +
+            "-fx-background-radius: 12;" +
+            "-fx-cursor: hand;";
+        String pillActive =
+            "-fx-background-color: rgba(50,200,100,0.28);" +
+            "-fx-text-fill: #50e896;" +
+            "-fx-font-size: 10px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-padding: 3 10;" +
+            "-fx-background-radius: 12;" +
+            "-fx-cursor: hand;";
+        Button btnFR = new Button("FR");
+        Button btnEN = new Button("EN");
+        Button btnAR = new Button("AR");
+        btnFR.setStyle(pillActive);  // FR is default active
+        btnEN.setStyle(pillStyle);
+        btnAR.setStyle(pillStyle);
+        btnFR.setOnAction(e -> {
+            descLabel.setText(originalDesc.isBlank() ? "Aucune description disponible." : originalDesc);
+            descLabel.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
+            btnFR.setStyle(pillActive); btnEN.setStyle(pillStyle); btnAR.setStyle(pillStyle);
+        });
+        btnEN.setOnAction(e -> {
+            descLabel.setText(translationService.translate(originalDesc, TranslationService.Language.EN));
+            descLabel.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
+            btnEN.setStyle(pillActive); btnFR.setStyle(pillStyle); btnAR.setStyle(pillStyle);
+        });
+        btnAR.setOnAction(e -> {
+            descLabel.setText(translationService.translate(originalDesc, TranslationService.Language.AR));
+            descLabel.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+            btnAR.setStyle(pillActive); btnFR.setStyle(pillStyle); btnEN.setStyle(pillStyle);
+        });
+        langRow.getChildren().addAll(btnFR, btnEN, btnAR);
 
-        // Action buttons
-        HBox actionButtons = new HBox(10);
-        actionButtons.setAlignment(Pos.CENTER);
-        Button editBtn = new Button("\u270F\uFE0F Modifier");
-        editBtn.setStyle("-fx-background-color: #50C878; -fx-text-fill: white; -fx-background-radius: 8; " +
-                        "-fx-padding: 6 14; -fx-font-size: 11px; -fx-cursor: hand; -fx-font-weight: bold;");
+        // ── Footer ───────────────────────────────────────────────────────────
+        HBox footer = new HBox(8);
+        footer.setAlignment(Pos.CENTER_LEFT);
+        footer.setPadding(new Insets(4, 0, 0, 0));
+
+        Button viewRoomsBtn = new Button("Voir Chambres");
+        viewRoomsBtn.setStyle(
+            "-fx-background-color: #1a8f4e;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 12px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-padding: 8 18;" +
+            "-fx-background-radius: 14;" +
+            "-fx-cursor: hand;");
+        viewRoomsBtn.setOnMouseEntered(ev -> viewRoomsBtn.setStyle(
+            "-fx-background-color: #22b860;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 12px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-padding: 8 18;" +
+            "-fx-background-radius: 14;" +
+            "-fx-cursor: hand;"));
+        viewRoomsBtn.setOnMouseExited(ev -> viewRoomsBtn.setStyle(
+            "-fx-background-color: #1a8f4e;" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 12px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-padding: 8 18;" +
+            "-fx-background-radius: 14;" +
+            "-fx-cursor: hand;"));
+        viewRoomsBtn.setOnAction(e -> goToChambres());
+
+        Region footerSpacer = new Region();
+        HBox.setHgrow(footerSpacer, Priority.ALWAYS);
+
+        String iconBtnStyle =
+            "-fx-background-color: rgba(255,255,255,0.06);" +
+            "-fx-text-fill: #6bcf9a;" +
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 6 10;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;";
+        String iconBtnHover =
+            "-fx-background-color: rgba(80,200,120,0.18);" +
+            "-fx-text-fill: #50e896;" +
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 6 10;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;";
+        String iconBtnDangerStyle =
+            "-fx-background-color: rgba(255,255,255,0.06);" +
+            "-fx-text-fill: #f07070;" +
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 6 10;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;";
+        String iconBtnDangerHover =
+            "-fx-background-color: rgba(220,60,60,0.18);" +
+            "-fx-text-fill: #ff6b6b;" +
+            "-fx-font-size: 14px;" +
+            "-fx-padding: 6 10;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;";
+
+        Button chatBtn = new Button("🤖");
+        chatBtn.setStyle(iconBtnStyle);
+        chatBtn.setTooltip(new Tooltip("Assistant IA"));
+        chatBtn.setOnMouseEntered(ev -> chatBtn.setStyle(iconBtnHover));
+        chatBtn.setOnMouseExited(ev -> chatBtn.setStyle(iconBtnStyle));
+        chatBtn.setOnAction(e -> openChatbot(hotel));
+
+        Button editBtn = new Button("✏");
+        editBtn.setStyle(iconBtnStyle);
+        editBtn.setTooltip(new Tooltip("Modifier"));
+        editBtn.setOnMouseEntered(ev -> editBtn.setStyle(iconBtnHover));
+        editBtn.setOnMouseExited(ev -> editBtn.setStyle(iconBtnStyle));
         editBtn.setOnAction(e -> editHotel(hotel));
-        Button deleteBtn = new Button("\uD83D\uDDD1\uFE0F");
-        deleteBtn.setStyle("-fx-background-color: #D84E36; -fx-text-fill: white; -fx-background-radius: 8; " +
-                          "-fx-padding: 6 10; -fx-font-size: 11px; -fx-cursor: hand;");
+
+        Button deleteBtn = new Button("🗑");
+        deleteBtn.setStyle(iconBtnDangerStyle);
+        deleteBtn.setTooltip(new Tooltip("Supprimer"));
+        deleteBtn.setOnMouseEntered(ev -> deleteBtn.setStyle(iconBtnDangerHover));
+        deleteBtn.setOnMouseExited(ev -> deleteBtn.setStyle(iconBtnDangerStyle));
         deleteBtn.setOnAction(e -> deleteHotel(hotel));
-        actionButtons.getChildren().addAll(editBtn, deleteBtn);
 
-        content.getChildren().addAll(header, addressLabel, budgetBox, descLabel, sep, actionButtons);
+        footer.getChildren().addAll(viewRoomsBtn, footerSpacer, chatBtn, editBtn, deleteBtn);
 
+        // ── ASSEMBLE ─────────────────────────────────────────────────────────
+        content.getChildren().addAll(locRow, metaRow, divider, descLabel, langRow, footer);
         card.getChildren().addAll(imageWrapper, content);
+
+        // Hover: lift + brighter border glow
+        String baseStyle =
+            "-fx-background-color: #0b2a1c;" +
+            "-fx-background-radius: 18;" +
+            "-fx-border-radius: 18;" +
+            "-fx-border-color: rgba(50,180,100,0.22);" +
+            "-fx-border-width: 1;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 20, 0, 0, 6);" +
+            "-fx-cursor: hand;";
+        String hoverStyle =
+            "-fx-background-color: #0e3323;" +
+            "-fx-background-radius: 18;" +
+            "-fx-border-radius: 18;" +
+            "-fx-border-color: rgba(60,220,120,0.55);" +
+            "-fx-border-width: 1.5;" +
+            "-fx-effect: dropshadow(gaussian, rgba(50,200,100,0.3), 28, 0, 0, 8);" +
+            "-fx-translate-y: -3;" +
+            "-fx-cursor: hand;";
+        card.setOnMouseEntered(e -> card.setStyle(hoverStyle));
+        card.setOnMouseExited(e -> card.setStyle(baseStyle));
+
         return card;
+    }
+
+    /**
+     * 🤖 Open AI Chatbot dialog for the hotel (RAG — no external API)
+     */
+    private void openChatbot(Hotel hotel) {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("🤖 Assistant IA — " + hotel.getNom());
+        dialog.setHeaderText(null);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+        DialogPane dp = dialog.getDialogPane();
+        dp.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
+
+        // ── Layout ─────────────────────────────────────────────
+        VBox root = new VBox(15);
+        root.setPrefSize(520, 560);
+        root.setPadding(new Insets(20));
+        root.setStyle("-fx-background-color: rgba(1,30,20,0.97); -fx-background-radius: 12;");
+
+        // Header
+        Label header = new Label("🤖 Assistant Hôtel GoVibe");
+        header.setStyle("-fx-text-fill: #50C878; -fx-font-size: 16px; -fx-font-weight: bold;");
+        Label sub = new Label("💬 Posez vos questions sur " + hotel.getNom() + " et nos services");
+        sub.setStyle("-fx-text-fill: #A0E0C9; -fx-font-size: 11px;");
+
+        // Chat area
+        VBox chatArea = new VBox(10);
+        chatArea.setPadding(new Insets(10));
+        ScrollPane chatScroll = new ScrollPane(chatArea);
+        chatScroll.setFitToWidth(true);
+        chatScroll.setStyle("-fx-background: transparent; -fx-background-color: rgba(255,255,255,0.03); " +
+                            "-fx-border-color: rgba(80,200,120,0.15); -fx-border-radius: 8;");
+        chatScroll.setPrefHeight(380);
+        VBox.setVgrow(chatScroll, Priority.ALWAYS);
+
+        // Input row
+        HBox inputRow = new HBox(10);
+        inputRow.setAlignment(Pos.CENTER);
+        TextField inputField = new TextField();
+        inputField.setPromptText("Écrivez votre message...");
+        inputField.getStyleClass().add("form-field");
+        HBox.setHgrow(inputField, Priority.ALWAYS);
+        Button sendBtn = new Button("➤ Envoyer");
+        sendBtn.getStyleClass().add("premium-button-small");
+
+        // Quick question buttons
+        HBox quickBox = new HBox(8);
+        quickBox.setAlignment(Pos.CENTER_LEFT);
+        Label quickLabel = new Label("💡");
+        quickLabel.setStyle("-fx-text-fill: #A0E0C9;");
+        String[] quickQuestions = {"Prix des chambres", "Équipements", "Réserver", "Codes promo"};
+        for (String q : quickQuestions) {
+            Button qBtn = new Button(q);
+            qBtn.setStyle("-fx-background-color: rgba(80,200,120,0.1); -fx-text-fill: #A0E0C9; " +
+                         "-fx-font-size: 10px; -fx-padding: 4 8; -fx-background-radius: 12; -fx-cursor: hand;");
+            qBtn.setOnAction(ev -> {
+                inputField.setText(q);
+                sendBtn.fire();
+            });
+            quickBox.getChildren().add(qBtn);
+        }
+        quickBox.getChildren().add(0, quickLabel);
+
+        inputRow.getChildren().addAll(inputField, sendBtn);
+        root.getChildren().addAll(header, sub, chatScroll, quickBox, inputRow);
+
+        // ── Welcome message ────────────────────────────────────
+        addChatMessage(chatArea, chatScroll, "🤖", "Bonjour ! Bienvenue chez **" + hotel.getNom() +
+                "** à " + hotel.getVille() + ". Je suis votre assistant hôtelier. " +
+                "Comment puis-je vous aider ? 😊", false);
+
+        // ── Send action ────────────────────────────────────────
+        Runnable sendAction = () -> {
+            String msg = inputField.getText().trim();
+            if (msg.isBlank()) return;
+            addChatMessage(chatArea, chatScroll, "👤", msg, true);
+            inputField.clear();
+
+            // Process in background
+            String question = msg;
+            Task<String> responseTask = new Task<>() {
+                @Override protected String call() {
+                    if (chatbotRAG == null) {
+                        return "⚠️ L'assistant est en cours d'initialisation. Veuillez réessayer dans un moment.";
+                    }
+                    return chatbotRAG.chat(question);
+                }
+            };
+            responseTask.setOnSucceeded(ev -> {
+                Platform.runLater(() ->
+                    addChatMessage(chatArea, chatScroll, "🤖", responseTask.getValue(), false));
+            });
+            new Thread(responseTask, "chatbot-response").start();
+        };
+
+        sendBtn.setOnAction(e -> sendAction.run());
+        inputField.setOnAction(e -> sendAction.run());
+
+        dp.setContent(root);
+        dp.setPrefWidth(560);
+        dialog.showAndWait();
+    }
+
+    private void addChatMessage(VBox chatArea, ScrollPane chatScroll, String avatar, String text, boolean isUser) {
+        HBox row = new HBox(10);
+        row.setAlignment(isUser ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
+        row.setPadding(new Insets(2, 8, 2, 8));
+
+        Label avatarLabel = new Label(avatar);
+        avatarLabel.setStyle("-fx-font-size: 18px;");
+
+        // Support basic **bold** markdown
+        Label msgLabel = new Label(text.replace("**", ""));
+        msgLabel.setWrapText(true);
+        msgLabel.setMaxWidth(360);
+        msgLabel.setStyle(isUser
+            ? "-fx-background-color: rgba(80,200,120,0.2); -fx-text-fill: white; " +
+              "-fx-padding: 10 14; -fx-background-radius: 14 14 3 14; -fx-font-size: 12px;"
+            : "-fx-background-color: rgba(255,255,255,0.05); -fx-text-fill: #E0F5EC; " +
+              "-fx-padding: 10 14; -fx-background-radius: 14 14 14 3; -fx-font-size: 12px;"
+        );
+
+        if (isUser) {
+            row.getChildren().addAll(msgLabel, avatarLabel);
+        } else {
+            row.getChildren().addAll(avatarLabel, msgLabel);
+        }
+
+        chatArea.getChildren().add(row);
+
+        // Scroll to bottom
+        chatScroll.layout();
+        chatScroll.setVvalue(1.0);
+
+        // Fade in
+        FadeTransition ft = new FadeTransition(Duration.millis(300), row);
+        ft.setFromValue(0); ft.setToValue(1); ft.play();
+    }
+
+    @FXML
+    public void openGlobalChatbot() {
+        // Open chatbot without hotel context
+        if (chatbotRAG == null) {
+            showAlert("Info", "L'assistant est en cours d'initialisation. Quelques secondes...", Alert.AlertType.INFORMATION);
+            return;
+        }
+        openChatbot(new Hotel(0, "GoVibe Hotels", "", "", 5, "", "", 0));
     }
 
     @FXML
@@ -199,9 +574,9 @@ public class HotelViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.getStyleClass().add("form-button-primary");
+        saveButton.getStyleClass().add("premium-button");
         Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-        cancelButton.getStyleClass().add("form-button-secondary");
+        cancelButton.getStyleClass().add("card-action-btn-danger");
 
         ScrollPane form = createHotelForm(null);
         dialog.getDialogPane().setContent(form);
@@ -249,9 +624,9 @@ public class HotelViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.getStyleClass().add("form-button-primary");
+        saveButton.getStyleClass().add("premium-button");
         Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-        cancelButton.getStyleClass().add("form-button-secondary");
+        cancelButton.getStyleClass().add("card-action-btn-danger");
 
         ScrollPane form = createHotelForm(hotel);
         dialog.getDialogPane().setContent(form);
@@ -302,13 +677,14 @@ public class HotelViewController implements Initializable {
     }
 
     private ScrollPane createHotelForm(Hotel hotel) {
-        VBox container = new VBox(15);
-        container.setPadding(new Insets(25));
-        container.setPrefWidth(480);
-        container.getStyleClass().add("form-card");
+        VBox container = new VBox(20);
+        container.setPadding(new Insets(30));
+        container.setPrefWidth(500);
+        container.getStyleClass().add("form-card-glass");
 
-        Label titleLabel = new Label("Informations de l'hotel");
-        titleLabel.getStyleClass().add("form-title");
+        Label titleLabel = new Label("✨ Détails de l'Hôtel");
+        titleLabel.getStyleClass().add("hero-title");
+        titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: #0B6E4F;");
 
         // Nom
         VBox nomBox = new VBox(5);
@@ -448,9 +824,9 @@ public class HotelViewController implements Initializable {
         // Wrap in ScrollPane
         ScrollPane scrollPane = new ScrollPane(container);
         scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background: #F5F3E7; -fx-background-color: #F5F3E7;");
-        scrollPane.setPrefHeight(500);
-        scrollPane.setMaxHeight(500);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setPrefHeight(550);
+        scrollPane.setMaxHeight(550);
 
         return scrollPane;
     }

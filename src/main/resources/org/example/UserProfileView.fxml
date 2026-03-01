@@ -113,6 +113,19 @@
                         </HBox>
                     </VBox>
                     
+                    <!-- Active Sessions Section -->
+                    <VBox spacing="20.0" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0, 0, 5);">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #013220;" text="Appareils Connectés" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button onAction="#loadSessions" style="-fx-background-color: transparent; -fx-text-fill: #50C878; -fx-cursor: hand; -fx-font-weight: bold;" text="↻ Actualiser" />
+                        </HBox>
+                        <Separator />
+                        <Label style="-fx-font-size: 13; -fx-text-fill: #7f8c8d;" text="Gérez les appareils actuellement connectés à votre compte. Vous pouvez déconnecter les sessions suspectes." wrapText="true" />
+                        
+                        <VBox fx:id="sessionsContainer" spacing="15" />
+                    </VBox>
+                    
                     <!-- Action Buttons -->
                     <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20 0;">
                         <Button onAction="#handleCancel" style="-fx-background-color: transparent; -fx-border-color: #013220; -fx-border-radius: 8; -fx-text-fill: #013220; -fx-font-size: 16; -fx-font-weight: bold; -fx-padding: 12 30; -fx-cursor: hand;" text="Annuler" />

@@ -59,7 +59,7 @@ public class CheckoutDetailController {
             bgImageView.fitWidthProperty().bind(rootStackPane.widthProperty());
             bgImageView.fitHeightProperty().bind(rootStackPane.heightProperty());
             
-            var resourcePath = "/messages/go_vibe.jpg"; // Using the same premium background
+            var resourcePath = "/messages/home-hero5.png";
             var url = getClass().getResource(resourcePath);
             if (url != null) {
                 Image img = new Image(url.toExternalForm(), true);

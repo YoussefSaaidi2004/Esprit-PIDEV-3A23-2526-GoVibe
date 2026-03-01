@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controllers.UserCheckoutsController"
+            stylesheets="@../styles/unified-styles.css"
+            styleClass="main-bg">
+
+    <!-- User Header at the top -->
+    <top>
+        <fx:include source="../components/UserHeader.fxml"/>
+    </top>
+
+    <!-- Hero content area -->
+    <center>
+        <StackPane fx:id="rootStackPane">
+            <!-- Background Hero Image -->
+            <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false"/>
+            <Region style="-fx-background-color: rgba(245,243,231,0.65);"/>
+
+            <VBox spacing="0">
+
+                <!-- Page header -->
+                <HBox alignment="CENTER_LEFT" spacing="20"
+                      style="-fx-padding: 30 50; -fx-background-color: rgba(1,50,32,0.0);">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Text text="Mes Réservations" styleClass="title"
+                              style="-fx-fill: #013220; -fx-font-size: 30px; -fx-font-weight: 900;"/>
+                        <Text text="Suivez et gérez vos réservations de vols" styleClass="subtitle"
+                              style="-fx-fill: #4a7a62;"/>
+                    </VBox>
+                    <HBox spacing="12" alignment="CENTER">
+                        <!-- Stats -->
+                        <VBox alignment="CENTER" spacing="3"
+                              style="-fx-background-color: rgba(80,200,120,0.15); -fx-background-radius: 14;
+                                     -fx-border-color: rgba(80,200,120,0.3); -fx-border-radius: 14;
+                                     -fx-padding: 10 20;">
+                            <Label fx:id="lblTotal" text="0"
+                                   style="-fx-text-fill: #013220; -fx-font-size: 24px; -fx-font-weight: 800;"/>
+                            <Label text="Réservations" style="-fx-text-fill: #4a7a62; -fx-font-size: 10px; -fx-font-weight: 700;"/>
+                        </VBox>
+                        <Button onAction="#handleRefresh" styleClass="icon-btn"
+                                style="-fx-background-color: rgba(80,200,120,0.15); -fx-background-radius: 50; -fx-cursor: hand;">
+                            <graphic><Text text="🔄" style="-fx-font-size: 18px; -fx-fill: #50C878;"/></graphic>
+                        </Button>
+                    </HBox>
+                </HBox>
+
+                <!-- Cards -->
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0 20 20 20;">
+                    <FlowPane fx:id="checkoutGrid" hgap="28" vgap="28" alignment="TOP_LEFT"
+                              style="-fx-padding: 10 30;"/>
+                </ScrollPane>
+
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

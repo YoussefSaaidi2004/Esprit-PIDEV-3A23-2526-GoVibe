@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -55,35 +56,41 @@ public class ReclamationController {
     }
 
     private void loadReclamations() {
-        try {
-            List<Reclamation> list;
-            if (currentUser != null) {
-                list = service.getByUser(currentUser.getId());
-            } else {
-                // Load all for demo/testing
-                list = service.getAll();
-            }
-            
-            // Apply filter
-            String filter = comboFiltre.getValue();
-            if (filter != null && !"Toutes".equals(filter)) {
-                list.removeIf(r -> !matchesFilter(r, filter));
-            }
-
-            reclamationsList.getChildren().clear();
-            
-            if (list.isEmpty()) {
-                emptyState.setVisible(true);
-            } else {
-                emptyState.setVisible(false);
-                for (Reclamation r : list) {
-                    reclamationsList.getChildren().add(createReclamationCard(r));
+        new Thread(() -> {
+            try {
+                java.util.List<Reclamation> list;
+                if (currentUser != null) {
+                    list = service.getByUser(currentUser.getId());
+                } else {
+                    list = service.getAll();
                 }
+                
+                // Copy list to avoid concurrent modification if filtering
+                final java.util.List<Reclamation> finalList = new java.util.ArrayList<>(list);
+                
+                Platform.runLater(() -> {
+                    // Apply filter on the UI thread or prepare it beforehand
+                    String filter = comboFiltre.getValue();
+                    if (filter != null && !"Toutes".equals(filter)) {
+                        finalList.removeIf(r -> !matchesFilter(r, filter));
+                    }
+
+                    reclamationsList.getChildren().clear();
+                    
+                    if (finalList.isEmpty()) {
+                        emptyState.setVisible(true);
+                    } else {
+                        emptyState.setVisible(false);
+                        for (Reclamation r : finalList) {
+                            reclamationsList.getChildren().add(createReclamationCard(r));
+                        }
+                    }
+                });
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger vos réclamations."));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger vos réclamations.");
-        }
+        }, "User-Reclamation-Load-Thread").start();
     }
 
     private boolean matchesFilter(Reclamation r, String filter) {

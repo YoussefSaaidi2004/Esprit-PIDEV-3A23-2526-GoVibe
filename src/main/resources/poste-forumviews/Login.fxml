@@ -32,6 +32,11 @@
                   <PasswordField fx:id="passwordField" promptText="Entrez votre mot de passe" style="-fx-background-radius: 5; -fx-border-color: #dadce0; -fx-border-radius: 5;" />
                </children>
             </VBox>
+            <Button mnemonicParsing="false" onAction="#handleLoginFaceID" prefWidth="300.0" style="-fx-background-color: #4A90E2; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="📸 Se connecter avec Face ID">
+               <padding>
+                  <Insets bottom="10.0" top="10.0" />
+               </padding>
+            </Button>
             <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" prefWidth="300.0" style="-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Se connecter">
                <padding>
                   <Insets bottom="10.0" top="10.0" />

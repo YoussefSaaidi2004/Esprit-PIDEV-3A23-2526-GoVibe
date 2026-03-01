@@ -1,11 +1,15 @@
 package org.example.controllers;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -22,6 +26,8 @@ import java.util.ResourceBundle;
 public class AdminReclamationController implements Initializable {
 
     @FXML private AdminSidebarController adminSidebarController;
+    @FXML private StackPane rootStackPane;
+    @FXML private ImageView bgImageView;
     @FXML private Label lblTotal;
     @FXML private Label lblEnAttente;
     @FXML private Label lblResolu;
@@ -35,8 +41,22 @@ public class AdminReclamationController implements Initializable {
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     private List<Reclamation> allReclamations;
 
+    private void setupBackground() {
+        if (bgImageView != null && rootStackPane != null) {
+            bgImageView.fitWidthProperty().bind(rootStackPane.widthProperty());
+            bgImageView.fitHeightProperty().bind(rootStackPane.heightProperty());
+            var url = getClass().getResource("/messages/home-hero5.png");
+            if (url != null) {
+                Image img = new Image(url.toExternalForm(), true);
+                bgImageView.setImage(img);
+                bgImageView.setEffect(new GaussianBlur(18));
+            }
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        setupBackground();
         // Set active page in sidebar
         if (adminSidebarController != null) {
             adminSidebarController.setActivePage("reclamations");
@@ -63,14 +83,19 @@ public class AdminReclamationController implements Initializable {
     }
 
     private void loadReclamations() {
-        try {
-            allReclamations = service.getAll();
-            updateStats();
-            filterAndDisplay();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger les réclamations: " + e.getMessage());
-        }
+        new Thread(() -> {
+            try {
+                final java.util.List<Reclamation> list = service.getAll();
+                Platform.runLater(() -> {
+                    allReclamations = list;
+                    updateStats();
+                    filterAndDisplay();
+                });
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de charger les réclamations: " + e.getMessage()));
+            }
+        }, "Admin-Reclamation-Load-Thread").start();
     }
 
     private void updateStats() {

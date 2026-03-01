@@ -28,6 +28,7 @@ public class ServicePersonne {
                 personne.setPassword(rs.getString("password"));
                 personne.setRole(rs.getString("role"));
                 personne.setCreated_at(rs.getTimestamp("created_at"));
+                personne.setFaceEncoding(rs.getString("face_encoding"));
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération de la personne : " + e.getMessage());
@@ -36,13 +37,14 @@ public class ServicePersonne {
     }
 
     public void ajouter(Personne p) throws SQLException {
-        String req = "INSERT INTO personne (nom, prenom, email, password, role) VALUES (?, ?, ?, ?, ?)";
+        String req = "INSERT INTO personne (nom, prenom, email, password, role, face_encoding) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setString(1, p.getNom());
         ps.setString(2, p.getPrenom());
         ps.setString(3, p.getEmail());
         ps.setString(4, p.getPassword());
         ps.setString(5, p.getRole());
+        ps.setString(6, p.getFaceEncoding());
         ps.executeUpdate();
     }
 
@@ -63,6 +65,7 @@ public class ServicePersonne {
                 personne.setPassword(rs.getString("password"));
                 personne.setRole(rs.getString("role"));
                 personne.setCreated_at(rs.getTimestamp("created_at"));
+                personne.setFaceEncoding(rs.getString("face_encoding"));
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors du login : " + e.getMessage());
@@ -99,10 +102,19 @@ public class ServicePersonne {
                 personne.setPassword(rs.getString("password"));
                 personne.setRole(rs.getString("role"));
                 personne.setCreated_at(rs.getTimestamp("created_at"));
+                personne.setFaceEncoding(rs.getString("face_encoding"));
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération par email : " + e.getMessage());
         }
         return personne;
+    }
+
+    public void updateFaceEncoding(String email, String faceEncoding) throws SQLException {
+        String req = "UPDATE personne SET face_encoding = ? WHERE email = ?";
+        PreparedStatement ps = cnx.prepareStatement(req);
+        ps.setString(1, faceEncoding);
+        ps.setString(2, email);
+        ps.executeUpdate();
     }
 }

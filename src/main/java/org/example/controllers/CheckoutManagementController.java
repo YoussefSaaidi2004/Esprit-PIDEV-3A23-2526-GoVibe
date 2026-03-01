@@ -2,6 +2,7 @@ package org.example.controllers;
 
 import org.example.entities.Checkout;
 import org.example.services.CheckoutService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -28,12 +29,17 @@ public class CheckoutManagementController {
         loadCheckouts();
     }
 
+    @FXML
+    public void handleRefresh() {
+        loadCheckouts();
+    }
+
     private void setupBackground() {
         if (bgImageView != null && rootStackPane != null) {
             bgImageView.fitWidthProperty().bind(rootStackPane.widthProperty());
             bgImageView.fitHeightProperty().bind(rootStackPane.heightProperty());
             
-            var resourcePath = "/messages/go_vibe.jpg";
+            var resourcePath = "/messages/home-hero5.png";
             var url = getClass().getResource(resourcePath);
             if (url != null) {
                 Image img = new Image(url.toExternalForm(), true);
@@ -43,90 +49,84 @@ public class CheckoutManagementController {
         }
     }
 
+    private void loadCheckouts() {
+        if (checkoutGrid == null) return;
+        checkoutGrid.getChildren().clear();
+        
+        new Thread(() -> {
+            try {
+                final List<Checkout> list = checkoutService.getAllCheckouts();
+                Platform.runLater(() -> {
+                    for (Checkout c : list) {
+                        try {
+                            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-card.fxml"));
+                            VBox card = loader.load();
+                            CheckoutCardController controller = loader.getController();
+                            controller.setData(c, true, this::handleApprove, this::handleReject, this::handleCancel);
+                            checkoutGrid.getChildren().add(card);
+                        } catch (Exception e) { 
+                            System.err.println("Error loading checkout card: " + e.getMessage());
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, "Checkout-Load-Thread").start();
+    }
+
     @FXML
     public void handleDashboard() {
-        try {
-            Stage currentStage = (Stage) checkoutGrid.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/AdminDashboardView.fxml"));
-            Parent root = loader.load();
-            currentStage.setScene(new Scene(root));
-        } catch (Exception e) { e.printStackTrace(); }
+        org.example.utils.SceneNavigator.switchTo("/org/example/AdminDashboardView.fxml", checkoutGrid);
     }
 
     @FXML
     public void handlePersonnes() {
-        try {
-            Stage currentStage = (Stage) checkoutGrid.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/PersonneView.fxml"));
-            Parent root = loader.load();
-            currentStage.setScene(new Scene(root));
-        } catch (Exception e) { e.printStackTrace(); }
+        org.example.utils.SceneNavigator.switchTo("/org/example/PersonneView.fxml", checkoutGrid);
     }
 
     @FXML
     public void handleVoitures() {
-        try {
-            Stage currentStage = (Stage) checkoutGrid.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/VoitureListView.fxml"));
-            Parent root = loader.load();
-            currentStage.setScene(new Scene(root));
-        } catch (Exception e) { e.printStackTrace(); }
+        org.example.utils.SceneNavigator.switchTo("/VoitureListView.fxml", checkoutGrid);
     }
 
     @FXML
     public void handleLocations() {
-        try {
-            Stage currentStage = (Stage) checkoutGrid.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AdminLocationListView.fxml"));
-            Parent root = loader.load();
-            currentStage.setScene(new Scene(root));
-        } catch (Exception e) { e.printStackTrace(); }
+        org.example.utils.SceneNavigator.switchTo("/AdminLocationListView.fxml", checkoutGrid);
     }
 
     @FXML
     public void handleFlights() {
-        try {
-            Stage currentStage = (Stage) checkoutGrid.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/flight-management.fxml"));
-            Parent root = loader.load();
-            currentStage.setScene(new Scene(root));
-        } catch (Exception e) { e.printStackTrace(); }
+        org.example.utils.SceneNavigator.switchTo("/views/flight-management.fxml", checkoutGrid);
     }
 
     @FXML
     public void handleLogout() {
-        try {
-            Stage currentStage = (Stage) checkoutGrid.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/LoginView.fxml"));
-            Parent root = loader.load();
-            currentStage.setScene(new Scene(root));
-        } catch (Exception e) { e.printStackTrace(); }
-    }
-
-    private void loadCheckouts() {
-        checkoutGrid.getChildren().clear();
-        List<Checkout> list = checkoutService.getAllCheckouts();
-
-        for (Checkout c : list) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/checkout-card.fxml"));
-                VBox card = loader.load();
-                CheckoutCardController controller = loader.getController();
-                controller.setData(c, true, this::handleApprove, this::handleReject, this::handleCancel);
-                checkoutGrid.getChildren().add(card);
-            } catch (Exception e) { e.printStackTrace(); }
-        }
+        org.example.utils.SessionManager.clear();
+        org.example.utils.SceneNavigator.switchTo("/org/example/LoginView.fxml", checkoutGrid);
     }
 
     private void handleApprove(Checkout c) {
-        if (checkoutService.approveCheckout(c.getCheckoutId(), 1)) loadCheckouts();
+        new Thread(() -> {
+            if (checkoutService.approveCheckout(c.getCheckoutId(), 1)) {
+                Platform.runLater(this::loadCheckouts);
+            }
+        }).start();
     }
 
     private void handleReject(Checkout c) {
-        if (checkoutService.rejectCheckout(c.getCheckoutId(), 1, "Rejected by Admin")) loadCheckouts();
+        new Thread(() -> {
+            if (checkoutService.rejectCheckout(c.getCheckoutId(), 1, "Rejected by Admin")) {
+                Platform.runLater(this::loadCheckouts);
+            }
+        }).start();
     }
 
     private void handleCancel(Checkout c) {
-        if (checkoutService.cancelCheckout(c.getCheckoutId(), 1)) loadCheckouts();
+        new Thread(() -> {
+            if (checkoutService.cancelCheckout(c.getCheckoutId(), 1)) {
+                Platform.runLater(this::loadCheckouts);
+            }
+        }).start();
     }
 }

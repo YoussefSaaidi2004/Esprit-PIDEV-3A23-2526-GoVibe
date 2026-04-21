@@ -1,0 +1,118 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< org.example:GoVibe >-------------------------
+[INFO] Building GoVibe 1.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ GoVibe ---
+[INFO] Copying 124 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ GoVibe ---
+[WARNING] Can't extract module name from osm-legal-default-speeds-jvm-1.4.jar: osm.legal.default.speeds.jvm: Invalid module name: 'default' is not a Java identifier
+[WARNING] ***********************************************************************************************************************************************************************************************************************
+[WARNING] * Required filename-based automodules detected: [jbcrypt-0.4.jar, commons-math3-3.6.1.jar, graphhopper-core-9.1.jar, xmlgraphics-commons-2.7.jar]. Please don't publish this project to a public artifact repository! *
+[WARNING] ***********************************************************************************************************************************************************************************************************************
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 159 source files with javac [debug release 17 module-path] to target\classes
+[INFO] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/ServiceActivite.java: Some input files use or override a deprecated API.
+[INFO] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/ServiceActivite.java: Recompile with -Xlint:deprecation for details.
+[INFO] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/controllers/ChambreViewController.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/controllers/ChambreViewController.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/controllers/LocationListController.java:[42,23] cannot find symbol
+  symbol:   class ResponsePath
+  location: package com.graphhopper
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[4,23] cannot find symbol
+  symbol:   class ResponsePath
+  location: package com.graphhopper
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[7,23] cannot find symbol
+  symbol:   class GHRequest
+  location: package com.graphhopper
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[8,23] cannot find symbol
+  symbol:   class GHResponse
+  location: package com.graphhopper
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[9,28] cannot find symbol
+  symbol:   class PointList
+  location: package com.graphhopper.util
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[95,12] cannot find symbol
+  symbol:   class ResponsePath
+  location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[72,50] cannot find symbol
+  symbol:   method setVehicle(java.lang.String)
+  location: class com.graphhopper.config.Profile
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[99,13] cannot find symbol
+  symbol:   class GHRequest
+  location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[99,33] cannot find symbol
+  symbol:   class GHRequest
+  location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[103,13] cannot find symbol
+  symbol:   class GHResponse
+  location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[121,9] cannot find symbol
+  symbol:   class ResponsePath
+  location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[140,9] cannot find symbol
+  symbol:   class ResponsePath
+  location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[142,13] cannot find symbol
+  symbol:   class PointList
+  location: class org.example.services.RoutingService
+[INFO] 13 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  5.589 s
+[INFO] Finished at: 2026-02-22T15:16:39+01:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project GoVibe: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/controllers/LocationListController.java:[42,23] cannot find symbol
+[ERROR]   symbol:   class ResponsePath
+[ERROR]   location: package com.graphhopper
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[4,23] cannot find symbol
+[ERROR]   symbol:   class ResponsePath
+[ERROR]   location: package com.graphhopper
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[7,23] cannot find symbol
+[ERROR]   symbol:   class GHRequest
+[ERROR]   location: package com.graphhopper
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[8,23] cannot find symbol
+[ERROR]   symbol:   class GHResponse
+[ERROR]   location: package com.graphhopper
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[9,28] cannot find symbol
+[ERROR]   symbol:   class PointList
+[ERROR]   location: package com.graphhopper.util
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[95,12] cannot find symbol
+[ERROR]   symbol:   class ResponsePath
+[ERROR]   location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[72,50] cannot find symbol
+[ERROR]   symbol:   method setVehicle(java.lang.String)
+[ERROR]   location: class com.graphhopper.config.Profile
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[99,13] cannot find symbol
+[ERROR]   symbol:   class GHRequest
+[ERROR]   location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[99,33] cannot find symbol
+[ERROR]   symbol:   class GHRequest
+[ERROR]   location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[103,13] cannot find symbol
+[ERROR]   symbol:   class GHResponse
+[ERROR]   location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[121,9] cannot find symbol
+[ERROR]   symbol:   class ResponsePath
+[ERROR]   location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[140,9] cannot find symbol
+[ERROR]   symbol:   class ResponsePath
+[ERROR]   location: class org.example.services.RoutingService
+[ERROR] /C:/Users/user/Desktop/GoVibe-gestion_compl-te/src/main/java/org/example/services/RoutingService.java:[142,13] cannot find symbol
+[ERROR]   symbol:   class PointList
+[ERROR]   location: class org.example.services.RoutingService
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

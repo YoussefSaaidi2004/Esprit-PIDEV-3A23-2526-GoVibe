@@ -1,0 +1,694 @@
+{
+  "FR": [
+    {
+      "name": "Tour Eiffel",
+      "description": "L'icône monumentale de Paris offrant une vue panoramique.",
+      "category": "Monument"
+    },
+    {
+      "name": "Palais de Versailles",
+      "description": "Résidence royale somptueuse et jardins historiques.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Mont Saint-Michel",
+      "description": "Abbaye médiévale perchée sur un îlot rocheux en Normandie.",
+      "category": "Culture"
+    }
+  ],
+  "IT": [
+    {
+      "name": "Colisée",
+      "description": "L'amphithéâtre antique de Rome, symbole de l'Empire.",
+      "category": "Monument"
+    },
+    {
+      "name": "Dôme de Florence",
+      "description": "Chef-d'œuvre de la Renaissance avec sa coupole spectaculaire.",
+      "category": "Culture"
+    },
+    {
+      "name": "Côte Amalfitaine",
+      "description": "Paysages côtiers pittoresques et villages colorés.",
+      "category": "Nature"
+    }
+  ],
+  "ES": [
+    {
+      "name": "Sagrada Família",
+      "description": "Basilique fantastique inachevée d'Antoni Gaudí.",
+      "category": "Monument"
+    },
+    {
+      "name": "Alhambra",
+      "description": "Palais et forteresse mauresque majestueux à Grenade.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Musée du Prado",
+      "description": "L'une des plus grandes pinacothèques au monde à Madrid.",
+      "category": "Musée"
+    }
+  ],
+  "US": [
+    {
+      "name": "Statue de la Liberté",
+      "description": "Symbole de liberté dominant le port de New York.",
+      "category": "Monument"
+    },
+    {
+      "name": "Grand Canyon",
+      "description": "Spectacle géologique sculpté par le fleuve Colorado.",
+      "category": "Nature"
+    },
+    {
+      "name": "Yellowstone",
+      "description": "Le premier parc national au monde, célèbre pour ses geysers.",
+      "category": "Nature"
+    }
+  ],
+  "JP": [
+    {
+      "name": "Mont Fuji",
+      "description": "Symbole sacré du Japon, un volcan à la silhouette parfaite.",
+      "category": "Nature"
+    },
+    {
+      "name": "Senso-ji",
+      "description": "Le plus ancien temple bouddhiste de Tokyo à Asakusa.",
+      "category": "Culture"
+    },
+    {
+      "name": "Château de Himeji",
+      "description": "L'un des plus beaux châteaux médiévaux du Japon.",
+      "category": "Histoire"
+    }
+  ],
+  "MA": [
+    {
+      "name": "Jardin Majorelle",
+      "description": "Jardin botanique d'un bleu intense créé par Jacques Majorelle.",
+      "category": "Nature"
+    },
+    {
+      "name": "Médina de Fès",
+      "description": "L'une des plus grandes zones piétonnes au monde, cité impériale.",
+      "category": "Culture"
+    },
+    {
+      "name": "Place Jemaa el-Fnaa",
+      "description": "Théâtre de rue vibrant au cœur de Marrakech.",
+      "category": "Culture"
+    }
+  ],
+  "TH": [
+    {
+      "name": "Grand Palais",
+      "description": "Enceinte sacrée des rois de Thaïlande à Bangkok.",
+      "category": "Culture"
+    },
+    {
+      "name": "Îles Phi Phi",
+      "description": "Plages de sable blanc et eaux turquoise paradisiaques.",
+      "category": "Nature"
+    },
+    {
+      "name": "Wat Phra That Doi Suthep",
+      "description": "Temple doré offrant une vue imprenable sur Chiang Mai.",
+      "category": "Culture"
+    }
+  ],
+  "GR": [
+    {
+      "name": "Acropole d'Athènes",
+      "description": "Le cœur de la Grèce antique dominant la capitale.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Santorin",
+      "description": "Maisons blanchies à la chaux et couchers de soleil célèbres.",
+      "category": "Nature"
+    },
+    {
+      "name": "Météores",
+      "description": "Monastères perchés sur des pitons rocheux spectaculaires.",
+      "category": "Culture"
+    }
+  ],
+  "TR": [
+    {
+      "name": "Sainte-Sophie",
+      "description": "Joyau architectural d'Istanbul, tour à tour église et mosquée.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Cappadoce",
+      "description": "Vols en montgolfière au-dessus des cheminées de fées.",
+      "category": "Nature"
+    },
+    {
+      "name": "Éphèse",
+      "description": "Cité antique grecque puis romaine magnifiquement préservée.",
+      "category": "Histoire"
+    }
+  ],
+  "PT": [
+    {
+      "name": "Tour de Belém",
+      "description": "Gardienne sculptée de l'embouchure du Tage à Lisbonne.",
+      "category": "Monument"
+    },
+    {
+      "name": "Palais de Pena",
+      "description": "Château romantique aux couleurs vives perchée à Sintra.",
+      "category": "Architecture"
+    },
+    {
+      "name": "Vallée du Douro",
+      "description": "Région viticole célèbre pour ses paysages de terrasses.",
+      "category": "Gastronomie"
+    }
+  ],
+  "DE": [
+    {
+      "name": "Château de Neuschwanstein",
+      "description": "Le château de contes de fées du roi Louis II en Bavière.",
+      "category": "Monument"
+    },
+    {
+      "name": "Porte de Brandebourg",
+      "description": "Symbole de l'Allemagne réunifiée à Berlin.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Cathédrale de Cologne",
+      "description": "Chef-d'œuvre gothique abritant les reliques des Rois Mages.",
+      "category": "Architecture"
+    }
+  ],
+  "GB": [
+    {
+      "name": "Stonehenge",
+      "description": "Cercle de pierres préhistoriques chargé de mystère.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Tour de Londres",
+      "description": "Ancienne forteresse royale et prison au bord de la Tamise.",
+      "category": "Histoire"
+    },
+    {
+      "name": "The British Museum",
+      "description": "Trésors de l'humanité, de l'Égypte antique à la Grèce.",
+      "category": "Musée"
+    }
+  ],
+  "CH": [
+    {
+      "name": "Cervin (Matterhorn)",
+      "description": "La pyramide des Alpes, emblème de la Suisse.",
+      "category": "Nature"
+    },
+    {
+      "name": "Lac de Lucerne",
+      "description": "Eaux miroitantes entourées de montagnes majestueuses.",
+      "category": "Nature"
+    },
+    {
+      "name": "Château de Chillon",
+      "description": "Forteresse médiévale flottant sur le lac Léman.",
+      "category": "Histoire"
+    }
+  ],
+  "DZ": [
+    {
+      "name": "Casbah d'Alger",
+      "description": "Vieille ville ottomane classée à l'UNESCO.",
+      "category": "Culture"
+    },
+    {
+      "name": "Tassili n'Ajjer",
+      "description": "Musée à ciel ouvert de peintures rupestres dans le Sahara.",
+      "category": "Nature"
+    },
+    {
+      "name": "Timgad",
+      "description": "Cité romaine antique magnifiquement conservée.",
+      "category": "Histoire"
+    }
+  ],
+  "TN": [
+    {
+      "name": "Amphithéâtre d'El Jem",
+      "description": "Colisée romain imposant au centre de la Tunisie.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Sidi Bou Saïd",
+      "description": "Village blanc et bleu surplombant la Méditerranée.",
+      "category": "Ville"
+    },
+    {
+      "name": "Carthage",
+      "description": "Ruines légendaires de l'empire phénicien et romain.",
+      "category": "Histoire"
+    }
+  ],
+  "CA": [
+    {
+      "name": "Parc National de Banff",
+      "description": "Joyau des Rocheuses avec ses lacs turquoise.",
+      "category": "Nature"
+    },
+    {
+      "name": "Tour CN",
+      "description": "Panorama urbain spectaculaire sur Toronto.",
+      "category": "Architecture"
+    },
+    {
+      "name": "Vieux-Québec",
+      "description": "Quartier historique aux charmes européens.",
+      "category": "Culture"
+    }
+  ],
+  "GL": [
+    {
+      "name": "Fjord de glace d'Ilulissat",
+      "description": "Berceau des plus grands icebergs de l'hémisphère Nord.",
+      "category": "Nature"
+    },
+    {
+      "name": "Baleines de Qeqertarsuaq",
+      "description": "Observation des géants des mers dans la baie de Disko.",
+      "category": "Nature"
+    },
+    {
+      "name": "Aurores Boréales",
+      "description": "Les meilleures observations au monde sous le ciel polaire.",
+      "category": "Nature"
+    }
+  ],
+  "AU": [
+    {
+      "name": "Opéra de Sydney",
+      "description": "Icône mondiale de l'architecture moderne.",
+      "category": "Culture"
+    },
+    {
+      "name": "Grande Barrière de Corail",
+      "description": "Le plus grand système récifal au monde.",
+      "category": "Nature"
+    },
+    {
+      "name": "Uluru (Ayers Rock)",
+      "description": "Monolithe rouge sacré au cœur du désert australien.",
+      "category": "Nature"
+    }
+  ],
+  "BR": [
+    {
+      "name": "Christ Rédempteur",
+      "description": "Statue monumentale surplombant Rio de Janeiro.",
+      "category": "Monument"
+    },
+    {
+      "name": "Chutes d'Iguacu",
+      "description": "Chaos d'eau spectaculaire à la frontière argentine.",
+      "category": "Nature"
+    },
+    {
+      "name": "Forêt Amazonienne",
+      "description": "La plus grande biodiversité au monde.",
+      "category": "Nature"
+    }
+  ],
+  "CN": [
+    {
+      "name": "Grande Muraille",
+      "description": "L'une des sept merveilles du monde moderne.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Cité Interdite",
+      "description": "Le cœur impérial de la Chine ancienne à Pékin.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Armée de Terre cuite",
+      "description": "Des milliers de soldats de argile enterrés à Xi'an.",
+      "category": "Histoire"
+    }
+  ],
+  "IN": [
+    {
+      "name": "Taj Mahal",
+      "description": "Le plus beau mausolée de marbre blanc de l'Inde.",
+      "category": "Monument"
+    },
+    {
+      "name": "Varanasi",
+      "description": "Ville sacrée sur le Gange, cœur spirituel hindou.",
+      "category": "Culture"
+    },
+    {
+      "name": "Palais de Mysore",
+      "description": "Résidence royale éblouissante illuminée la nuit.",
+      "category": "Histoire"
+    }
+  ],
+  "MX": [
+    {
+      "name": "Chichen Itza",
+      "description": "Pyramide maya spectaculaire au Yucatan.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Teotihuacan",
+      "description": "Cité antique des dieux connue pour ses pyramides.",
+      "category": "Histoire"
+    }
+  ],
+  "RU": [
+    {
+      "name": "Place Rouge",
+      "description": "Le centre historique et politique de Moscou.",
+      "category": "Culture"
+    },
+    {
+      "name": "Musée de l'Ermitage",
+      "description": "Trésors des tsars dans le Palais d'Hiver à Saint-Pétersbourg.",
+      "category": "Musée"
+    }
+  ],
+  "ZA": [
+    {
+      "name": "Table Mountain",
+      "description": "Montagne à sommet plat surplombant Le Cap.",
+      "category": "Nature"
+    },
+    {
+      "name": "Parc Kruger",
+      "description": "L'un des meilleurs safaris au monde.",
+      "category": "Nature"
+    }
+  ],
+  "SN": [
+    {
+      "name": "Île de Gorée",
+      "description": "Lieu de mémoire historique au large de Dakar.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Lac Rose",
+      "description": "Lagune aux eaux roses célèbres pour sa teneur en sel.",
+      "category": "Nature"
+    }
+  ],
+  "VN": [
+    {
+      "name": "Baie de Ha Long",
+      "description": "Paysages karstiques spectaculaires émergeant de la mer.",
+      "category": "Nature"
+    },
+    {
+      "name": "Hoi An",
+      "description": "Vieille ville charmante aux lanternes multicolores.",
+      "category": "Culture"
+    }
+  ],
+  "IL": [
+    {
+      "name": "Mur des Lamentations",
+      "description": "Lieu de prière sacré dans la vieille ville de Jérusalem.",
+      "category": "Culture"
+    },
+    {
+      "name": "Mer Morte",
+      "description": "Flottaison naturelle unique dans les eaux les plus salées au monde.",
+      "category": "Nature"
+    }
+  ],
+  "JO": [
+    {
+      "name": "Pétra",
+      "description": "Cité antique sculptée dans le grès rose.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Wadi Rum",
+      "description": "Désert rouge spectaculaire inspirant de nombreux films.",
+      "category": "Nature"
+    }
+  ],
+  "AE": [
+    {
+      "name": "Burj Khalifa",
+      "description": "La plus haute tour au monde offrant une vue futuriste.",
+      "category": "Architecture"
+    },
+    {
+      "name": "Mosquée Sheikh Zayed",
+      "description": "Joyau de marbre blanc aux lustres de cristal.",
+      "category": "Architecture"
+    }
+  ],
+  "EG": [
+    {
+      "name": "Pyramides de Gizeh",
+      "description": "Énigmes de pierre de l'Égypte antique.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Temple de Louxor",
+      "description": "Splendeur du Nouvel Empire au bord du Nil.",
+      "category": "Histoire"
+    }
+  ],
+  "KE": [
+    {
+      "name": "Maasai Mara",
+      "description": "Spectacle annuel de la migration des gnous.",
+      "category": "Nature"
+    }
+  ],
+  "IS": [
+    {
+      "name": "Cercle d'Or",
+      "description": "Geysers, chutes d'eau et parcs nationaux volcaniques.",
+      "category": "Nature"
+    },
+    {
+      "name": "Blue Lagoon",
+      "description": "Eaux thermales bleues laiteuses dans un champ de lave.",
+      "category": "Nature"
+    }
+  ],
+  "IE": [
+    {
+      "name": "Falaises de Moher",
+      "description": "Falaises vertigineuses face à l'Océan Atlantique.",
+      "category": "Nature"
+    }
+  ],
+  "PL": [
+    {
+      "name": "Camp d'Auschwitz-Birkenau",
+      "description": "Mémorial et musée de la Shoah.",
+      "category": "Histoire"
+    },
+    {
+      "name": "Vieille ville de Cracovie",
+      "description": "Cœur médiéval riche en histoire et architecture.",
+      "category": "Culture"
+    }
+  ],
+  "HU": [
+    {
+      "name": "Parlement de Budapest",
+      "description": "Bâtiment néo-gothique majestueux au bord du Danube.",
+      "category": "Architecture"
+    }
+  ],
+  "CZ": [
+    {
+      "name": "Pont Charles",
+      "description": "Pont médiéval chargé de statues surplombant Prague.",
+      "category": "Monument"
+    }
+  ],
+  "BE": [
+    {
+      "name": "Grand-Place de Bruxelles",
+      "description": "L'une des plus belles places au monde, entourée de maisons de guildes.",
+      "category": "Culture"
+    }
+  ],
+  "NL": [
+    {
+      "name": "Canaux d'Amsterdam",
+      "description": "Réseau historique classé à l'UNESCO.",
+      "category": "Culture"
+    }
+  ],
+  "SE": [
+    {
+      "name": "Vasa Museet",
+      "description": "Musée abritant un navire du XVIIe siècle parfaitement conservé.",
+      "category": "Musée"
+    }
+  ],
+  "NO": [
+    {
+      "name": "Fjord de Geiranger",
+      "description": "Paysage de fjord sublime aux chutes d'eau spectaculaires.",
+      "category": "Nature"
+    }
+  ],
+  "FI": [
+    {
+      "name": "Village du Père Noël",
+      "description": "La magie de Rovaniemi en Laponie.",
+      "category": "Divertissement"
+    }
+  ],
+  "DK": [
+    {
+      "name": "Jardins de Tivoli",
+      "description": "Parc d'attractions historique et jardins à Copenhague.",
+      "category": "Divertissement"
+    }
+  ],
+  "AT": [
+    {
+      "name": "Palais de Schönbrunn",
+      "description": "Résidence impériale d'été de la faimille Habsbourg.",
+      "category": "Histoire"
+    }
+  ],
+  "AR": [
+    {
+      "name": "Glacier Perito Moreno",
+      "description": "Mur de glace vivant d'une beauté saisissante en Patagonie.",
+      "category": "Nature"
+    }
+  ],
+  "CL": [
+    {
+      "name": "Torres del Paine",
+      "description": "Massif montagneux emblématique du sud du Chili.",
+      "category": "Nature"
+    }
+  ],
+  "PE": [
+    {
+      "name": "Machu Picchu",
+      "description": "Cité inca perdue dans les nuages des Andes.",
+      "category": "Histoire"
+    }
+  ],
+  "CO": [
+    {
+      "name": "Carthagène des Indes",
+      "description": "Ville coloniale colorée et joyau des Caraïbes.",
+      "category": "Histoire"
+    }
+  ],
+  "CR": [
+    {
+      "name": "Volcan Arenal",
+      "description": "Parc national offrant des paysages de jungle et des sources chaudes.",
+      "category": "Nature"
+    }
+  ],
+  "CU": [
+    {
+      "name": "Vieil Havane",
+      "description": "Atmosphère rétro et architecture coloniale à Cuba.",
+      "category": "Culture"
+    }
+  ],
+  "DO": [
+    {
+      "name": "Punta Cana",
+      "description": "Plages de rêve et complexes hôteliers de luxe.",
+      "category": "Nature"
+    }
+  ],
+  "JM": [
+    {
+      "name": "Blue Mountains",
+      "description": "Région montagneuse célèbre pour son café et sa nature sauvage.",
+      "category": "Nature"
+    }
+  ],
+  "SG": [
+    {
+      "name": "Gardens by the Bay",
+      "description": "Jardins futuristes avec les célèbres Supertrees.",
+      "category": "Nature"
+    }
+  ],
+  "MY": [
+    {
+      "name": "Tours Petronas",
+      "description": "Tours jumelles emblématiques dominant Kuala Lumpur.",
+      "category": "Architecture"
+    }
+  ],
+  "PH": [
+    {
+      "name": "Rizières de Banaue",
+      "description": "Escaliers verts sculptés dans les montagnes il y a 2000 ans.",
+      "category": "Nature"
+    }
+  ],
+  "ID": [
+    {
+      "name": "Temples de Borobudur",
+      "description": "Le plus grand monument bouddhiste au monde à Java.",
+      "category": "Histoire"
+    }
+  ],
+  "QA": [
+    {
+      "name": "Musée d'Art Islamique",
+      "description": "Chef-d'œuvre architectural abritant des trésors d'art.",
+      "category": "Musée"
+    }
+  ],
+  "KW": [
+    {
+      "name": "Kuwait Towers",
+      "description": "Symboles de modernité surplombant le Golfe Persique.",
+      "category": "Architecture"
+    }
+  ],
+  "OM": [
+    {
+      "name": "Sultan Qaboos Grand Mosque",
+      "description": "Mosquée majestueuse au tapis de prière spectaculaire.",
+      "category": "Culture"
+    }
+  ],
+  "LB": [
+    {
+      "name": "Baalbek",
+      "description": "Ruines romaines colossales parmi les mieux préservées au monde.",
+      "category": "Histoire"
+    }
+  ],
+  "SA": [
+    {
+      "name": "Al Ula (Hégra)",
+      "description": "Tombes nabatéennes sculptées dans le désert saoudien.",
+      "category": "Histoire"
+    }
+  ],
+  "KR": [
+    {
+      "name": "Palais Gyeongbokgung",
+      "description": "Le plus grand des cinq grands palais de Séoul.",
+      "category": "Histoire"
+    }
+  ]
+}

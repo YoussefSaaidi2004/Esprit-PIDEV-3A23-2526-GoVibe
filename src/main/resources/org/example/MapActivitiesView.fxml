@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.WebView?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+
+<StackPane fx:id="mainStack" prefHeight="940.0" prefWidth="1440.0" stylesheets="@../../styles/unified-styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.MapActivitiesController">
+    
+    <!-- Premium Image Background -->
+    <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" styleClass="premium-bg" />
+    
+    <!-- Neutral Dark Overlay (No Green Tint) -->
+    <Pane styleClass="premium-bg-overlay" />
+
+    <VBox fx:id="root" spacing="0" style="-fx-background-color: transparent;">
+        <!-- Header Container -->
+        <StackPane styleClass="header-glass">
+            <fx:include source="../../components/UserHeader.fxml"/>
+        </StackPane>
+
+        <SplitPane dividerPositions="0.65" styleClass="map-split-pane" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+            <items>
+                <!-- Map Side -->
+                <AnchorPane style="-fx-background-color: transparent;">
+                    <WebView fx:id="mapWebView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    
+                    <!-- Search Overlay (Premium) -->
+                    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="map-search-overlay-premium" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+                        <TextField fx:id="searchField" prefWidth="280" promptText="Rechercher une destination..." styleClass="map-search-field-premium" />
+                        <Button onAction="#handleSearch" styleClass="icon-btn-success">
+                            <graphic>
+                                <SVGPath content="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="white" />
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </AnchorPane>
+
+                <!-- Details Side (Glass Effect) -->
+                <VBox fx:id="sidePanel" spacing="0" styleClass="glass-panel">
+                    <padding><Insets bottom="20" left="10" right="10" top="20" /></padding>
+                    <ScrollPane fitToWidth="true" styleClass="transparent-scroll" VBox.vgrow="ALWAYS">
+                        <content>
+                            <StackPane>
+                                <VBox fx:id="detailsVBox" spacing="30" style="-fx-padding: 30;">
+                                    <!-- Initial State -->
+                                    <VBox fx:id="emptyState" alignment="CENTER" spacing="25" styleClass="ocean-state-container">
+                                        <SVGPath content="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="rgba(80, 200, 120, 0.4)" scaleX="4" scaleY="4" />
+                                        <Label fx:id="emptyTitle" style="-fx-font-size: 32; -fx-font-weight: 900; -fx-text-fill: white;" text="Explorez le monde" />
+                                        <Label fx:id="emptySubtitle" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 16;" text="Un univers de possibilités s'offre à vous. Cliquez sur la carte." textAlignment="CENTER" wrapText="true" />
+                                    </VBox>
+                                    
+                                    <!-- Country Content -->
+                                    <VBox fx:id="countryContent" managed="false" spacing="25" visible="false">
+                                        <HBox alignment="CENTER_LEFT" spacing="25">
+                                            <ImageView fx:id="countryFlag" fitHeight="65" preserveRatio="true">
+                                                <effect><javafx.scene.effect.DropShadow color="rgba(0,0,0,0.5)" radius="10" /></effect>
+                                            </ImageView>
+                                            <VBox>
+                                                <Label fx:id="countryName" style="-fx-font-size: 34; -fx-font-weight: 900; -fx-text-fill: white; -fx-letter-spacing: -1;" />
+                                                <Label fx:id="countryRegion" style="-fx-text-fill: #50C878; -fx-font-weight: 800; -fx-font-size: 14;" />
+                                            </VBox>
+                                        </HBox>
+
+                                        <GridPane hgap="15" vgap="15" styleClass="premium-info-grid">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
+                                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50" />
+                                            </columnConstraints>
+                                            <children>
+                                                <VBox styleClass="glass-tile" GridPane.columnIndex="0">
+                                                    <Label styleClass="tile-label" text="CAPITALE" />
+                                                    <Label fx:id="capitalLabel" styleClass="tile-value" text="-" />
+                                                </VBox>
+                                                <VBox styleClass="glass-tile" GridPane.columnIndex="1">
+                                                    <Label styleClass="tile-label" text="POPULATION" />
+                                                    <Label fx:id="populationLabel" styleClass="tile-value" text="-" />
+                                                </VBox>
+                                                <VBox styleClass="glass-tile" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                                                    <Label styleClass="tile-label" text="MONNAIE" />
+                                                    <Label fx:id="currencyLabel" styleClass="tile-value" text="-" />
+                                                </VBox>
+                                                <VBox styleClass="glass-tile" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                                                    <Label styleClass="tile-label" text="LANGUES" />
+                                                    <Label fx:id="languageLabel" styleClass="tile-value" text="-" />
+                                                </VBox>
+                                            </children>
+                                        </GridPane>
+
+                                        <HBox alignment="CENTER_LEFT" spacing="10">
+                                            <Label style="-fx-font-size: 13; -fx-font-weight: 900; -fx-text-fill: #50C878; -fx-letter-spacing: 2;" text="EXPÉRIENCES IMMERSIVES" />
+                                            <Region HBox.hgrow="ALWAYS" />
+                                            <Button fx:id="aiInsightsBtn" onAction="#handleAskAI" styleClass="btn-ai-mini-premium" text="Conseils de l'IA ✨" />
+                                        </HBox>
+                                        
+                                        <VBox fx:id="attractionsContainer" spacing="20" />
+                                    </VBox>
+                                </VBox>
+
+                                <!-- Overlays -->
+                                <VBox fx:id="loadingOverlay" alignment="CENTER" spacing="25" visible="false" style="-fx-background-color: rgba(1, 46, 32, 0.7); -fx-background-radius: 20;">
+                                    <ProgressIndicator prefHeight="70.0" prefWidth="70.0" />
+                                    <Label style="-fx-text-fill: white; -fx-font-size: 18; -fx-font-weight: bold;" text="Exploration en cours..." />
+                                </VBox>
+
+                                <VBox fx:id="errorOverlay" alignment="CENTER" spacing="20" visible="false" style="-fx-background-color: rgba(1, 46, 32, 0.85); -fx-background-radius: 20;">
+                                    <SVGPath content="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#E74C3C" scaleX="3" scaleY="3" />
+                                    <Label fx:id="errorMessage" style="-fx-text-fill: white; -fx-font-weight: bold;" textAlignment="CENTER" wrapText="true" />
+                                    <Button onAction="#handleRetry" styleClass="btn-retry" text="Réessayer" />
+                                </VBox>
+                            </StackPane>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+            </items>
+        </SplitPane>
+    </VBox>
+</StackPane>

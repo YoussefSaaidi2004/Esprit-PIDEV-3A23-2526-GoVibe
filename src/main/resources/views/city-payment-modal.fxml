@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.WebView?>
+
+<StackPane fx:id="rootPane" prefHeight="780.0" prefWidth="560.0"
+           style="-fx-background-color: rgba(0,0,0,0.65);"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.example.controllers.CityPaymentModalController">
+   <children>
+      <!-- Glass card -->
+      <VBox maxHeight="740.0" maxWidth="480.0" prefWidth="480.0"
+            style="-fx-background-color: rgba(255,255,255,0.97);
+                   -fx-background-radius: 24;
+                   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 48, 0, 0, 16);">
+         <children>
+
+            <!-- ══ HERO IMAGE + overlay ══ -->
+            <StackPane prefHeight="230.0">
+               <children>
+                  <!-- Hero photo -->
+                  <ImageView fx:id="cityImageView" fitHeight="230.0" fitWidth="480.0" preserveRatio="false"
+                             style="-fx-background-color: #b2bec3;" />
+
+                  <!-- Bottom gradient overlay so white text is readable -->
+                  <Region style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, transparent 30%, rgba(0,0,0,0.72) 100%);" />
+
+                  <!-- City title overlaid at bottom-left of image -->
+                  <VBox alignment="BOTTOM_LEFT" style="-fx-padding: 0 16 18 20;">
+                     <Label fx:id="cityTitleLabel"
+                            style="-fx-font-size: 34; -fx-font-weight: bold; -fx-text-fill: white;
+                                   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 10, 0, 0, 2);" />
+                     <Label fx:id="countrySubtitleLabel"
+                            style="-fx-font-size: 14; -fx-text-fill: rgba(255,255,255,0.88);
+                                   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 6, 0, 0, 1);" />
+                  </VBox>
+
+                  <!-- Close button top-right -->
+                  <Button mnemonicParsing="false" onAction="#handleClose" text="✕"
+                          style="-fx-background-color: rgba(0,0,0,0.35); -fx-background-radius: 50;
+                                 -fx-text-fill: white; -fx-font-size: 13; -fx-font-weight: bold;
+                                 -fx-pref-width: 32; -fx-pref-height: 32; -fx-cursor: hand;"
+                          StackPane.alignment="TOP_RIGHT">
+                     <StackPane.margin><Insets top="12.0" right="14.0"/></StackPane.margin>
+                  </Button>
+
+                  <!-- Loading spinner -->
+                  <ProgressIndicator fx:id="loadingIndicator" maxHeight="44.0" maxWidth="44.0" />
+               </children>
+            </StackPane>
+
+            <!-- ══ SCROLL BODY ══ -->
+            <ScrollPane fitToWidth="true" vbarPolicy="NEVER"
+                        style="-fx-background: transparent; -fx-background-color: transparent;">
+               <content>
+                  <VBox spacing="18.0" style="-fx-padding: 22 22 28 22;">
+                     <children>
+
+                        <!-- ── STATS CARDS ── -->
+                        <VBox spacing="10.0">
+                           <Label text="Destination Overview"
+                                  style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #b2bec3;
+                                         -fx-letter-spacing: 1;" />
+                           <HBox spacing="10.0">
+                              <!-- Population -->
+                              <VBox spacing="3.0" HBox.hgrow="ALWAYS" minWidth="0"
+                                    style="-fx-background-color: rgba(0,184,148,0.07);
+                                           -fx-background-radius: 14;
+                                           -fx-border-color: rgba(0,184,148,0.25);
+                                           -fx-border-radius: 14; -fx-padding: 12 14 12 14;">
+                                 <Label text="👥  Population"
+                                        style="-fx-font-size: 11; -fx-text-fill: #636e72;" />
+                                 <Label fx:id="populationLabel" text="—"
+                                        style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d3436;" />
+                              </VBox>
+                              <!-- Timezone -->
+                              <VBox spacing="3.0" HBox.hgrow="ALWAYS" minWidth="0"
+                                    style="-fx-background-color: rgba(9,132,227,0.07);
+                                           -fx-background-radius: 14;
+                                           -fx-border-color: rgba(9,132,227,0.25);
+                                           -fx-border-radius: 14; -fx-padding: 12 14 12 14;">
+                                 <Label text="🕒  Timezone"
+                                        style="-fx-font-size: 11; -fx-text-fill: #636e72;" />
+                                 <Label fx:id="timezoneLabel" text="—"
+                                        style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d3436;" />
+                              </VBox>
+                           </HBox>
+                           <HBox spacing="10.0">
+                              <!-- Currency -->
+                              <VBox spacing="3.0" HBox.hgrow="ALWAYS" minWidth="0"
+                                    style="-fx-background-color: rgba(253,203,110,0.12);
+                                           -fx-background-radius: 14;
+                                           -fx-border-color: rgba(253,203,110,0.6);
+                                           -fx-border-radius: 14; -fx-padding: 12 14 12 14;">
+                                 <Label text="💰  Currency"
+                                        style="-fx-font-size: 11; -fx-text-fill: #636e72;" />
+                                 <Label fx:id="currencyLabel" text="—"
+                                        style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d3436;" />
+                              </VBox>
+                              <!-- Capital -->
+                              <VBox spacing="3.0" HBox.hgrow="ALWAYS" minWidth="0"
+                                    style="-fx-background-color: rgba(162,155,254,0.10);
+                                           -fx-background-radius: 14;
+                                           -fx-border-color: rgba(162,155,254,0.35);
+                                           -fx-border-radius: 14; -fx-padding: 12 14 12 14;">
+                                 <Label text="🏛️  Capital"
+                                        style="-fx-font-size: 11; -fx-text-fill: #636e72;" />
+                                 <Label fx:id="capitalLabel" text="—"
+                                        style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2d3436;" />
+                              </VBox>
+                           </HBox>
+                        </VBox>
+
+                        <Separator style="-fx-opacity: 0.4;" />
+
+                        <!-- ── ABOUT ── -->
+                        <VBox spacing="14.0"
+                              style="-fx-background-color: rgba(45,52,54,0.04);
+                                     -fx-background-radius: 18;
+                                     -fx-border-color: rgba(0,0,0,0.07);
+                                     -fx-border-radius: 18; -fx-padding: 18 20 20 20;">
+                           <HBox alignment="CENTER_LEFT" spacing="8.0">
+                              <Label text="✈"
+                                     style="-fx-font-size: 17; -fx-text-fill: #00b894;" />
+                              <Label text="About this destination"
+                                     style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2d3436;" />
+                           </HBox>
+                           <Label fx:id="placeDescriptionArea" wrapText="true"
+                                  style="-fx-font-size: 13.5; -fx-text-fill: #4a4a4a;
+                                         -fx-line-spacing: 5; -fx-label-padding: 0 2 0 2;"
+                                  text="Loading destination details..." />
+                        </VBox>
+
+                        <Separator style="-fx-opacity: 0.4;" />
+
+                        <!-- ── TRAVEL TIPS ── -->
+                        <VBox spacing="10.0"
+                              style="-fx-background-color: rgba(9,132,227,0.05);
+                                     -fx-background-radius: 18;
+                                     -fx-border-color: rgba(9,132,227,0.18);
+                                     -fx-border-radius: 18; -fx-padding: 16 18 16 18;">
+                           <Label text="🗺   Travel Tips"
+                                  style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #0984e3;" />
+                           <Label wrapText="true" text="Check visa requirements and entry rules for your nationality before travel. Local currency can typically be obtained at airport exchange desks or ATMs on arrival. Keep a copy of your passport and booking confirmation accessible offline."
+                                  style="-fx-font-size: 12.5; -fx-text-fill: #636e72; -fx-line-spacing: 4;" />
+                        </VBox>
+
+                        <!-- ── BEST TIME TO VISIT ── -->
+                        <VBox spacing="10.0"
+                              style="-fx-background-color: rgba(253,203,110,0.09);
+                                     -fx-background-radius: 18;
+                                     -fx-border-color: rgba(253,203,110,0.55);
+                                     -fx-border-radius: 18; -fx-padding: 16 18 16 18;">
+                           <Label text="☀   Best Time to Visit"
+                                  style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #e17055;" />
+                           <Label wrapText="true" text="Most destinations are best visited in shoulder season (spring or early autumn) for mild weather and fewer crowds. Check average temperatures and rainfall for your specific travel months to plan accordingly."
+                                  style="-fx-font-size: 12.5; -fx-text-fill: #636e72; -fx-line-spacing: 4;" />
+                        </VBox>
+
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+
+         </children>
+      </VBox>
+   </children>
+</StackPane>
+

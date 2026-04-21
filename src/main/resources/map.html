@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="scripts/leaflet/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #012e20;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100vw;
+            background: transparent;
+        }
+
+        .error-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(1, 46, 32, 0.9);
+            text-align: center;
+            padding: 20px;
+            z-index: 9999;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #50C878;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 400px;
+        }
+
+        .leaflet-container {
+            background: transparent !important;
+        }
+
+        /* Close button overlay */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10000;
+            background: rgba(1, 46, 32, 0.85);
+            border: 2px solid rgba(80, 200, 120, 0.4);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .close-btn:hover {
+            background: rgba(220, 50, 50, 0.8);
+            border-color: rgba(220, 50, 50, 0.6);
+            transform: scale(1.1);
+        }
+
+        /* Info panel (route distance & ETA) */
+        .info-panel {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            z-index: 10000;
+            background: rgba(1, 46, 32, 0.88);
+            border: 1px solid rgba(80, 200, 120, 0.3);
+            border-radius: 16px;
+            padding: 14px 22px;
+            backdrop-filter: blur(12px);
+            display: none;
+            min-width: 180px;
+        }
+
+        .info-panel .info-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 6px;
+        }
+
+        .info-panel .info-distance {
+            font-size: 22px;
+            font-weight: 700;
+            color: #50C878;
+        }
+
+        .info-panel .info-eta {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.75);
+            margin-top: 2px;
+        }
+
+        .info-panel .info-speed {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <!-- Close button -->
+    <button class="close-btn" onclick="handleClose()" title="Fermer">✕</button>
+
+    <!-- Info Panel -->
+    <div id="info-panel" class="info-panel">
+        <div class="info-title">Trajet</div>
+        <div id="info-distance" class="info-distance">—</div>
+        <div id="info-eta" class="info-eta"></div>
+        <div id="info-speed" class="info-speed" style="display:none;"></div>
+    </div>
+
+    <div id="error-overlay" class="error-container">
+        <div class="error-icon">🗺️</div>
+        <div class="error-title">Chargement de la carte impossible</div>
+        <div class="error-message">Nous n'avons pas pu charger les données de la carte. Veuillez vérifier votre
+            connexion internet ou réessayer plus tard.</div>
+    </div>
+
+    <script src="scripts/leaflet/leaflet.js"></script>
+    <script>
+        var map;
+        var currentMarker = null;
+        var currentRoute = null;  // Polyline layer
+
+        function showError() {
+            document.getElementById('error-overlay').style.display = 'flex';
+        }
+
+        function initMap() {
+            try {
+                if (typeof L === 'undefined') {
+                    console.error("Leaflet not loaded!");
+                    showError();
+                    return;
+                }
+
+                map = L.map('map', {
+                    zoomControl: false,
+                    minZoom: 2,
+                    maxBounds: [[-85, -180], [85, 180]]
+                }).setView([20, 0], 2);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                L.control.zoom({ position: 'topright' }).addTo(map);
+
+                map.on('click', function (e) {
+                    var lat = e.latlng.lat;
+                    var lng = e.latlng.lng;
+                    addMarker(lat, lng);
+                    if (window.javaConnector) {
+                        window.javaConnector.onMapClick(lat, lng);
+                    }
+                });
+
+                console.log("Map initialized successfully");
+                setTimeout(function () { if (map) map.invalidateSize(); }, 500);
+            } catch (e) {
+                console.error("Map Init Error: " + e);
+            }
+        }
+
+        function addMarker(lat, lng) {
+            if (!map) return;
+            if (currentMarker) map.removeLayer(currentMarker);
+
+            var carIcon = L.divIcon({
+                className: 'car-marker',
+                html: '<div style="background: #50C878; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.4);"></div>',
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+            });
+            currentMarker = L.marker([lat, lng], { icon: carIcon }).addTo(map);
+        }
+
+        /**
+         * Update the existing marker position without re-creating it (for live tracking).
+         */
+        function updateMarker(lat, lng) {
+            if (!map) return;
+            if (currentMarker) {
+                currentMarker.setLatLng([lat, lng]);
+            } else {
+                addMarker(lat, lng);
+            }
+        }
+
+        /**
+         * Draw a route polyline on the map.
+         * @param {Array} points - Array of [lat, lng] pairs, e.g. [[36.8, 10.1], [36.9, 10.2]]
+         */
+        function drawRoute(points) {
+            if (!map) return;
+            clearRoute();
+            if (!points || points.length < 2) return;
+
+            currentRoute = L.polyline(points, {
+                color: '#50C878',
+                weight: 4,
+                opacity: 0.85,
+                dashArray: '10, 8',
+                lineCap: 'round',
+                lineJoin: 'round'
+            }).addTo(map);
+
+            // Fit map to show the entire route
+            map.fitBounds(currentRoute.getBounds().pad(0.15));
+        }
+
+        /**
+         * Remove the current route polyline from the map.
+         */
+        function clearRoute() {
+            if (currentRoute && map) {
+                map.removeLayer(currentRoute);
+                currentRoute = null;
+            }
+        }
+
+        /**
+         * Update the info panel with distance and ETA.
+         */
+        function showRouteInfo(distance, eta, isEstimate) {
+            var panel = document.getElementById('info-panel');
+            document.getElementById('info-distance').textContent = distance;
+            document.getElementById('info-eta').textContent = (isEstimate ? '~' : '') + eta;
+            panel.style.display = 'block';
+        }
+
+        /**
+         * Update speed info in the panel (for live tracking).
+         */
+        function showSpeed(speedKmh) {
+            var el = document.getElementById('info-speed');
+            el.textContent = '🚗 ' + speedKmh.toFixed(1) + ' km/h';
+            el.style.display = 'block';
+        }
+
+        /**
+         * Hide the info panel.
+         */
+        function hideRouteInfo() {
+            document.getElementById('info-panel').style.display = 'none';
+        }
+
+        var recommendationMarkers = [];
+
+        /**
+         * Display a list of recommended cars as special markers.
+         * @param {Array} cars - List of {id, marque, modele, prix, lat, lng}
+         */
+        function showRecommendations(cars) {
+            if (!map) return;
+
+            // Clear previous recommendations
+            recommendationMarkers.forEach(m => map.removeLayer(m));
+            recommendationMarkers = [];
+
+            if (!cars || cars.length === 0) return;
+
+            var recoIcon = L.divIcon({
+                className: 'reco-marker',
+                html: '<div style="background: #FFCC00; width: 22px; height: 22px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px #FFCC00; display: flex; align-items: center; justify-content: center; color: #012e20; font-weight: bold; font-size: 14px;">✨</div>',
+                iconSize: [28, 28],
+                iconAnchor: [14, 14]
+            });
+
+            var bounds = [];
+            cars.forEach(car => {
+                var marker = L.marker([car.lat, car.lng], { icon: recoIcon })
+                    .bindPopup('<b>' + car.marque + ' ' + car.modele + '</b><br/>' + car.prix + ' DT/jour')
+                    .addTo(map);
+
+                recommendationMarkers.push(marker);
+                bounds.push([car.lat, car.lng]);
+            });
+
+            if (bounds.length > 0) {
+                map.fitBounds(L.latLngBounds(bounds).pad(0.2));
+            }
+        }
+
+        /**
+         * Highlight a specific car on the map (from AI Forum) with detailed view.
+         */
+        window.highlightCar = function (id, lat, lng, label, price, description, imageUrl) {
+            if (!map) return;
+            var latNum = parseFloat(lat);
+            var lngNum = parseFloat(lng);
+
+            map.flyTo([latNum, lngNum], 14, {
+                animate: true,
+                duration: 1.5
+            });
+
+            var highlightIcon = L.divIcon({
+                className: 'highlight-marker',
+                html: '<div style="background: #50C878; width: 34px; height: 34px; border-radius: 50%; border: 4px solid white; box-shadow: 0 0 25px #50C878; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; animation: pulse 2s infinite;">🚗</div>',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
+            });
+
+            // Fallback image if empty
+            var imgHtml = (imageUrl && imageUrl !== 'null') ?
+                '<img src="' + imageUrl + '" style="width:100%; border-radius:8px; margin-bottom:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">' :
+                '<div style="width:100%; height:80px; background:rgba(80,200,120,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">🚗 Photo non disponible</div>';
+
+            var popupContent = '<div style="width: 200px; padding: 5px; color: #012e20;">' +
+                imgHtml +
+                '<div style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #012e20;">' + label + '</div>' +
+                '<div style="font-weight: bold; color: #50C878; font-size: 14px; margin-bottom: 8px;">' + price + ' DT / jour</div>' +
+                '<div style="font-size: 12px; line-height: 1.4; color: #444; border-top: 1px solid #eee; padding-top: 8px;">' + (description || "Excellent véhicule premium sélectionné par l'IA.") + '</div>' +
+                '<div style="background: #eef9f2; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 10px; display: inline-block;">RECOMMANDÉ PAR L\'ASSISTANT</div>' +
+                '</div>';
+
+            var marker = L.marker([latNum, lngNum], { icon: highlightIcon })
+                .bindPopup(popupContent, {
+                    maxWidth: 250,
+                    className: 'premium-popup'
+                })
+                .addTo(map)
+                .openPopup();
+
+            recommendationMarkers.push(marker);
+        }
+
+        // Add pulse animation style if not already present
+        if (!document.getElementById('map-animations')) {
+            var style = document.createElement('style');
+            style.id = 'map-animations';
+            style.innerHTML = '@keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(80, 200, 120, 0.7); } 70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(80, 200, 120, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(80, 200, 120, 0); } }';
+            document.head.appendChild(style);
+        }
+
+        function flyTo(lat, lng, zoom) {
+            if (!map) {
+                console.error("flyTo called but map is not initialized");
+                initMap();
+                if (!map) return;
+            }
+
+            map.invalidateSize();
+            map.flyTo([lat, lng], zoom || 6, {
+                animate: true,
+                duration: 1.5
+            });
+            addMarker(lat, lng);
+        }
+
+        /**
+         * Handle close button click — notify Java controller.
+         */
+        function handleClose() {
+            if (window.javaConnector && window.javaConnector.onCloseMap) {
+                window.javaConnector.onCloseMap();
+            }
+        }
+
+        window.onload = initMap;
+
+        window.addEventListener('resize', function () {
+            if (map) map.invalidateSize();
+        });
+
+        // Resilience: call invalidateSize periodically
+        setInterval(function () {
+            if (map) map.invalidateSize();
+        }, 3000);
+    </script>
+</body>
+
+</html>

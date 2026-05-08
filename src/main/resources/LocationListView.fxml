@@ -1,11 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.control.Label?>
@@ -16,146 +13,229 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
 
-<StackPane fx:id="mainStack" prefHeight="940.0" prefWidth="1440.0" stylesheets="@styles/unified-styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.LocationListController">
-    
-    <!-- Premium Image Background -->
-    <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" styleClass="premium-bg" />
-    
-    <!-- Neutral Dark Overlay -->
-    <Pane styleClass="premium-bg-overlay" />
+<StackPane fx:id="mainStack" prefHeight="940.0" prefWidth="1440.0"
+           stylesheets="@styles/unified-styles.css"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.example.controllers.LocationListController">
 
-    <!-- Main Content Root -->
+    <!-- Hero Background Image -->
+    <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false"/>
+
+    <!-- Dark Gradient Overlay matching VoitureListView style -->
+    <Region style="-fx-background-color: linear-gradient(to bottom right, rgba(0,8,4,0.65) 0%, rgba(1,20,11,0.58) 40%, rgba(1,30,16,0.68) 100%);"/>
+
+    <!-- Main Content Root (blurred when modal opens) -->
     <VBox fx:id="contentRoot" spacing="0" style="-fx-background-color: transparent;">
-        <!-- Header Container -->
+
+        <!-- Navigation Header -->
         <StackPane styleClass="header-glass">
             <fx:include source="components/UserHeader.fxml"/>
         </StackPane>
 
-        <VBox spacing="20" VBox.vgrow="ALWAYS" style="-fx-padding: 30 50;">
-            <!-- Fleet Status Banner (Real-time from BookNow API) -->
-            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="glass-panel-accent-emerald" style="-fx-padding: 10 30; -fx-background-radius: 15;">
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <StackPane styleClass="live-indicator-dot"/>
-                    <Label text="Statut de la Flotte (Live)" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13; -fx-opacity: 0.9;"/>
-                </HBox>
+        <VBox spacing="20" VBox.vgrow="ALWAYS" style="-fx-padding: 24 42;">
+
+            <!-- Fleet Status Bar -->
+            <HBox alignment="CENTER_LEFT" spacing="18"
+                  style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 14;
+                         -fx-border-color: rgba(80,200,120,0.30); -fx-border-width: 1.2; -fx-border-radius: 14;
+                         -fx-padding: 10 22;">
+                <Circle radius="5" fill="#50C878"
+                        style="-fx-effect: dropshadow(gaussian, rgba(80,200,120,0.95), 10, 0.6, 0, 0);"/>
+                <Label text="Statut de la Flotte (Live)"
+                       style="-fx-text-fill: rgba(200,240,220,0.9); -fx-font-weight: 700; -fx-font-size: 12;"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <HBox spacing="25">
-                    <HBox alignment="CENTER" spacing="8">
-                        <Label text="🚗 Total:" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 11;"/>
-                        <Label fx:id="fleetTotalLabel" text="--" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <HBox spacing="28" alignment="CENTER">
+                    <HBox spacing="8" alignment="CENTER">
+                        <Text text="Total:" style="-fx-fill: rgba(180,220,200,0.58); -fx-font-size: 11;"/>
+                        <Label fx:id="fleetTotalLabel" text="N/A"
+                               style="-fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 12;"/>
                     </HBox>
-                    <HBox alignment="CENTER" spacing="8">
-                        <Label text="✅ Dispo:" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 11;"/>
-                        <Label fx:id="fleetAvailableLabel" text="--" style="-fx-text-fill: #50C878; -fx-font-weight: bold;"/>
+                    <HBox spacing="8" alignment="CENTER">
+                        <Text text="Dispo:" style="-fx-fill: rgba(180,220,200,0.58); -fx-font-size: 11;"/>
+                        <Label fx:id="fleetAvailableLabel" text="N/A"
+                               style="-fx-text-fill: #50C878; -fx-font-weight: 800; -fx-font-size: 12;"/>
                     </HBox>
-                    <HBox alignment="CENTER" spacing="8">
-                        <Label text="⌛ Loués:" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 11;"/>
-                        <Label fx:id="fleetRentedLabel" text="--" style="-fx-text-fill: #FFCC00; -fx-font-weight: bold;"/>
+                    <HBox spacing="8" alignment="CENTER">
+                        <Text text="Loues:" style="-fx-fill: rgba(180,220,200,0.58); -fx-font-size: 11;"/>
+                        <Label fx:id="fleetRentedLabel" text="N/A"
+                               style="-fx-text-fill: #FFCC00; -fx-font-weight: 800; -fx-font-size: 12;"/>
                     </HBox>
                 </HBox>
-                <HBox alignment="CENTER" spacing="10">
-                    <Button onAction="#refreshFleetStatus" styleClass="icon-btn-ghost-small" text="Actualiser ↺" style="-fx-font-size: 11;"/>
-                    <Label onMouseClicked="#showFeatureGuide" text="?" styleClass="label-help-icon">
-                        <tooltip>
-                            <Tooltip text="Aide sur les nouvelles fonctionnalités"/>
-                        </tooltip>
-                    </Label>
-                </HBox>
+                <Button onAction="#refreshFleetStatus" text="Actualiser"
+                        style="-fx-background-color: rgba(80,200,120,0.12); -fx-background-radius: 8;
+                               -fx-border-color: rgba(80,200,120,0.35); -fx-border-width: 1; -fx-border-radius: 8;
+                               -fx-text-fill: #50C878; -fx-font-size: 11; -fx-font-weight: 700;
+                               -fx-padding: 5 14; -fx-cursor: hand;"/>
+                <Label onMouseClicked="#showFeatureGuide" text="?"
+                       style="-fx-text-fill: rgba(255,255,255,0.5); -fx-font-size: 14; -fx-font-weight: 900;
+                              -fx-background-color: rgba(255,255,255,0.08); -fx-background-radius: 50;
+                              -fx-padding: 2 8; -fx-cursor: hand;">
+                    <tooltip><Tooltip text="Guide des fonctionnalites"/></tooltip>
+                </Label>
             </HBox>
 
-            <!-- Hero Title Section (Glass) -->
-            <HBox alignment="CENTER_LEFT" spacing="25" styleClass="glass-panel" style="-fx-padding: 30; -fx-background-radius: 20;">
-                <StackPane styleClass="icon-circle-emerald">
-                    <Label text="🚗" style="-fx-font-size: 32;"/>
+            <!-- Hero Header + Stats -->
+            <HBox alignment="CENTER_LEFT" spacing="26"
+                  style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 20;
+                         -fx-border-color: rgba(80,200,120,0.28); -fx-border-width: 1.5; -fx-border-radius: 20;
+                         -fx-padding: 26 34; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.44), 22, 0, 0, 8);">
+                <StackPane style="-fx-background-color: rgba(80,200,120,0.18); -fx-background-radius: 16;
+                                  -fx-padding: 14; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.5), 22, 0, 0, 0);">
+                    <Text text="&#x1F697;" style="-fx-font-size: 30px;"/>
                 </StackPane>
-                <VBox spacing="5">
-                    <HBox spacing="15" alignment="CENTER_LEFT">
-                        <Label text="Mes Locations" style="-fx-font-size: 32; -fx-font-weight: 900; -fx-text-fill: white;"/>
-                        <Button onAction="#handleOpenAiForum" styleClass="icon-btn-ghost-small" style="-fx-font-size: 24; -fx-padding: 5; -fx-text-fill: #50C878;" text="🤖">
-                            <tooltip>
-                                <Tooltip text="Forum Assistant GoVibe Pro - Comment puis-je vous aider ?"/>
-                            </tooltip>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <HBox spacing="14" alignment="CENTER_LEFT">
+                        <Text text="Mes Locations"
+                              style="-fx-font-size: 30px; -fx-font-weight: 900; -fx-fill: white;
+                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 10, 0, 0, 2);"/>
+                        <Button onAction="#handleOpenAiForum" text="&#x1F916;"
+                                style="-fx-background-color: rgba(80,200,120,0.15); -fx-background-radius: 10;
+                                       -fx-border-color: rgba(80,200,120,0.45); -fx-border-width: 1.2; -fx-border-radius: 10;
+                                       -fx-text-fill: #50C878; -fx-font-size: 19; -fx-padding: 4 10; -fx-cursor: hand;">
+                            <tooltip><Tooltip text="Assistant GoVibe Pro - trouver la voiture ideale avec l'IA"/></tooltip>
                         </Button>
                     </HBox>
-                    <Label text="Gérez vos réservations et validez vos contrats en toute simplicité" style="-fx-font-size: 14; -fx-text-fill: rgba(255,255,255,0.7);"/>
+                    <Text text="Gerez vos reservations et validez vos contrats en toute simplicite"
+                          style="-fx-font-size: 13px; -fx-fill: rgba(180,230,210,0.72);"/>
                 </VBox>
-                <Region HBox.hgrow="ALWAYS"/>
-                
-                <!-- Statistiques (Glass Tiles) -->
-                <HBox spacing="15">
-                    <VBox alignment="CENTER" spacing="5" styleClass="glass-tile-mini">
-                        <Label fx:id="totalCountLabel" text="0" styleClass="tile-value-emerald"/>
-                        <Label text="TOTAL" styleClass="tile-label-tiny"/>
+                <HBox spacing="14">
+                    <VBox spacing="6" alignment="CENTER"
+                          style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 16;
+                                 -fx-border-color: rgba(80,200,120,0.28); -fx-border-width: 1.5; -fx-border-radius: 16;
+                                 -fx-padding: 16 26; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.36), 14, 0, 0, 4);">
+                        <Text text="TOTAL" style="-fx-fill: rgba(180,230,210,0.65); -fx-font-size: 11; -fx-font-weight: 800;"/>
+                        <Label fx:id="totalCountLabel" text="0"
+                               style="-fx-font-size: 28; -fx-font-weight: 900; -fx-text-fill: white;"/>
                     </VBox>
-                    <VBox alignment="CENTER" spacing="5" styleClass="glass-tile-mini">
-                        <Label fx:id="confirmedCountLabel" text="0" styleClass="tile-value-emerald"/>
-                        <Label text="CONFIRMÉES" styleClass="tile-label-tiny"/>
+                    <VBox spacing="6" alignment="CENTER"
+                          style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 16;
+                                 -fx-border-color: rgba(80,200,120,0.28); -fx-border-width: 1.5; -fx-border-radius: 16;
+                                 -fx-padding: 16 26; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.36), 14, 0, 0, 4);">
+                        <Text text="CONFIRMEES" style="-fx-fill: rgba(180,230,210,0.65); -fx-font-size: 11; -fx-font-weight: 800;"/>
+                        <Label fx:id="confirmedCountLabel" text="0"
+                               style="-fx-font-size: 28; -fx-font-weight: 900; -fx-text-fill: #50C878;"/>
                     </VBox>
-                    <VBox alignment="CENTER" spacing="5" styleClass="glass-tile-mini" prefWidth="120">
-                        <Label fx:id="totalRevenueLabel" text="0.00" styleClass="tile-value-emerald"/>
-                        <Label text="DÉPENSÉ (TND)" styleClass="tile-label-tiny"/>
+                    <VBox spacing="6" alignment="CENTER"
+                          style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 16;
+                                 -fx-border-color: rgba(80,200,120,0.28); -fx-border-width: 1.5; -fx-border-radius: 16;
+                                 -fx-padding: 16 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.36), 14, 0, 0, 4);">
+                        <Text text="DEPENSE (TND)" style="-fx-fill: rgba(180,230,210,0.65); -fx-font-size: 11; -fx-font-weight: 800;"/>
+                        <Label fx:id="totalRevenueLabel" text="0.00"
+                               style="-fx-font-size: 22; -fx-font-weight: 900; -fx-text-fill: white;"/>
                     </VBox>
-                </HBox>
-            </HBox>
-            
-            <!-- Actions & Filters Bar (Premium Glass) -->
-            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="glass-panel-light" style="-fx-padding: 15 30; -fx-background-radius: 50;">
-                <Button fx:id="addLocationButton" onAction="#handleOpenAdd" styleClass="btn-primary-emerald" text="➕ Nouvelle Location" />
-                
-                <Separator orientation="VERTICAL" style="-fx-opacity: 0.2;"/>
-                
-                <HBox alignment="CENTER_LEFT" spacing="12" styleClass="search-box-glass">
-                    <Label text="🔍" style="-fx-font-size: 16; -fx-opacity: 0.6; -fx-text-fill: white;"/>
-                    <TextField fx:id="searchField" promptText="Rechercher une référence..." styleClass="transparent-field" prefWidth="250"/>
-                </HBox>
-                
-                <!-- AI Assistant Pro Card (UPGRADED) -->
-                <VBox spacing="8" styleClass="glass-panel" style="-fx-background-radius: 18; -fx-padding: 12 25; -fx-border-color: rgba(80, 200, 120, 0.5); -fx-border-width: 1.5; -fx-effect: dropshadow(three-pass-box, rgba(80, 200, 120, 0.2), 15, 0, 0, 0);">
-                    <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Label text="✨ Assistant GoVibe Pro" style="-fx-text-fill: #50C878; -fx-font-weight: bold; -fx-font-size: 14;"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="aiStatusLabel" text="Prêt" style="-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 10;"/>
-                    </HBox>
-                    <HBox alignment="CENTER_LEFT" spacing="12">
-                        <TextField fx:id="aiBudgetField" promptText="Budget (ex: 100)" styleClass="transparent-field" prefWidth="110" style="-fx-font-size: 12; -fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 8;"/>
-                        <TextField fx:id="aiDestinationField" promptText="Destination (ex: Tunis)" styleClass="transparent-field" prefWidth="180" style="-fx-font-size: 12; -fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 8;"/>
-                        <Button onAction="#handleAiRecommend" styleClass="btn-emerald-mini" text="Analyser avec DeepSeek" style="-fx-font-size: 11; -fx-padding: 6 15; -fx-font-weight: bold;"/>
-                    </HBox>
-                </VBox>
-                
-                <ComboBox fx:id="voitureFilter" promptText="Véhicule" styleClass="combo-glass-premium" prefWidth="180"/>
-                <ComboBox fx:id="sortChoice" promptText="Trier par" styleClass="combo-glass-premium" prefWidth="150"/>
-                
-                <Region HBox.hgrow="ALWAYS"/>
-                
-                <Button onAction="#handleResetFilters" styleClass="icon-btn-ghost" text="↺" />
-                
-                <HBox spacing="10">
-                    <Button fx:id="exportPdfButton" onAction="#handleExportPdf" styleClass="btn-outline-white-mini" text="PDF" />
-                    <Button fx:id="exportExcelButton" onAction="#handleExportExcel" styleClass="btn-outline-white-mini" text="Excel" />
                 </HBox>
             </HBox>
 
-            <!-- List View Wrapper (Glass) -->
-            <VBox VBox.vgrow="ALWAYS" styleClass="glass-panel" style="-fx-background-radius: 20; -fx-padding: 10;">
-                <ListView fx:id="locationList" VBox.vgrow="ALWAYS" styleClass="transparent-listview"/>
-                
-                <!-- Pagination -->
-                <HBox alignment="CENTER" spacing="20" style="-fx-padding: 15 0 5 0;">
-                    <Button fx:id="prevPageButton" onAction="#handlePrevPage" styleClass="btn-pagination-premium" text="←" />
-                    <Label fx:id="pageInfoLabel" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-weight: bold;" text="Page 1 / 1" />
-                    <Button fx:id="nextPageButton" onAction="#handleNextPage" styleClass="btn-pagination-premium" text="→" />
+            <!-- Toolbar: AI + Search + Filters -->
+            <VBox spacing="12"
+                  style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 18;
+                         -fx-border-color: rgba(80,200,120,0.26); -fx-border-width: 1.5; -fx-border-radius: 18;
+                         -fx-padding: 15 22; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.32), 14, 0, 0, 4);">
+
+                <!-- AI Row -->
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <StackPane style="-fx-background-color: rgba(80,200,120,0.16); -fx-background-radius: 10; -fx-padding: 8;">
+                        <Text text="&#x2728;" style="-fx-font-size: 15;"/>
+                    </StackPane>
+                    <Label text="Assistant GoVibe Pro"
+                           style="-fx-text-fill: #50C878; -fx-font-weight: 800; -fx-font-size: 13;"/>
+                    <Label fx:id="aiStatusLabel" text="Pret"
+                           style="-fx-text-fill: rgba(255,255,255,0.45); -fx-font-size: 10;
+                                  -fx-background-color: rgba(80,200,120,0.09); -fx-background-radius: 6; -fx-padding: 2 8;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="aiBudgetField" promptText="Budget (ex: 100)"
+                               style="-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 10;
+                                      -fx-border-color: rgba(80,200,120,0.25); -fx-border-width: 1; -fx-border-radius: 10;
+                                      -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38);
+                                      -fx-font-size: 12; -fx-padding: 9 14;" prefWidth="130"/>
+                    <TextField fx:id="aiDestinationField" promptText="Destination (ex: Tunis)"
+                               style="-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 10;
+                                      -fx-border-color: rgba(80,200,120,0.25); -fx-border-width: 1; -fx-border-radius: 10;
+                                      -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38);
+                                      -fx-font-size: 12; -fx-padding: 9 14;" prefWidth="200"/>
+                    <Button onAction="#handleAiRecommend" text="Analyser avec IA"
+                            style="-fx-background-color: linear-gradient(to right, #50C878, #2e9952);
+                                   -fx-background-radius: 10; -fx-border-width: 0; -fx-text-fill: white;
+                                   -fx-font-weight: 800; -fx-font-size: 12; -fx-padding: 10 20; -fx-cursor: hand;
+                                   -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.55), 16, 0, 0, 5);"/>
+                </HBox>
+
+                <Separator style="-fx-opacity: 0.10;"/>
+
+                <!-- Search + Filter Row -->
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Button fx:id="addLocationButton" onAction="#handleOpenAdd" text="+ Nouvelle Location"
+                            style="-fx-background-color: linear-gradient(to bottom right, #50C878, #2e9952);
+                                   -fx-background-radius: 11; -fx-border-width: 0; -fx-padding: 10 20; -fx-cursor: hand;
+                                   -fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 13;
+                                   -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.6), 18, 0, 0, 5);"/>
+                    <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 12;
+                                 -fx-border-color: rgba(255,255,255,0.12); -fx-border-width: 1; -fx-border-radius: 12;
+                                 -fx-padding: 8 16;">
+                        <Text text="&#x1F50D;" style="-fx-fill: rgba(80,200,120,0.65); -fx-font-size: 14;"/>
+                        <TextField fx:id="searchField" promptText="Rechercher une reference, voiture..."
+                                   style="-fx-background-color: transparent; -fx-text-fill: white;
+                                          -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-font-size: 13;
+                                          -fx-border-width: 0; -fx-padding: 2 0;"
+                                   HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    <ComboBox fx:id="voitureFilter" promptText="Vehicule"
+                              style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 10;
+                                     -fx-border-color: rgba(80,200,120,0.30); -fx-border-width: 1; -fx-border-radius: 10;"
+                              prefWidth="165"/>
+                    <ComboBox fx:id="sortChoice" promptText="Trier par"
+                              style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 10;
+                                     -fx-border-color: rgba(80,200,120,0.30); -fx-border-width: 1; -fx-border-radius: 10;"
+                              prefWidth="148"/>
+                    <Button onAction="#handleResetFilters" text="&#x21BA;"
+                            style="-fx-background-color: rgba(255,255,255,0.08); -fx-background-radius: 9;
+                                   -fx-border-color: rgba(255,255,255,0.18); -fx-border-width: 1; -fx-border-radius: 9;
+                                   -fx-text-fill: white; -fx-font-size: 16; -fx-padding: 7 13; -fx-cursor: hand;"/>
+                    <Button fx:id="exportPdfButton" onAction="#handleExportPdf" text="PDF"
+                            style="-fx-background-color: rgba(255,80,80,0.15); -fx-background-radius: 9;
+                                   -fx-border-color: rgba(255,80,80,0.38); -fx-border-width: 1.2; -fx-border-radius: 9;
+                                   -fx-text-fill: rgba(255,160,160,0.90); -fx-font-weight: 700; -fx-padding: 8 14; -fx-cursor: hand;"/>
+                    <Button fx:id="exportExcelButton" onAction="#handleExportExcel" text="Excel"
+                            style="-fx-background-color: rgba(80,200,120,0.14); -fx-background-radius: 9;
+                                   -fx-border-color: rgba(80,200,120,0.38); -fx-border-width: 1.2; -fx-border-radius: 9;
+                                   -fx-text-fill: #50C878; -fx-font-weight: 700; -fx-padding: 8 14; -fx-cursor: hand;"/>
                 </HBox>
             </VBox>
+
+            <!-- Locations List Container -->
+            <VBox spacing="0" VBox.vgrow="ALWAYS"
+                  style="-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 18;
+                         -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1.5; -fx-border-radius: 18;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.42), 22, 0, 0, 8);">
+                <ListView fx:id="locationList" VBox.vgrow="ALWAYS"
+                          style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 8 4;"/>
+            </VBox>
+
+            <!-- Pagination -->
+            <HBox alignment="CENTER" spacing="18">
+                <Button fx:id="prevPageButton" onAction="#handlePrevPage" text="Prec"
+                        style="-fx-background-color: rgba(255,255,255,0.08); -fx-background-radius: 10;
+                               -fx-border-color: rgba(255,255,255,0.2); -fx-border-width: 1.5; -fx-border-radius: 10;
+                               -fx-text-fill: white; -fx-font-weight: 700; -fx-padding: 10 22; -fx-cursor: hand;"/>
+                <Label fx:id="pageInfoLabel" text="Page 1 / 1"
+                       style="-fx-text-fill: rgba(200,240,220,0.80); -fx-font-size: 14; -fx-font-weight: 700;"/>
+                <Button fx:id="nextPageButton" onAction="#handleNextPage" text="Suiv"
+                        style="-fx-background-color: rgba(255,255,255,0.08); -fx-background-radius: 10;
+                               -fx-border-color: rgba(255,255,255,0.2); -fx-border-width: 1.5; -fx-border-radius: 10;
+                               -fx-text-fill: white; -fx-font-weight: 700; -fx-padding: 10 22; -fx-cursor: hand;"/>
+            </HBox>
+
         </VBox>
     </VBox>
 
-    <!-- Modal Overlay Layer (Hidden by default) -->
-    <StackPane fx:id="modalOverlay" visible="false" style="-fx-background-color: rgba(0,0,0,0.6);">
-        <VBox fx:id="modalContent" alignment="CENTER" StackPane.alignment="CENTER" maxWidth="750" maxHeight="600">
-            <!-- Content will be loaded dynamically or defined here -->
-        </VBox>
+    <!-- Modal Overlay -->
+    <StackPane fx:id="modalOverlay" visible="false"
+               style="-fx-background-color: rgba(0,0,0,0.68);">
+        <VBox fx:id="modalContent" alignment="CENTER"
+              StackPane.alignment="CENTER" maxWidth="760" maxHeight="660"/>
     </StackPane>
 
 </StackPane>

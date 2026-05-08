@@ -112,6 +112,54 @@ _STT_CORRECTIONS: dict[str, str] = {
     "logging off":          "log out",
     "lock out":             "log out",
     "locked out":           "log out",
+    # face id -- Vosk commonly mishears short 2-syllable phrase "face id"
+    "phase id":             "face id",
+    "faced id":             "face id",
+    "base id":              "face id",
+    "face it":              "face id",
+    "faces id":             "face id",
+    "face idea":            "face id",
+    "face aid":             "face id",
+    "faith id":             "face id",
+    "fake id":              "face id",   # bilabial /p/→/k/ confusion
+    "phased id":            "face id",
+    "fayed id":             "face id",
+    "faze id":              "face id",
+    "fades id":             "face id",
+    # Vosk phonetic mangling of "face id" (observed in logs)
+    "they say d":           "face id",
+    "they said d":          "face id",
+    "this aid":             "face id",
+    "these aid":            "face id",
+    "space id":             "face id",
+    "the saint":            "face id",
+    "base it":              "face id",
+    "faith":                "face id",
+    # Vosk further mishearings of "face id" observed in runtime logs
+    "please idea":          "please face id",
+    "please id":            "face id",
+    # "no in" / "no one" / "know in" -> common Vosk mishearing of "log in"
+    "no in":                "log in",
+    "no one in":            "log in",
+    "know in":              "log in",
+    "no end":               "log in",
+    "no end in":            "log in",
+    # sign in mishearings
+    "sign it":              "sign in",
+    "signed in":            "sign in",
+    # log out mishearings  -  Vosk commonly drops the space or garbles the second syllable
+    "logo":                 "log out",
+    "log go":               "log out",
+    "log gate":             "log out",
+    # pay mishearings  -  Vosk often drops the /p/ and hears 'b'
+    "bay":                  "pay",
+    "bayed":                "pay",
+    "loeb in":              "log in",   # Vosk mishearing of 'log in' (observed in logs)
+    # cancel / annuler mishearings (avoid false CANCEL triggers from short audio)
+    "can sell":             "cancel",
+    # home mishearings
+    "go home":              "home",
+    "come home":            "home",
 }
 
 
@@ -619,7 +667,7 @@ def _echo_comedian_loop() -> None:
     _rnd.shuffle(quips)
     idx = 0
     time.sleep(16)                        # initial grace  -  let startup settle
-    while not _vivian_ready:
+    while not _vivian_ready and not _user_logged_in:  # stop quips once user logs in
         if _tts_queue.empty() and not _is_speaking:
             quip = quips[idx % len(quips)]
             idx += 1
@@ -629,8 +677,8 @@ def _echo_comedian_loop() -> None:
         elapsed  = 0.0
         step     = 0.5
         while elapsed < interval:
-            if _vivian_ready:
-                return               # Vivian loaded mid-sleep  -  stop immediately
+            if _vivian_ready or _user_logged_in:
+                return               # Vivian loaded or user logged in  -  stop immediately
             time.sleep(step)
             elapsed += step
 
@@ -1595,6 +1643,12 @@ INTENTS = {
             "login with face", "use face id", "scan my face", "faceid",
             "open the camera", "start camera", "camara", "face scan",
             "log in with camera", "log in with face",
+            # Vosk / accent variants
+            "face login", "face recognition", "face unlock", "unlock with face",
+            "open cam", "activate camera", "turn on camera", "launch camera",
+            "use my face", "login face", "face authenticate", "biometric login",
+            "face detection", "identify my face", "verify my face",
+            "facial recognition", "facial id", "facial login",
         ],
         "response": "Opening the camera for Face ID login!",
         "action": "OPEN_CAMERA",
@@ -2875,6 +2929,9 @@ def main():
                     "authenticate", "creer un compte", "creer compte",
                     "inscription", "register", "sign up", "signup",
                     "focus email", "email", "password", "mot de passe",
+                    # face id / camera -- login screen always needs to react to these
+                    "face", "camera", "camara", "scan", "faceid", "cam",
+                    "biometric", "facial", "face id", "open cam",
                 ]
                 if not _user_logged_in and any(t in norm for t in _AUTH_TRIGGERS):
                     _log("[SLEEPING] Auth command on login screen  -  bypassing sleep -> HELPING.")
@@ -3215,8 +3272,29 @@ def main():
             passengers    = 1
             used_engine   = _engine
 
+            # -- Login-screen Face ID override (pre-classify) ------------------
+            # On the login screen the most common voice action is Face ID login.
+            # If the raw text contains any face/camera keyword -- even partially
+            # mangled by Vosk -- route straight to OPEN_CAMERA before running the
+            # full ML stack, which can mis-classify short ambiguous phrases.
+            _login_cam_kws = [
+                "face", "camera", "camara", "cam", "scan", "faceid",
+                "facial", "biometric", "recognition", "phase id", "base id",
+                "id login", "id log",
+            ]
+            # bare "id" alone on login screen = user trying to say "face id"
+            _login_bare_id = text.lower().strip() in ("id", "i d", "face i d")
+            if not _user_logged_in and (any(kw in text.lower() for kw in _login_cam_kws) or _login_bare_id):
+                intent_key  = "OPEN_CAMERA"
+                confidence  = 0.95
+                used_engine = "login-face-override"
+                _log("  Login-screen face/camera keyword detected -- override -> OPEN_CAMERA")
+            else:
+                intent_key = "UNKNOWN"
+
             # Tier 0: direct accent-insensitive phrase lookup (instant).
-            intent_key, confidence = _direct_match(enriched_text)
+            if intent_key == "UNKNOWN":
+                intent_key, confidence = _direct_match(enriched_text)
             if intent_key != "UNKNOWN":
                 _log(f"  Tier-0 direct match -> {intent_key} (conf=1.0)")
                 used_engine = "direct-match"
@@ -3254,6 +3332,21 @@ def main():
                             used_engine = "ollama"
                             if ol_resp and intent_key in INTENTS:
                                 INTENTS[intent_key]["_llm_response"] = ol_resp
+
+            # -- Login-screen low-confidence safety net -----------------------
+            # On the login screen, garbled Vosk output can mis-classify as an
+            # unrelated intent (e.g. "they say d" -> DESCRIBE 0.54).
+            # If confidence is too low for a non-auth intent, reset to UNKNOWN
+            # so the "I didn't catch that" path fires instead of wrong action.
+            if not _user_logged_in and intent_key != "UNKNOWN":
+                _LOGIN_SAFE_INTENTS = {
+                    "OPEN_CAMERA", "LOGIN", "SIGNUP", "GREET",
+                    "FOCUS_EMAIL", "FOCUS_PASSWORD", "VIVIAN_CALL",
+                }
+                if intent_key not in _LOGIN_SAFE_INTENTS and confidence < 0.70:
+                    _log(f"  [Login-gate] Rejected {intent_key!r} conf={confidence:.2f} (below 0.70 on login screen) -> UNKNOWN")
+                    intent_key = "UNKNOWN"
+                    confidence = 0.0
 
             result = build_response(enriched_text, intent_key, confidence)
             # Unsupervised learning: record this utterance outcome

@@ -32,8 +32,12 @@ public class AiRecommendationService {
     private final ServiceVoiture voitureService = new ServiceVoiture();
     private final WebCarHarvester harvester = new WebCarHarvester();
     private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
-    private static final String DEEPSEEK_API_KEY = "YOUR_DEEPSEEK_API_KEY"; // TODO: Replace with actual key
-    private static final String DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"; // TODO: Replace with actual URL
+    private static final String DEEPSEEK_API_KEY = "sk-868178ef790c4205acc04d02d4792ee2";
+    private static final String DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions";
+    // Gemini fallback (OpenAI-compatible endpoint)
+    private static final String GEMINI_API_KEY = "AIzaSyCNgI3fpLERtasCdFw2R1qBn1ENIpTKQNc";
+    private static final String GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+    private static final String GEMINI_MODEL = "gemini-2.0-flash";
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public List<Voiture> recommendCars(double maxBudget, String destination) {
@@ -60,10 +64,10 @@ public class AiRecommendationService {
     }
 
     private List<Voiture> rankWithDeepSeek(List<Voiture> cars, double budget, String destination) {
-        // Si pas de cle API, on fait un tri simple (fallback)
+        // Fallback: destination-aware ranking when API fails or key is placeholder
         if ("YOUR_DEEPSEEK_API_KEY".equals(DEEPSEEK_API_KEY)) {
-            System.out.println("[AI] API Key not set. Using fallback ranking.");
-            return cars.stream().sorted((v1, v2) -> Double.compare(v1.getPrixJour(), v2.getPrixJour())).collect(Collectors.toList());
+            System.out.println("[AI] API Key not set. Using destination-aware fallback.");
+            return fallbackRank(cars, destination);
         }
 
         try {
@@ -88,8 +92,8 @@ public class AiRecommendationService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             
             if (response.statusCode() != 200) {
-                System.err.println("[DeepSeek] API Error: " + response.statusCode());
-                return cars;
+                System.err.println("[DeepSeek] API Error: " + response.statusCode() + " — trying Gemini fallback...");
+                return rankWithGemini(cars, budget, destination);
             }
 
             JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
@@ -121,8 +125,89 @@ public class AiRecommendationService {
 
         } catch (Exception e) {
             System.err.println("[DeepSeek] Integration Error: " + e.getMessage());
-            e.printStackTrace();
-            return cars;
+            return rankWithGemini(cars, budget, destination);
         }
+    }
+
+    /**
+     * Gemini fallback using the OpenAI-compatible endpoint.
+     * Called automatically when DeepSeek returns a non-200 or throws.
+     */
+    private List<Voiture> rankWithGemini(List<Voiture> cars, double budget, String destination) {
+        try {
+            System.out.println("[Gemini] Attempting car ranking fallback...");
+            String prompt = String.format(
+                "Analyze these rental cars for a user with a daily budget of %.2f TND heading to '%s'. "
+                + "Rank them by value and suitability. Return ONLY a comma-separated list of car IDs in ranked order.",
+                budget, destination);
+
+            JsonObject requestBody = new JsonObject();
+            requestBody.addProperty("model", GEMINI_MODEL);
+            JsonArray messages = new JsonArray();
+            JsonObject msg = new JsonObject();
+            msg.addProperty("role", "user");
+            msg.addProperty("content", prompt + "\nCars: " + gson.toJson(cars));
+            messages.add(msg);
+            requestBody.add("messages", messages);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(GEMINI_URL))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + GEMINI_API_KEY)
+                    .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(requestBody)))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                System.err.println("[Gemini] API Error: " + response.statusCode() + " — using destination fallback.");
+                return fallbackRank(cars, destination);
+            }
+
+            JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
+            String content = jsonResponse.getAsJsonArray("choices")
+                    .get(0).getAsJsonObject()
+                    .getAsJsonObject("message")
+                    .get("content").getAsString();
+
+            System.out.println("[Gemini Response] " + content);
+
+            List<String> rankedIds = java.util.Arrays.stream(content.split(","))
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+
+            return cars.stream()
+                .sorted((v1, v2) -> {
+                    int idx1 = rankedIds.indexOf(String.valueOf(v1.getIdVoiture()));
+                    int idx2 = rankedIds.indexOf(String.valueOf(v2.getIdVoiture()));
+                    if (idx1 == -1) idx1 = 999;
+                    if (idx2 == -1) idx2 = 999;
+                    return Integer.compare(idx1, idx2);
+                })
+                .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            System.err.println("[Gemini] Integration Error: " + e.getMessage());
+            return fallbackRank(cars, destination);
+        }
+    }
+
+    /**
+     * Destination-aware fallback when DeepSeek is unavailable.
+     * Boosts cars whose agency address matches the destination, then sorts by price.
+     */
+    private List<Voiture> fallbackRank(List<Voiture> cars, String destination) {
+        String dest = destination == null ? "" : destination.trim().toLowerCase(java.util.Locale.ROOT);
+        return cars.stream()
+            .sorted((a, b) -> {
+                boolean aMatch = !dest.isEmpty() && a.getAdresseAgence() != null
+                        && a.getAdresseAgence().toLowerCase(java.util.Locale.ROOT).contains(dest);
+                boolean bMatch = !dest.isEmpty() && b.getAdresseAgence() != null
+                        && b.getAdresseAgence().toLowerCase(java.util.Locale.ROOT).contains(dest);
+                if (aMatch && !bMatch) return -1;
+                if (!aMatch && bMatch) return 1;
+                return Double.compare(a.getPrixJour(), b.getPrixJour());
+            })
+            .collect(Collectors.toList());
     }
 }

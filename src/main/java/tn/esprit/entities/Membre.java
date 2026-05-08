@@ -6,6 +6,7 @@ public class Membre {
     private int forum_id;
     private int user_id;
     private Timestamp date_adhesion;
+    private String status = "PENDING"; // Matches Symfony MembreForum.status: PENDING, APPROVED, REJECTED
 
     public Membre() {
     }
@@ -14,6 +15,13 @@ public class Membre {
         this.forum_id = forum_id;
         this.user_id = user_id;
         this.date_adhesion = date_adhesion;
+    }
+
+    public Membre(int forum_id, int user_id, Timestamp date_adhesion, String status) {
+        this.forum_id = forum_id;
+        this.user_id = user_id;
+        this.date_adhesion = date_adhesion;
+        this.status = status;
     }
 
     // Constructor without date (for insertion)
@@ -46,12 +54,21 @@ public class Membre {
         this.date_adhesion = date_adhesion;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Membre{" +
                 "forum_id=" + forum_id +
                 ", user_id=" + user_id +
                 ", date_adhesion=" + date_adhesion +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

@@ -19,7 +19,7 @@
             <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false"/>
             <Region style="-fx-background-color: linear-gradient(to bottom right, rgba(0,8,4,0.58) 0%, rgba(1,20,11,0.52) 40%, rgba(1,30,16,0.60) 100%);"/>
 
-            <VBox spacing="24" style="-fx-padding: 40;">
+            <VBox spacing="24" maxWidth="Infinity" maxHeight="Infinity" style="-fx-padding: 40;">
 
                 <!-- Header row -->
                 <HBox alignment="CENTER_LEFT" spacing="20">

@@ -644,8 +644,12 @@ public class ReservationViewController implements Initializable {
 
         // Style the dialog
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
-        dialogPane.getStyleClass().add("form-dialog");
+        dialogPane.setStyle(
+            "-fx-background-color: rgba(8,20,13,0.98);" +
+            "-fx-border-color: rgba(80,200,120,0.28);" +
+            "-fx-border-width: 1.5;");
+        java.net.URL addCssUrl = getClass().getResource("/styles/unified-styles.css");
+        if (addCssUrl != null) dialogPane.getStylesheets().add(addCssUrl.toExternalForm());
 
         ButtonType saveButtonType = new ButtonType("💾 Réserver", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -653,9 +657,15 @@ public class ReservationViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.getStyleClass().add("premium-button");
+        saveButton.setStyle(
+            "-fx-background-color: linear-gradient(to right,#1a8f4e,#22b860);" +
+            "-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 22;" +
+            "-fx-background-radius: 12; -fx-cursor: hand;");
         Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-        cancelButton.getStyleClass().add("card-action-btn-danger");
+        cancelButton.setStyle(
+            "-fx-background-color: rgba(200,60,50,0.15);" +
+            "-fx-text-fill: rgba(255,130,110,0.90); -fx-padding: 8 22;" +
+            "-fx-background-radius: 12; -fx-cursor: hand;");
 
         ScrollPane form = createReservationForm(null);
         dialog.getDialogPane().setContent(form);
@@ -711,8 +721,12 @@ public class ReservationViewController implements Initializable {
 
         // Style the dialog
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
-        dialogPane.getStyleClass().add("form-dialog");
+        dialogPane.setStyle(
+            "-fx-background-color: rgba(8,20,13,0.98);" +
+            "-fx-border-color: rgba(80,200,120,0.28);" +
+            "-fx-border-width: 1.5;");
+        java.net.URL editCssUrl = getClass().getResource("/styles/unified-styles.css");
+        if (editCssUrl != null) dialogPane.getStylesheets().add(editCssUrl.toExternalForm());
 
         ButtonType saveButtonType = new ButtonType("💾 Enregistrer", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -720,9 +734,15 @@ public class ReservationViewController implements Initializable {
 
         // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.getStyleClass().add("premium-button");
+        saveButton.setStyle(
+            "-fx-background-color: linear-gradient(to right,#1a8f4e,#22b860);" +
+            "-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 22;" +
+            "-fx-background-radius: 12; -fx-cursor: hand;");
         Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-        cancelButton.getStyleClass().add("card-action-btn-danger");
+        cancelButton.setStyle(
+            "-fx-background-color: rgba(200,60,50,0.15);" +
+            "-fx-text-fill: rgba(255,130,110,0.90); -fx-padding: 8 22;" +
+            "-fx-background-radius: 12; -fx-cursor: hand;");
 
         ScrollPane form = createReservationForm(reservation);
         dialog.getDialogPane().setContent(form);
@@ -810,16 +830,20 @@ public class ReservationViewController implements Initializable {
         VBox container = new VBox(20);
         container.setPadding(new Insets(30));
         container.setPrefWidth(550);
-        container.getStyleClass().add("form-card-glass");
+        container.setStyle(
+            "-fx-background-color: rgba(8,20,13,0.96);" +
+            "-fx-background-radius: 16;" +
+            "-fx-border-color: rgba(80,200,120,0.18);" +
+            "-fx-border-width: 1;" +
+            "-fx-border-radius: 16;");
 
-        Label titleLabel = new Label("✨ Détails de la Réservation");
-        titleLabel.getStyleClass().add("hero-title");
-        titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: #0B6E4F;");
+        Label titleLabel = new Label("✦ Détails de la Réservation");
+        titleLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #50C878; -fx-padding: 0 0 6 0;");
 
         // User
         VBox userBox = new VBox(5);
         Label userLabel = new Label("Utilisateur *");
-        userLabel.getStyleClass().add("form-label");
+        userLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         ComboBox<String> userCombo = new ComboBox<>();
         userCombo.setPromptText("Sélectionnez un utilisateur");
         for (personne user : userList) {
@@ -829,7 +853,7 @@ public class ReservationViewController implements Initializable {
             userCombo.setValue(findUserOption(reservation.getUserId()));
         }
         userCombo.setId("userCombo");
-        userCombo.getStyleClass().add("form-field");
+        userCombo.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8;");
         userCombo.setPrefWidth(500);
         Label userError = org.example.utils.FormValidator.createErrorLabel();
         userError.setId("userError");
@@ -838,7 +862,7 @@ public class ReservationViewController implements Initializable {
         // Hotel
         VBox hotelBox = new VBox(5);
         Label hotelLabel = new Label("Hôtel *");
-        hotelLabel.getStyleClass().add("form-label");
+        hotelLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         ComboBox<String> hotelCombo = new ComboBox<>();
         hotelCombo.setPromptText("Sélectionnez un hôtel");
         for (Hotel h : hotelList) {
@@ -848,7 +872,7 @@ public class ReservationViewController implements Initializable {
             hotelCombo.setValue(reservation.getHotelId() + " - " + getHotelName(reservation.getHotelId()));
         }
         hotelCombo.setId("hotelCombo");
-        hotelCombo.getStyleClass().add("form-field");
+        hotelCombo.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8;");
         hotelCombo.setPrefWidth(500);
         Label hotelError = org.example.utils.FormValidator.createErrorLabel();
         hotelError.setId("hotelError");
@@ -857,9 +881,10 @@ public class ReservationViewController implements Initializable {
         // Chambre
         VBox chambreBox = new VBox(5);
         Label chambreLabel = new Label("Chambre *");
-        chambreLabel.getStyleClass().add("form-label");
+        chambreLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         ComboBox<String> chambreCombo = new ComboBox<>();
         chambreCombo.setPromptText("Sélectionnez d'abord un hôtel");
+        chambreCombo.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8;");
 
         // Load chambres when hotel is selected
         hotelCombo.setOnAction(e -> {
@@ -885,7 +910,7 @@ public class ReservationViewController implements Initializable {
             chambreCombo.setValue(reservation.getChambreId() + " - " + getChambreType(reservation.getChambreId()));
         }
         chambreCombo.setId("chambreCombo");
-        chambreCombo.getStyleClass().add("form-field");
+        chambreCombo.getStyleClass(); // id set above
         chambreCombo.setPrefWidth(500);
         Label chambreError = org.example.utils.FormValidator.createErrorLabel();
         chambreError.setId("chambreError");
@@ -894,10 +919,10 @@ public class ReservationViewController implements Initializable {
         // Date Début
         VBox dateDebutBox = new VBox(5);
         Label dateDebutLabel = new Label("Date de début *");
-        dateDebutLabel.getStyleClass().add("form-label");
+        dateDebutLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         DatePicker dateDebutPicker = new DatePicker(reservation != null ? reservation.getDateDebut() : LocalDate.now());
         dateDebutPicker.setId("dateDebutPicker");
-        dateDebutPicker.getStyleClass().add("form-field");
+        dateDebutPicker.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8;");
         dateDebutPicker.setPrefWidth(500);
         Label dateDebutError = org.example.utils.FormValidator.createErrorLabel();
         dateDebutError.setId("dateDebutError");
@@ -906,10 +931,10 @@ public class ReservationViewController implements Initializable {
         // Date Fin
         VBox dateFinBox = new VBox(5);
         Label dateFinLabel = new Label("Date de fin *");
-        dateFinLabel.getStyleClass().add("form-label");
+        dateFinLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         DatePicker dateFinPicker = new DatePicker(reservation != null ? reservation.getDateFin() : LocalDate.now().plusDays(1));
         dateFinPicker.setId("dateFinPicker");
-        dateFinPicker.getStyleClass().add("form-field");
+        dateFinPicker.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8;");
         dateFinPicker.setPrefWidth(500);
         Label dateFinError = org.example.utils.FormValidator.createErrorLabel();
         dateFinError.setId("dateFinError");
@@ -918,11 +943,11 @@ public class ReservationViewController implements Initializable {
         // Prix Total
         VBox prixBox = new VBox(5);
         Label prixLabel = new Label("Prix total (DT) *");
-        prixLabel.getStyleClass().add("form-label");
+        prixLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         TextField prixField = new TextField(reservation != null ? String.valueOf(reservation.getPrixTotal()) : "");
         prixField.setPromptText("Ex: 450.00");
         prixField.setId("prixField");
-        prixField.getStyleClass().add("form-field");
+        prixField.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-size: 13px;");
         Label prixError = org.example.utils.FormValidator.createErrorLabel();
         prixError.setId("prixError");
         prixBox.getChildren().addAll(prixLabel, prixField, prixError);
@@ -930,13 +955,13 @@ public class ReservationViewController implements Initializable {
         // 💡 Code Promo
         VBox promoBox = new VBox(5);
         Label promoLabel = new Label("💡 Code Promo (optionnel)");
-        promoLabel.getStyleClass().add("form-label");
+        promoLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         HBox promoRow = new HBox(10);
         promoRow.setAlignment(Pos.CENTER_LEFT);
         TextField promoField = new TextField();
         promoField.setPromptText("Ex: HOTEL10, SUMMER2026...");
         promoField.setId("promoField");
-        promoField.getStyleClass().add("form-field");
+        promoField.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12;");
         promoField.setPrefWidth(300);
         HBox.setHgrow(promoField, Priority.ALWAYS);
         Button applyPromoBtn = new Button("Appliquer");
@@ -1081,22 +1106,23 @@ public class ReservationViewController implements Initializable {
         // Statut
         VBox statutBox = new VBox(5);
         Label statutLabel = new Label("Statut *");
-        statutLabel.getStyleClass().add("form-label");
+        statutLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         ComboBox<String> statutCombo = new ComboBox<>();
         statutCombo.getItems().addAll("EN_ATTENTE", "CONFIRMEE", "ANNULEE");
         statutCombo.setValue(reservation != null ? reservation.getStatut() : "EN_ATTENTE");
         statutCombo.setId("statutCombo");
-        statutCombo.getStyleClass().add("form-field");
+        statutCombo.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8;");
         Label statutError = org.example.utils.FormValidator.createErrorLabel();
         statutError.setId("statutError");
         statutBox.getChildren().addAll(statutLabel, statutCombo, statutError);
 
         // Info text
         Label infoLabel = new Label("* Champs obligatoires");
-        infoLabel.getStyleClass().add("form-help");
+        infoLabel.setStyle("-fx-text-fill: rgba(150,200,170,0.55); -fx-font-size: 10.5px;");
 
         GridPane formGrid = new GridPane();
-        formGrid.getStyleClass().add("form-grid");
+        formGrid.setHgap(16);
+        formGrid.setVgap(16);
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
         col1.setHgrow(Priority.ALWAYS);

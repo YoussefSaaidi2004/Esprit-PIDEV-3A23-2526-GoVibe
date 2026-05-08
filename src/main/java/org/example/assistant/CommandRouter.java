@@ -299,16 +299,18 @@ public class CommandRouter implements VoiceCommandListener {
         add("DASHBOARD",  "dashboard", cmd -> navigate("/org/example/UserHomeView.fxml", "GoVibe — Home", "Back to base!"));
         add("HOME",       "home",      cmd -> navigate("/org/example/UserHomeView.fxml", "GoVibe — Home", "Home sweet home!"));
 
+        // ---- My bookings tab — MUST come before RESERVATION/BOOK keys ----
+        // (CommandRouter uses substring matching: "MES RESERVATIONS" contains
+        //  "RESERVATION", so the more specific keys must be registered first.)
+        add("MES RESERVATIONS", "my bookings",  cmd -> doShowBookings());
+        add("MY BOOKINGS",      "my bookings",  cmd -> doShowBookings());
+        add("RESERVATIONS",     "bookings",     cmd -> doShowBookings());
+
         // ---- Booking ----
         add("NOUVELLE RESERVATION", "new booking", cmd -> doOpenBooking());
         add("RESERVER",   "book",    cmd -> doOpenBooking());
         add("RESERVATION","book",    cmd -> doOpenBooking());
         add("BOOK",       "book",    cmd -> doOpenBooking());
-
-        // ---- My bookings tab ----
-        add("MES RESERVATIONS", "my bookings",  cmd -> doShowBookings());
-        add("MY BOOKINGS",      "my bookings",  cmd -> doShowBookings());
-        add("RESERVATIONS",     "bookings",     cmd -> doShowBookings());
 
         // ---- Checkouts ----
         add("MY CHECKOUTS",     "checkouts",    cmd -> doShowCheckouts());

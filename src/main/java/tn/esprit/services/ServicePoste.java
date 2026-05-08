@@ -10,9 +10,33 @@ public class ServicePoste implements iPoste<Poste> {
 
     private Connection cnx = MyDataBase.getInstance().getConnection();
 
+    /**
+     * Helper: populate all Poste fields from a ResultSet row.
+     * Reads every column that Symfony's poste table has.
+     */
+    private Poste mapResultSet(ResultSet rs) throws SQLException {
+        Poste p = new Poste();
+        p.setPost_id(rs.getInt("post_id"));
+        p.setUser_id(rs.getInt("user_id"));
+        p.setLikes(rs.getInt("likes"));
+        p.setDate_creation(rs.getTimestamp("date_creation"));
+        p.setDate_modification(rs.getTimestamp("date_modification"));
+        p.setUrl(rs.getString("url"));
+        p.setType(rs.getString("type"));
+        p.setContenu(rs.getString("contenu"));
+        int forumId = rs.getInt("forum_id");
+        if (rs.wasNull()) {
+            p.setForum_id(null);
+        } else {
+            p.setForum_id(forumId);
+        }
+        p.setLocalisation(rs.getString("localisation"));
+        return p;
+    }
+
     @Override
     public void ajouter(Poste p) throws SQLException {
-        String sql = "INSERT INTO poste (user_id, likes, date_creation, date_modification, url, type, contenu, forum_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO poste (user_id, likes, date_creation, date_modification, url, type, contenu, forum_id, localisation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = cnx.prepareStatement(sql);
         ps.setInt(1, p.getUser_id());
         ps.setInt(2, p.getLikes());
@@ -26,12 +50,13 @@ public class ServicePoste implements iPoste<Poste> {
         } else {
             ps.setNull(8, Types.INTEGER);
         }
+        ps.setString(9, p.getLocalisation());
         ps.executeUpdate();
     }
 
     @Override
     public void modifier(Poste p) throws SQLException {
-        String sql = "UPDATE poste SET user_id=?, likes=?, date_modification=?, url=?, type=?, contenu=?, forum_id=? WHERE post_id=?";
+        String sql = "UPDATE poste SET user_id=?, likes=?, date_modification=?, url=?, type=?, contenu=?, forum_id=?, localisation=? WHERE post_id=?";
         PreparedStatement ps = cnx.prepareStatement(sql);
         ps.setInt(1, p.getUser_id());
         ps.setInt(2, p.getLikes());
@@ -44,7 +69,8 @@ public class ServicePoste implements iPoste<Poste> {
         } else {
             ps.setNull(7, Types.INTEGER);
         }
-        ps.setInt(8, p.getPost_id());
+        ps.setString(8, p.getLocalisation());
+        ps.setInt(9, p.getPost_id());
         ps.executeUpdate();
     }
 
@@ -63,22 +89,7 @@ public class ServicePoste implements iPoste<Poste> {
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
-            Poste p = new Poste();
-            p.setPost_id(rs.getInt("post_id"));
-            p.setUser_id(rs.getInt("user_id"));
-            p.setLikes(rs.getInt("likes"));
-            p.setDate_creation(rs.getTimestamp("date_creation"));
-            p.setDate_modification(rs.getTimestamp("date_modification"));
-            p.setUrl(rs.getString("url"));
-            p.setType(rs.getString("type"));
-            p.setContenu(rs.getString("contenu"));
-            int forumId = rs.getInt("forum_id");
-            if (rs.wasNull()) {
-                p.setForum_id(null);
-            } else {
-                p.setForum_id(forumId);
-            }
-            postes.add(p);
+            postes.add(mapResultSet(rs));
         }
         return postes;
     }
@@ -89,17 +100,7 @@ public class ServicePoste implements iPoste<Poste> {
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
-            Poste p = new Poste();
-            p.setPost_id(rs.getInt("post_id"));
-            p.setUser_id(rs.getInt("user_id"));
-            p.setLikes(rs.getInt("likes"));
-            p.setDate_creation(rs.getTimestamp("date_creation"));
-            p.setDate_modification(rs.getTimestamp("date_modification"));
-            p.setUrl(rs.getString("url"));
-            p.setType(rs.getString("type"));
-            p.setContenu(rs.getString("contenu"));
-            p.setForum_id(null);
-            postes.add(p);
+            postes.add(mapResultSet(rs));
         }
         return postes;
     }
@@ -111,17 +112,7 @@ public class ServicePoste implements iPoste<Poste> {
         ps.setInt(1, forumId);
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
-            Poste p = new Poste();
-            p.setPost_id(rs.getInt("post_id"));
-            p.setUser_id(rs.getInt("user_id"));
-            p.setLikes(rs.getInt("likes"));
-            p.setDate_creation(rs.getTimestamp("date_creation"));
-            p.setDate_modification(rs.getTimestamp("date_modification"));
-            p.setUrl(rs.getString("url"));
-            p.setType(rs.getString("type"));
-            p.setContenu(rs.getString("contenu"));
-            p.setForum_id(forumId);
-            postes.add(p);
+            postes.add(mapResultSet(rs));
         }
         return postes;
     }

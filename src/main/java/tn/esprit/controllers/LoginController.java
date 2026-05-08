@@ -51,6 +51,7 @@ public class LoginController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
             showAlert(Alert.AlertType.ERROR, "Échec de connexion", "Email ou mot de passe incorrect.");
         }
     }

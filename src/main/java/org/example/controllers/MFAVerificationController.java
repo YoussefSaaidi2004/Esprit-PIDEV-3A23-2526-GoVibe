@@ -73,10 +73,16 @@ public class MFAVerificationController {
 
         // Generate and send OTP off the FX thread (network call)
         new Thread(() -> {
-            otpService.generateAndSendOTP(pendingUser.getId(), pendingUser.getEmail());
-            Platform.runLater(() ->
-                showMessage("Un code OTP a été envoyé à " + maskEmail(pendingUser.getEmail()), false)
-            );
+            OTPService.OTPResult result = otpService.generateAndSendOTP(pendingUser.getId(), pendingUser.getEmail());
+            Platform.runLater(() -> {
+                if (result.emailSent) {
+                    showMessage("Un code OTP a été envoyé à " + maskEmail(pendingUser.getEmail()), false);
+                } else {
+                    // Email not configured / SMTP failure — show code directly (dev-mode fallback)
+                    showMessage("⚠️ Email non configuré — code visible ci-dessous (mode développement)", true);
+                    showDevCodeDialog(result.code);
+                }
+            });
         }, "MFA-SendOTP").start();
         showMessage("Envoi du code en cours...", false);
     }
@@ -134,10 +140,15 @@ public class MFAVerificationController {
         if (pendingUser != null) {
             showMessage("Envoi du code en cours...", false);
             new Thread(() -> {
-                otpService.generateAndSendOTP(pendingUser.getId(), pendingUser.getEmail());
-                Platform.runLater(() ->
-                    showMessage("Nouveau code OTP envoyé à " + maskEmail(pendingUser.getEmail()), false)
-                );
+                OTPService.OTPResult result = otpService.generateAndSendOTP(pendingUser.getId(), pendingUser.getEmail());
+                Platform.runLater(() -> {
+                    if (result.emailSent) {
+                        showMessage("Nouveau code OTP envoyé à " + maskEmail(pendingUser.getEmail()), false);
+                    } else {
+                        showMessage("⚠️ Email non configuré — code visible dans la fenêtre (mode développement)", true);
+                        showDevCodeDialog(result.code);
+                    }
+                });
             }, "MFA-Resend").start();
         }
     }
@@ -154,6 +165,26 @@ public class MFAVerificationController {
             lblMessage.setStyle(isError ? "-fx-text-fill: #ff6b6b;" : "-fx-text-fill: #50C878;");
             lblMessage.setVisible(true);
         }
+    }
+
+    /**
+     * Shows a dialog with the raw OTP code when email delivery is unavailable.
+     * This is intentionally only shown in dev/testing mode (when SMTP is unconfigured).
+     */
+    private void showDevCodeDialog(String code) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("🛠️ Mode Développement — Code OTP");
+        alert.setHeaderText("Email SMTP non configuré");
+        alert.setContentText(
+            "Votre code OTP est :\n\n" + code + "\n\n" +
+            "Pour activer l'envoi réel, renseignez mail.password\n" +
+            "dans src/main/resources/config/oauth2.properties\n" +
+            "(utilisez un mot de passe d'application Gmail).");
+        // Pre-fill the OTP field for convenience
+        if (tfOtp != null) {
+            tfOtp.setText(code);
+        }
+        alert.showAndWait();
     }
 
     /**

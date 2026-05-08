@@ -116,11 +116,13 @@
     <Region VBox.vgrow="ALWAYS"/>
 
     <!-- Logout Section -->
-    <VBox spacing="4" style="-fx-padding: 0 12;">
+    <VBox spacing="8" style="-fx-padding: 0 12 0 12;">
         <Separator style="-fx-background-color: rgba(160,224,201,0.2);"/>
-        <Region prefHeight="10"/>
         <Button onAction="#handleLogout" maxWidth="Infinity"
-                style="-fx-background-color: transparent; -fx-text-fill: #e74c3c; -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 10; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-graphic-text-gap: 12;">
+                style="-fx-background-color: rgba(231,76,60,0.18); -fx-text-fill: #e74c3c; -fx-font-size: 14px;
+                       -fx-font-weight: 700; -fx-padding: 13 16; -fx-background-radius: 10; -fx-cursor: hand;
+                       -fx-alignment: CENTER_LEFT; -fx-graphic-text-gap: 12;
+                       -fx-border-color: rgba(231,76,60,0.35); -fx-border-width: 1; -fx-border-radius: 10;">
             <graphic>
                 <SVGPath content="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
                          style="-fx-fill: #e74c3c;" scaleX="0.9" scaleY="0.9"/>

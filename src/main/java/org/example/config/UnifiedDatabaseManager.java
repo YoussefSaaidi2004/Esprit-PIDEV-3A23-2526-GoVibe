@@ -44,36 +44,21 @@ public class UnifiedDatabaseManager {
     }
 
     /**
-     * Get a new database connection (internal method)
-     * Implements retry logic for resilience
-     * @return Connection object, null if connection fails after retries
+     * Get a fresh database connection.
+     * Always returns a new connection so concurrent DAO calls each own their
+     * connection and can close it safely via try-with-resources without
+     * corrupting each other's ResultSets.
      */
-    private Connection connection;
-
-    /**
-     * Get a database connection (singleton/cached)
-     * Implements retry logic for resilience
-     * @return Connection object, null if connection fails after retries
-     */
-    private synchronized Connection getConnectionInternal() {
-        try {
-            if (connection != null && !connection.isClosed() && connection.isValid(CONNECTION_TIMEOUT)) {
-                return connection;
-            }
-        } catch (SQLException e) {
-            System.err.println("⚠️ [UnifiedDB] Cached connection invalid: " + e.getMessage());
-            connection = null;
-        }
-
+    private Connection getConnectionInternal() {
         int attempts = 0;
         SQLException lastException = null;
 
         while (attempts < MAX_RETRIES) {
             try {
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                if (connection != null) {
+                Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+                if (conn != null) {
                     System.out.println("✅ [UnifiedDB] Connected to govibe_project database (Attempt " + (attempts + 1) + ")");
-                    return connection;
+                    return conn;
                 }
             } catch (SQLException e) {
                 attempts++;

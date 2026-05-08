@@ -15,18 +15,18 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.controllers.VoitureEditController"
-            stylesheets="@voiture.css"
-            styleClass="app-root">
+            stylesheets="@styles/unified-styles.css"
+            style="-fx-background-color: #0a1810;">
     <children>
         <VBox spacing="18.0" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0"
               AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
             <children>
-                <Label text="Modification d'une voiture" styleClass="page-title"/>
+                <Label text="Modification d'une voiture" style="-fx-font-size: 26px; -fx-text-fill: white; -fx-font-weight: 900;"/>
 
                 <VBox spacing="12.0">
                     <children>
-                        <Label text="Formulaire de modification" styleClass="section-title"/>
-                        <GridPane hgap="14.0" vgap="12.0" styleClass="card">
+                        <Label text="Formulaire de modification" style="-fx-font-size: 14px; -fx-text-fill: #50C878; -fx-font-weight: 700;"/>
+                        <GridPane hgap="14.0" vgap="12.0" style="-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 16; -fx-border-color: rgba(80,200,120,0.20); -fx-border-width: 1; -fx-border-radius: 16; -fx-padding: 20;">
                             <columnConstraints>
                                 <ColumnConstraints percentWidth="25"/>
                                 <ColumnConstraints percentWidth="25"/>
@@ -40,41 +40,41 @@
                                 <RowConstraints minHeight="32"/>
                             </rowConstraints>
                             <children>
-                                <Label text="Matricule" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+                                <Label text="Matricule" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <TextField fx:id="matriculeField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                                           promptText="AB-123-CD" styleClass="input-field"/>
+                                           promptText="AB-123-CD" style="-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9; -fx-padding: 8 12;"/>
 
-                                <Label text="Marque" GridPane.rowIndex="0" GridPane.columnIndex="2" styleClass="form-label"/>
+                                <Label text="Marque" GridPane.rowIndex="0" GridPane.columnIndex="2" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <TextField fx:id="marqueField" GridPane.rowIndex="0" GridPane.columnIndex="3"
-                                           promptText="Toyota" styleClass="input-field"/>
+                                           promptText="Toyota" style="-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9; -fx-padding: 8 12;"/>
 
-                                <Label text="Modele" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+                                <Label text="Modele" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <TextField fx:id="modeleField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                                           promptText="Corolla" styleClass="input-field"/>
+                                           promptText="Corolla" style="-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9; -fx-padding: 8 12;"/>
 
-                                <Label text="Annee" GridPane.rowIndex="1" GridPane.columnIndex="2" styleClass="form-label"/>
+                                <Label text="Annee" GridPane.rowIndex="1" GridPane.columnIndex="2" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <TextField fx:id="anneeField" GridPane.rowIndex="1" GridPane.columnIndex="3"
-                                           promptText="2024" styleClass="input-field"/>
+                                           promptText="2024" style="-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9; -fx-padding: 8 12;"/>
 
-                                <Label text="Carburant" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+                                <Label text="Carburant" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <ComboBox fx:id="typeCarburantBox" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                                          promptText="Choisir" styleClass="input-field"/>
+                                          promptText="Choisir" style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9;"/>
 
-                                <Label text="Prix/Jour" GridPane.rowIndex="2" GridPane.columnIndex="2" styleClass="form-label"/>
+                                <Label text="Prix/Jour" GridPane.rowIndex="2" GridPane.columnIndex="2" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <TextField fx:id="prixJourField" GridPane.rowIndex="2" GridPane.columnIndex="3"
-                                           promptText="120" styleClass="input-field"/>
+                                           promptText="120" style="-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9; -fx-padding: 8 12;"/>
 
-                                <Label text="Statut" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+                                <Label text="Statut" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <ComboBox fx:id="statutBox" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                                          promptText="Choisir" styleClass="input-field"/>
+                                          promptText="Choisir" style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9;"/>
 
-                                <Label text="Agence" GridPane.rowIndex="3" GridPane.columnIndex="2" styleClass="form-label"/>
+                                <Label text="Agence" GridPane.rowIndex="3" GridPane.columnIndex="2" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <ComboBox fx:id="agenceBox" GridPane.rowIndex="3" GridPane.columnIndex="3"
-                                          promptText="Choisir" styleClass="input-field"/>
+                                          promptText="Choisir" style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9;"/>
                             </children>
                         </GridPane>
 
-                        <GridPane hgap="14.0" vgap="12.0" styleClass="card">
+                        <GridPane hgap="14.0" vgap="12.0" style="-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 16; -fx-border-color: rgba(80,200,120,0.20); -fx-border-width: 1; -fx-border-radius: 16; -fx-padding: 20;">
                             <columnConstraints>
                                 <ColumnConstraints percentWidth="25"/>
                                 <ColumnConstraints percentWidth="25"/>
@@ -82,27 +82,27 @@
                                 <ColumnConstraints percentWidth="25"/>
                             </columnConstraints>
                             <children>
-                                <Label text="Image URL" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+                                <Label text="Image URL" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <TextField fx:id="imageUrlField" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                                           promptText="https://..." styleClass="input-field"/>
+                                           promptText="https://..." style="-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9; -fx-padding: 8 12;"/>
 
-                                <Label text="Description" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+                                <Label text="Description" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: rgba(180,220,200,0.80); -fx-font-weight: 700; -fx-font-size: 12px;"/>
                                 <TextArea fx:id="descriptionArea" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.columnSpan="3"
                                           prefRowCount="4" wrapText="true"
                                           promptText="Decrivez la voiture, ses options, son etat et ses particularites"
-                                          styleClass="description-area"/>
+                                          style="-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-background-radius: 9; -fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1; -fx-border-radius: 9; -fx-padding: 8 12;"/>
                             </children>
                             <padding>
                                 <Insets top="0" right="0" bottom="0" left="0"/>
                             </padding>
                         </GridPane>
 
-                        <HBox spacing="12.0" styleClass="actions">
+                        <HBox spacing="12.0" alignment="CENTER_RIGHT">
                             <children>
                                 <Button fx:id="backButton" text="Retour" onAction="#handleRetour"
-                                        styleClass="btn btn-danger"/>
+                                        style="-fx-background-color: rgba(255,80,80,0.12); -fx-text-fill: rgba(255,150,150,0.90); -fx-border-color: rgba(255,80,80,0.35); -fx-border-width: 1; -fx-background-radius: 10; -fx-border-radius: 10; -fx-padding: 10 24; -fx-font-weight: 700; -fx-cursor: hand;"/>
                                 <Button fx:id="updateButton" text="Modifier" onAction="#handleModifier"
-                                        styleClass="btn btn-accent"/>
+                                        style="-fx-background-color: linear-gradient(to bottom right, #50C878, #2e9952); -fx-text-fill: white; -fx-border-width: 0; -fx-background-radius: 10; -fx-padding: 10 28; -fx-font-weight: 900; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.55), 14, 0, 0, 4);"/>
                             </children>
                         </HBox>
                     </children>

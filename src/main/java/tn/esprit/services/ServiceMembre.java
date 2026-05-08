@@ -15,10 +15,11 @@ public class ServiceMembre {
             return; // Already a member
         }
 
-        String sql = "INSERT INTO membre_forum (forum_id, user_id, date_adhesion) VALUES (?, ?, CURRENT_TIMESTAMP)";
+        String sql = "INSERT INTO membre_forum (forum_id, user_id, date_adhesion, status) VALUES (?, ?, CURRENT_TIMESTAMP, ?)";
         PreparedStatement ps = cnx.prepareStatement(sql);
         ps.setInt(1, m.getForum_id());
         ps.setInt(2, m.getUser_id());
+        ps.setString(3, m.getStatus() != null ? m.getStatus() : "PENDING");
         ps.executeUpdate();
 
         // Update member count in forum
@@ -61,9 +62,23 @@ public class ServiceMembre {
             m.setForum_id(rs.getInt("forum_id"));
             m.setUser_id(rs.getInt("user_id"));
             m.setDate_adhesion(rs.getTimestamp("date_adhesion"));
+            m.setStatus(rs.getString("status"));
             membres.add(m);
         }
         return membres;
+    }
+
+    /**
+     * Update the status of a membership (e.g. PENDING -> APPROVED).
+     * Compatible with Symfony's MembreForum.status field.
+     */
+    public void updateStatus(int forumId, int userId, String newStatus) throws SQLException {
+        String sql = "UPDATE membre_forum SET status = ? WHERE forum_id = ? AND user_id = ?";
+        PreparedStatement ps = cnx.prepareStatement(sql);
+        ps.setString(1, newStatus);
+        ps.setInt(2, forumId);
+        ps.setInt(3, userId);
+        ps.executeUpdate();
     }
 
     private void updateForumMemberCount(int forumId) throws SQLException {

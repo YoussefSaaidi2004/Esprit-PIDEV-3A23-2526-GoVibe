@@ -177,7 +177,11 @@ public class ListForumController {
                 + "-fx-font-size: 12px; -fx-font-weight: 600; -fx-background-radius: 9;"
                 + "-fx-border-color: rgba(255,255,255,0.18); -fx-border-width: 1; -fx-border-radius: 9;"
                 + "-fx-padding: 7 14; -fx-cursor: hand;");
-        btnView.setOnAction(e -> handleGoToPosts(null));
+        btnView.setOnAction(e -> {
+            AdminListPostController.setForumFilter(f.getForum_id(), f.getName());
+            org.example.mains.MainApp.switchScene("/org/example/AdminPostView.fxml",
+                    "Publications – " + (f.getName() != null ? f.getName() : "Forum"));
+        });
 
         Button btnDelete = new Button("Supprimer");
         btnDelete.setStyle("-fx-background-color: rgba(220,60,60,0.15); -fx-text-fill: #ff6b6b;"
@@ -540,15 +544,27 @@ public class ListForumController {
         formOverlay.setVisible(true);
         formOverlay.setManaged(true);
 
-        BoxBlur blur = new BoxBlur(10, 10, 3);
-        if (rootStackPane.getChildren().size() > 1)
-            rootStackPane.getChildren().get(rootStackPane.getChildren().size() - 2).setEffect(blur);
+        // Blur every background child (all except overlay panes)
+        GaussianBlur blur = new GaussianBlur(8);
+        for (Node child : rootStackPane.getChildren()) {
+            if (child != formOverlay && child != statsOverlay) {
+                child.setEffect(blur);
+            }
+        }
 
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), formOverlay);
+        // Overlay fade-in
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(280), formOverlay);
         fadeIn.setFromValue(0.0); fadeIn.setToValue(1.0);
+
+        // Form card: slide up + scale in
+        formContainer.setScaleX(0.92); formContainer.setScaleY(0.92);
         TranslateTransition slideUp = new TranslateTransition(Duration.millis(300), formContainer);
-        slideUp.setFromY(50); slideUp.setToY(0);
-        new ParallelTransition(fadeIn, slideUp).play();
+        slideUp.setFromY(60); slideUp.setToY(0);
+        javafx.animation.ScaleTransition scaleIn =
+                new javafx.animation.ScaleTransition(Duration.millis(300), formContainer);
+        scaleIn.setToX(1.0); scaleIn.setToY(1.0);
+
+        new ParallelTransition(fadeIn, slideUp, scaleIn).play();
     }
 
     public void hideFormOverlay() {
@@ -562,8 +578,12 @@ public class ListForumController {
             formOverlay.setVisible(false);
             formOverlay.setManaged(false);
             formContainer.getChildren().clear();
-            if (rootStackPane.getChildren().size() > 1)
-                rootStackPane.getChildren().get(rootStackPane.getChildren().size() - 2).setEffect(null);
+            // Remove blur from all background children
+            for (Node child : rootStackPane.getChildren()) {
+                if (child != formOverlay && child != statsOverlay) {
+                    child.setEffect(null);
+                }
+            }
             loadForums();
         });
         pt.play();
@@ -584,7 +604,14 @@ public class ListForumController {
 
     @FXML
     private void handleGoToPosts(ActionEvent event) {
-        org.example.mains.MainApp.switchScene("/poste-forumviews/ListPost.fxml", "Publications");
+        boolean isAdmin = SessionManager.getCurrentUser() != null
+                && "admin".equalsIgnoreCase(SessionManager.getCurrentUser().getRole());
+        if (isAdmin) {
+            AdminListPostController.clearFilter();
+            org.example.mains.MainApp.switchScene("/org/example/AdminPostView.fxml", "Publications Admin");
+        } else {
+            org.example.mains.MainApp.switchScene("/poste-forumviews/ListPost.fxml", "Publications");
+        }
     }
 
     @FXML

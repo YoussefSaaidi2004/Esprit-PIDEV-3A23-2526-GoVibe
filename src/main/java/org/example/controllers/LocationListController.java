@@ -1008,42 +1008,84 @@ public class LocationListController {
         }
 
         LocationCell() {
-            // Setup cardRoot (HBox)
-            cardRoot.getStyleClass().add("premium-location-card");
+            // ── Card root: dark glass panel ──
             cardRoot.setAlignment(Pos.CENTER_LEFT);
-            cardRoot.setPadding(new Insets(15, 25, 15, 25));
-            HBox.setHgrow(detailsBox, Priority.ALWAYS); // Push price/actions to the right
-            
-            // 1. Image Styling
-            carImageView.setFitWidth(180); // More compact for horizontal
-            carImageView.setFitHeight(100);
+            cardRoot.setPadding(new Insets(0, 0, 0, 0));
+            cardRoot.setSpacing(0);
+            cardRoot.setStyle(
+                "-fx-background-color: rgba(8,18,12,0.78);" +
+                "-fx-background-radius: 16;" +
+                "-fx-border-color: rgba(80,200,120,0.28);" +
+                "-fx-border-width: 1.5;" +
+                "-fx-border-radius: 16;" +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.50), 18, 0, 0, 6);"
+            );
+            HBox.setHgrow(detailsBox, Priority.ALWAYS);
+
+            // ── 1. Image ──
+            carImageView.setFitWidth(190);
+            carImageView.setFitHeight(110);
             carImageView.setPreserveRatio(true);
+            carImageView.setSmooth(true);
             StackPane imageWrapper = new StackPane(carImageView);
-            imageWrapper.getStyleClass().add("location-card-image-clip");
-            
-            // 2. Details Styling
+            imageWrapper.setMinWidth(190);
+            imageWrapper.setMinHeight(110);
+            imageWrapper.setPrefHeight(110);
+            imageWrapper.setStyle(
+                "-fx-background-color: rgba(0,0,0,0.5);" +
+                "-fx-background-radius: 14 0 0 14;"
+            );
+            imageWrapper.setPadding(new Insets(0));
+
+            // ── 2. Center info ──
             detailsBox.setAlignment(Pos.CENTER_LEFT);
-            carModelLabel.getStyleClass().add("location-card-subtitle"); // Still Emerald green
-            carModelLabel.setStyle("-fx-font-size: 18px;"); // Adjust size for horizontal
-            dateRangeLabel.getStyleClass().add("location-card-meta");
-            durationLabel.getStyleClass().add("location-card-meta");
-            routeInfoLabel.getStyleClass().add("location-card-meta");
-            routeInfoLabel.setStyle("-fx-text-fill: #50C878; -fx-font-size: 12px;");
+            detailsBox.setPadding(new Insets(16, 20, 16, 22));
+            detailsBox.setSpacing(5);
+
+            carModelLabel.setStyle(
+                "-fx-font-size: 17px; -fx-font-weight: 900; -fx-text-fill: white;"
+            );
+            dateRangeLabel.setStyle(
+                "-fx-font-size: 12px; -fx-text-fill: rgba(180,220,200,0.75);"
+            );
+            durationLabel.setStyle(
+                "-fx-font-size: 12px; -fx-text-fill: rgba(180,220,200,0.75);"
+            );
+            routeInfoLabel.setStyle(
+                "-fx-font-size: 11.5px; -fx-text-fill: #50C878; -fx-font-weight: 600;"
+            );
             detailsBox.getChildren().addAll(carModelLabel, dateRangeLabel, durationLabel, routeInfoLabel);
-            
-            // 3. Right Details & Status
+
+            // ── 3. Right column: REF / Status / Price ──
             rightDetails.setAlignment(Pos.CENTER_RIGHT);
-            refLabel.getStyleClass().add("location-card-title"); // Dark green
-            priceLabel.getStyleClass().add("location-card-price"); // Dark green
-            priceLabel.setStyle("-fx-font-size: 20px;"); 
-            statusBadge.getStyleClass().add("location-card-status");
+            rightDetails.setPadding(new Insets(16, 22, 16, 10));
+            rightDetails.setSpacing(6);
+            rightDetails.setMinWidth(160);
+
+            refLabel.setStyle(
+                "-fx-font-size: 11px; -fx-text-fill: rgba(180,220,200,0.55); -fx-font-weight: 700; -fx-letter-spacing: 1;"
+            );
+            statusBadge.setStyle(
+                "-fx-font-size: 10.5px; -fx-font-weight: 800; -fx-padding: 4 12; -fx-background-radius: 20;"
+            );
+            priceLabel.setStyle(
+                "-fx-font-size: 20px; -fx-font-weight: 900; -fx-text-fill: #50C878;"
+            );
             rightDetails.getChildren().addAll(refLabel, statusBadge, priceLabel);
-            
-            // 4. Action Buttons (SVG Icons)
+
+            // ── 4. Action buttons ──
             actionButtons.setAlignment(Pos.CENTER_RIGHT);
-            actionButtons.setSpacing(8);
-            
-            // SVG Paths and Tooltips
+            actionButtons.setSpacing(7);
+            actionButtons.setPadding(new Insets(16, 18, 16, 8));
+
+            String btnBase =
+                "-fx-background-color: rgba(255,255,255,0.07);" +
+                "-fx-background-radius: 9;" +
+                "-fx-border-color: rgba(255,255,255,0.12);" +
+                "-fx-border-width: 1;" +
+                "-fx-border-radius: 9;" +
+                "-fx-cursor: hand;";
+
             editButton.setGraphic(createIcon("M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"));
             deleteButton.setGraphic(createIcon("M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"));
             viewContractButton.setGraphic(createIcon("M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"));
@@ -1058,23 +1100,53 @@ public class LocationListController {
             viewQrButton.setTooltip(new Tooltip("Visualiser le code QR"));
             saveContractButton.setTooltip(new Tooltip("Télécharger le dossier complet"));
             saveQrButton.setTooltip(new Tooltip("Exporter le justificatif QR"));
-            trackButton.setTooltip(new Tooltip("📍 Suivi GPS en temps réel & Trajet"));
+            trackButton.setTooltip(new Tooltip("Suivi GPS en temps réel & Trajet"));
 
-            String iconStyle = "btn-icon-premium";
-            editButton.getStyleClass().add(iconStyle);
-            deleteButton.getStyleClass().add(iconStyle);
-            viewContractButton.getStyleClass().add(iconStyle);
-            viewQrButton.getStyleClass().add(iconStyle);
-            saveContractButton.getStyleClass().add(iconStyle);
-            saveQrButton.getStyleClass().add(iconStyle);
-            trackButton.getStyleClass().addAll(iconStyle, "btn-track-premium");
-            
-            actionButtons.getChildren().addAll(editButton, deleteButton, viewContractButton, trackButton, viewQrButton, saveContractButton, saveQrButton);
-            
-            // Assemble everything in one horizontal row
-            cardRoot.getChildren().addAll(imageWrapper, detailsBox, rightDetails, actionButtons);
+            for (Button b : new Button[]{editButton, deleteButton, viewContractButton, viewQrButton, saveContractButton, saveQrButton}) {
+                b.setStyle(btnBase);
+                b.setPadding(new Insets(8));
+            }
+            // Track button gets emerald tint
+            trackButton.setStyle(
+                "-fx-background-color: rgba(80,200,120,0.14);" +
+                "-fx-background-radius: 9;" +
+                "-fx-border-color: rgba(80,200,120,0.38);" +
+                "-fx-border-width: 1;" +
+                "-fx-border-radius: 9;" +
+                "-fx-cursor: hand;"
+            );
+            trackButton.setPadding(new Insets(8));
+
+            // Apply green fill to all SVG icons
+            for (Button b : new Button[]{editButton, deleteButton, viewContractButton, viewQrButton,
+                                         saveContractButton, saveQrButton, trackButton}) {
+                if (b.getGraphic() instanceof SVGPath svg) {
+                    svg.setStyle("-fx-fill: rgba(180,220,200,0.75);");
+                    svg.setScaleX(0.82); svg.setScaleY(0.82);
+                }
+            }
+
+            actionButtons.getChildren().addAll(
+                editButton, deleteButton, viewContractButton, trackButton,
+                viewQrButton, saveContractButton, saveQrButton
+            );
+
+            // Vertical separator between sections
+            Region vSep1 = new Region();
+            vSep1.setPrefWidth(1);
+            vSep1.setStyle("-fx-background-color: rgba(80,200,120,0.12);");
+            Region vSep2 = new Region();
+            vSep2.setPrefWidth(1);
+            vSep2.setStyle("-fx-background-color: rgba(80,200,120,0.12);");
+            Region vSep3 = new Region();
+            vSep3.setPrefWidth(1);
+            vSep3.setStyle("-fx-background-color: rgba(80,200,120,0.12);");
+
+            cardRoot.getChildren().addAll(imageWrapper, vSep1, detailsBox, vSep2, rightDetails, vSep3, actionButtons);
             setGraphic(null);
             setText(null);
+            // Transparent cell background
+            setStyle("-fx-background-color: transparent; -fx-padding: 5 2;");
         }
 
         @Override
@@ -1089,10 +1161,16 @@ public class LocationListController {
                 statusBadge.setText(item.getStatut() != null ? item.getStatut().toString().toUpperCase() : ""); // Changed to getStatut()
 
                 trackButton.setOnAction(e -> handleTrackCar(item));
-                statusBadge.getStyleClass().removeAll("status-en-attente", "status-confirmee", "status-annulee");
-                if (st.contains("attente")) statusBadge.getStyleClass().add("status-en-attente");
-                else if (st.contains("confirm")) statusBadge.getStyleClass().add("status-confirmee");
-                else if (st.contains("annul")) statusBadge.getStyleClass().add("status-annulee");
+                // Inline glass-pill status badge
+                String badgeBase = "-fx-font-size: 10.5px; -fx-font-weight: 800; -fx-padding: 4 12; -fx-background-radius: 20; -fx-border-width: 1; -fx-border-radius: 20;";
+                if (st.contains("attente"))
+                    statusBadge.setStyle(badgeBase + "-fx-background-color: rgba(255,200,0,0.13); -fx-text-fill: #FFCC00; -fx-border-color: rgba(255,200,0,0.40);");
+                else if (st.contains("confirm"))
+                    statusBadge.setStyle(badgeBase + "-fx-background-color: rgba(80,200,120,0.13); -fx-text-fill: #50C878; -fx-border-color: rgba(80,200,120,0.40);");
+                else if (st.contains("annul"))
+                    statusBadge.setStyle(badgeBase + "-fx-background-color: rgba(255,80,80,0.13); -fx-text-fill: rgba(255,140,140,0.95); -fx-border-color: rgba(255,100,100,0.40);");
+                else
+                    statusBadge.setStyle(badgeBase + "-fx-background-color: rgba(180,180,180,0.10); -fx-text-fill: rgba(220,220,220,0.75); -fx-border-color: rgba(200,200,200,0.25);");
 
                 // Get car info
                 Voiture v = item.getVoiture();
@@ -1330,22 +1408,109 @@ public class LocationListController {
     }
 
     public void highlightCarOnMap(Voiture v) {
-        // Zoom to car location and show details on map
-        String description = v.getDescription() != null ? v.getDescription().replace("'", "\\'") : "";
-        String imageUrl = v.getImageUrl() != null ? v.getImageUrl() : "";
-        
-        String script = String.format("window.highlightCar(%d, '%.6f', '%.6f', '%s %s', '%.2f', '%s', '%s')", 
-            v.getIdVoiture(), v.getLatitude(), v.getLongitude(), 
-            v.getMarque(), v.getModele(), v.getPrixJour(), description, imageUrl);
-        
-        runInWebView(script);
+        if (currentEngine != null) {
+            // Map is open: zoom to marker
+            String description = v.getDescription() != null ? v.getDescription().replace("'", "\\'") : "";
+            String imageUrl = v.getImageUrl() != null ? v.getImageUrl() : "";
+            String script = String.format(
+                "window.highlightCar(%d, '%.6f', '%.6f', '%s %s', '%.2f', '%s', '%s')",
+                v.getIdVoiture(), v.getLatitude(), v.getLongitude(),
+                v.getMarque(), v.getModele(), v.getPrixJour(), description, imageUrl);
+            runInWebView(script);
+        } else {
+            // No map: show a rich detail popup
+            showCarDetailPopup(v);
+        }
         System.out.println("[AI Forum] Highlighting " + v.getMarque() + " with detailed info.");
+    }
+
+    private void showCarDetailPopup(Voiture v) {
+        javafx.stage.Stage popup = new javafx.stage.Stage();
+        popup.initStyle(javafx.stage.StageStyle.TRANSPARENT);
+        popup.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        popup.setTitle(v.getMarque() + " " + v.getModele());
+
+        VBox root = new VBox(18);
+        root.setStyle("-fx-background-color: #1a1a2e; -fx-background-radius: 20; "
+            + "-fx-border-color: rgba(80,200,120,0.5); -fx-border-width: 2; "
+            + "-fx-border-radius: 20; -fx-padding: 28;");
+        root.setPrefWidth(420);
+        root.setAlignment(Pos.TOP_LEFT);
+
+        // Header
+        HBox header = new HBox(12);
+        header.setAlignment(Pos.CENTER_LEFT);
+        Label icon = new Label("🏎️");
+        icon.setStyle("-fx-font-size: 26;");
+        VBox titleBox = new VBox(2);
+        Label titleLbl = new Label(v.getMarque() + " " + v.getModele());
+        titleLbl.setStyle("-fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 18;");
+        Label yearLbl = new Label("Année " + v.getAnnee() + " · " + (v.getTypeCarburant() != null ? v.getTypeCarburant() : ""));
+        yearLbl.setStyle("-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 12;");
+        titleBox.getChildren().addAll(titleLbl, yearLbl);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Label priceLbl = new Label(String.format("%.0f DT/j", v.getPrixJour()));
+        priceLbl.setStyle("-fx-text-fill: #50C878; -fx-font-weight: 900; -fx-font-size: 16; "
+            + "-fx-background-color: rgba(80,200,120,0.12); -fx-padding: 6 14; -fx-background-radius: 10;");
+        header.getChildren().addAll(icon, titleBox, spacer, priceLbl);
+
+        // Separator
+        javafx.scene.control.Separator sep = new javafx.scene.control.Separator();
+        sep.setStyle("-fx-opacity: 0.15;");
+
+        // Info rows
+        VBox info = new VBox(10);
+        info.getChildren().addAll(
+            makeInfoRow("📍", "Agence", v.getAdresseAgence() != null ? v.getAdresseAgence() : "N/A"),
+            makeInfoRow("🔑", "Matricule", v.getMatricule() != null ? v.getMatricule() : "N/A"),
+            makeInfoRow("✅", "Statut", v.getStatut() != null ? v.getStatut().toString() : "N/A"),
+            makeInfoRow("📍", "Coordonnées", String.format("%.5f, %.5f", v.getLatitude(), v.getLongitude()))
+        );
+
+        // Description
+        if (v.getDescription() != null && !v.getDescription().isBlank()) {
+            Label descTitle = new Label("Description");
+            descTitle.setStyle("-fx-text-fill: rgba(255,255,255,0.5); -fx-font-size: 11;");
+            Label descLbl = new Label(v.getDescription());
+            descLbl.setWrapText(true);
+            descLbl.setMaxWidth(370);
+            descLbl.setStyle("-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 12; -fx-line-spacing: 3;");
+            info.getChildren().addAll(descTitle, descLbl);
+        }
+
+        // Close button
+        Button closeBtn = new Button("Fermer");
+        closeBtn.setMaxWidth(Double.MAX_VALUE);
+        closeBtn.setStyle("-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #50C878; "
+            + "-fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10; -fx-cursor: hand; "
+            + "-fx-border-color: rgba(80,200,120,0.4); -fx-border-width: 1; -fx-border-radius: 10;");
+        closeBtn.setOnAction(e -> popup.close());
+
+        root.getChildren().addAll(header, sep, info, closeBtn);
+
+        javafx.scene.Scene scene = new javafx.scene.Scene(root);
+        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        popup.setScene(scene);
+        popup.show();
+    }
+
+    private HBox makeInfoRow(String emoji, String label, String value) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER_LEFT);
+        Label iconLbl = new Label(emoji);
+        iconLbl.setMinWidth(20);
+        Label lbl = new Label(label + ":  ");
+        lbl.setStyle("-fx-text-fill: rgba(255,255,255,0.45); -fx-font-size: 12;");
+        Label val = new Label(value);
+        val.setStyle("-fx-text-fill: white; -fx-font-size: 12; -fx-font-weight: 600;");
+        row.getChildren().addAll(iconLbl, lbl, val);
+        return row;
     }
 
     private void runInWebView(String script) {
         if (currentEngine != null) {
             try {
-                // Ensure UI thread
                 javafx.application.Platform.runLater(() -> {
                     try {
                         currentEngine.executeScript(script);
@@ -1356,9 +1521,6 @@ public class LocationListController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            // Optionnel: Ouvrir la carte si elle n'est pas ouverte
-            System.out.println("[AI] Map is not open, recommendations displayed as list only.");
         }
     }
 }

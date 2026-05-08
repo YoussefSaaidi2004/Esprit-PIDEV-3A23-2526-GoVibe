@@ -31,6 +31,11 @@ public class AjoutPostController {
         this.listPostController = parent;
     }
 
+    private AdminListPostController adminListPostController;
+    public void setAdminListPostOverlayController(AdminListPostController parent) {
+        this.adminListPostController = parent;
+    }
+
     public void setForum(Forum forum) {
         this.currentForum = forum;
     }
@@ -200,6 +205,10 @@ public class AjoutPostController {
             listPostController.hideFormOverlay();
             return;
         }
+        if (adminListPostController != null) {
+            adminListPostController.hideFormOverlay();
+            return;
+        }
         if (currentForum != null) {
             org.example.mains.MainApp.switchScene("/poste-forumviews/DetailsForum.fxml", "GoVibe - Forum");
         } else {
@@ -214,6 +223,10 @@ public class AjoutPostController {
         }
         if (listPostController != null) {
             listPostController.hideFormOverlay();
+            return;
+        }
+        if (adminListPostController != null) {
+            adminListPostController.hideFormOverlay();
             return;
         }
         if (currentForum != null) {

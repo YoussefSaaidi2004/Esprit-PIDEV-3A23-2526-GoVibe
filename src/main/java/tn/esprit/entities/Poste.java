@@ -12,6 +12,7 @@ public class Poste {
     private String type;
     private String contenu;
     private Integer forum_id;
+    private String localisation; // Matches Symfony Poste.localisation (nullable)
 
     public Poste() {
     }
@@ -131,6 +132,14 @@ public class Poste {
         this.forum_id = forum_id;
     }
 
+    public String getLocalisation() {
+        return localisation;
+    }
+
+    public void setLocalisation(String localisation) {
+        this.localisation = localisation;
+    }
+
     @Override
     public String toString() {
         return "Poste{" +
@@ -143,6 +152,7 @@ public class Poste {
                 ", type='" + type + '\'' +
                 ", contenu='" + contenu + '\'' +
                 ", forum_id=" + forum_id +
+                ", localisation='" + localisation + '\'' +
                 '}';
     }
 }

@@ -83,9 +83,11 @@ public class MainApp extends Application {
                 // For SAPI-only mode (no Vosk model), startListening() is called from
                 // VoiceAssistantService.detectSapi() once SAPI availability is confirmed.
                 System.out.println("[VoiceAssistant] Global assistant ready. STT=deferred-until-model-load");
-                // Welcome message — spoken by Vivian (queued if she isn't ready yet,
-                // delivered automatically once the Python TTS worker loads).
-                voiceAssistant.vivianSpeak("GoVibe is online! This is Echo speaking — Vivian is still warming up and will join us shortly. Say 'Hey Go' whenever you need us!");
+                // NOTE: startup greeting removed from Java — Python plays it independently
+                // from its own user_context handler when logged_in=false is detected.
+                // Queueing it here caused the same message to play TWICE (Java flush +
+                // Python startup TTS overlap), generating extra TTS echo that Vosk would
+                // then misprocess as false user commands (echo feedback loop).
             } catch (Throwable e) {
                 System.err.println("[VoiceAssistant] FATAL failure during initialization: " + e.getMessage());
                 e.printStackTrace();

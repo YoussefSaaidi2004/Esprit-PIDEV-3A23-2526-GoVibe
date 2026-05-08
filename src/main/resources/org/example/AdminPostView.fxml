@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controllers.AdminListPostController"
+            stylesheets="@../styles/unified-styles.css, @../styles.css">
+
+    <!-- LEFT SIDEBAR -->
+    <left>
+        <fx:include source="AdminSidebar.fxml" fx:id="adminSidebar"/>
+    </left>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <StackPane fx:id="rootStackPane">
+
+            <!-- Hero Background -->
+            <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" styleClass="premium-bg"/>
+            <Pane styleClass="premium-bg-overlay" mouseTransparent="true"/>
+
+            <!-- Main scrollable content -->
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;"
+                        hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+                <content>
+                    <VBox spacing="0" style="-fx-background-color: transparent;">
+
+                        <!-- Hero Header -->
+                        <HBox alignment="CENTER_LEFT" spacing="25" styleClass="glass-panel"
+                              style="-fx-padding: 28 36; -fx-background-radius: 20;">
+                            <padding><Insets top="20" right="36" bottom="20" left="36"/></padding>
+                            <StackPane styleClass="icon-circle-emerald">
+                                <Label text="📝" style="-fx-font-size: 32;"/>
+                            </StackPane>
+                            <VBox spacing="4">
+                                <Label text="Publications Admin"
+                                       style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: white;
+                                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 8, 0, 0, 2);"/>
+                                <Label fx:id="headerSubtitleLabel" text="Toutes les publications"
+                                       style="-fx-font-size: 14; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <HBox spacing="12" alignment="CENTER">
+                                <VBox alignment="CENTER" spacing="4" styleClass="glass-tile-mini" prefWidth="90">
+                                    <Label fx:id="statTotalLabel" text="0" styleClass="tile-value-emerald" style="-fx-font-size: 20;"/>
+                                    <Label text="PUBS" styleClass="tile-label-tiny"/>
+                                </VBox>
+                                <VBox alignment="CENTER" spacing="4" styleClass="glass-tile-mini" prefWidth="90">
+                                    <Label fx:id="statLikesLabel" text="0" styleClass="tile-value-emerald" style="-fx-font-size: 20;"/>
+                                    <Label text="LIKES" styleClass="tile-label-tiny"/>
+                                </VBox>
+                            </HBox>
+                        </HBox>
+
+                        <!-- Search + Action Buttons -->
+                        <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-padding: 20 40 0 40;">
+                            <HBox alignment="CENTER_LEFT" spacing="0" styleClass="search-bar-wrap" HBox.hgrow="ALWAYS">
+                                <StackPane prefWidth="38" prefHeight="38">
+                                    <SVGPath styleClass="search-icon-svg"
+                                             content="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                                             scaleX="0.85" scaleY="0.85"/>
+                                </StackPane>
+                                <TextField fx:id="searchField" promptText="Rechercher des publications..."
+                                           onKeyReleased="#handleSearch"
+                                           styleClass="search-input" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </HBox>
+
+                        <!-- Action Buttons Row -->
+                        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 14 40 0 40;">
+                            <Button onAction="#handleGoToForums" styleClass="lf-btn-secondary">
+                                <graphic>
+                                    <HBox alignment="CENTER" spacing="8">
+                                        <SVGPath styleClass="lf-btn-svg-dark"
+                                                 content="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                                                 scaleX="0.85" scaleY="0.85"/>
+                                        <Label text="Retour aux forums" styleClass="lf-btn-text-dark"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                            <Button onAction="#handleGoToPosts" styleClass="lf-btn-secondary">
+                                <graphic>
+                                    <HBox alignment="CENTER" spacing="8">
+                                        <SVGPath styleClass="lf-btn-svg-dark"
+                                                 content="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+                                                 scaleX="0.85" scaleY="0.85"/>
+                                        <Label text="Actualiser" styleClass="lf-btn-text-dark"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                            <Button onAction="#handleExportPdf" styleClass="lf-btn-secondary">
+                                <graphic>
+                                    <HBox alignment="CENTER" spacing="8">
+                                        <SVGPath styleClass="lf-btn-svg-dark"
+                                                 content="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"
+                                                 scaleX="0.85" scaleY="0.85"/>
+                                        <Label text="Exporter PDF" styleClass="lf-btn-text-dark"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button onAction="#handleAjoutPost" styleClass="lf-btn-primary">
+                                <graphic>
+                                    <HBox alignment="CENTER" spacing="8">
+                                        <SVGPath styleClass="lf-btn-svg-light"
+                                                 content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+                                                 scaleX="0.9" scaleY="0.9"/>
+                                        <Label text="Nouvelle publication" styleClass="lf-btn-text-light"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                        </HBox>
+
+                        <!-- Section Title -->
+                        <HBox alignment="CENTER_LEFT" style="-fx-padding: 24 40 12 40;">
+                            <Label text="Publications"
+                                   style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: white;
+                                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0, 0, 1);"/>
+                        </HBox>
+
+                        <!-- Posts Container -->
+                        <HBox alignment="TOP_CENTER" style="-fx-padding: 0 20 50 20;">
+                            <VBox HBox.hgrow="ALWAYS" spacing="0">
+                                <VBox fx:id="postsContainer" spacing="14"
+                                      style="-fx-background-color: transparent; -fx-padding: 0 20 20 20;">
+                                </VBox>
+
+                                <!-- Empty State -->
+                                <VBox alignment="CENTER" spacing="15"
+                                      styleClass="empty-state">
+                                    <Label fx:id="emptyLabel" text="" styleClass="empty-state-title" managed="false" visible="false"/>
+                                </VBox>
+                            </VBox>
+                        </HBox>
+
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <!-- Modal Overlay (form) -->
+            <StackPane fx:id="formOverlay" managed="false" visible="false"
+                       style="-fx-background-color: rgba(0,0,0,0.65);">
+                <VBox fx:id="formContainer" alignment="CENTER" maxHeight="700" maxWidth="800"
+                      style="-fx-background-color: transparent;"/>
+            </StackPane>
+
+        </StackPane>
+    </center>
+
+</BorderPane>

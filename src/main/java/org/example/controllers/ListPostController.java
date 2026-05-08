@@ -11,7 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -197,15 +197,25 @@ public class ListPostController {
         formOverlay.setVisible(true);
         formOverlay.setManaged(true);
 
-        BoxBlur blur = new BoxBlur(10, 10, 3);
-        if (rootStackPane != null && rootStackPane.getChildren().size() > 1)
-            rootStackPane.getChildren().get(rootStackPane.getChildren().size() - 2).setEffect(blur);
+        // Blur every background child (all except the form overlay)
+        GaussianBlur blur = new GaussianBlur(8);
+        for (Node child : rootStackPane.getChildren()) {
+            if (child != formOverlay) child.setEffect(blur);
+        }
 
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), formOverlay);
+        // Overlay fade-in
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(280), formOverlay);
         fadeIn.setFromValue(0.0); fadeIn.setToValue(1.0);
+
+        // Form card: slide up + scale in
+        formContainer.setScaleX(0.92); formContainer.setScaleY(0.92);
         TranslateTransition slideUp = new TranslateTransition(Duration.millis(300), formContainer);
-        slideUp.setFromY(50); slideUp.setToY(0);
-        new ParallelTransition(fadeIn, slideUp).play();
+        slideUp.setFromY(60); slideUp.setToY(0);
+        javafx.animation.ScaleTransition scaleIn =
+                new javafx.animation.ScaleTransition(Duration.millis(300), formContainer);
+        scaleIn.setToX(1.0); scaleIn.setToY(1.0);
+
+        new ParallelTransition(fadeIn, slideUp, scaleIn).play();
     }
 
     public void hideFormOverlay() {
@@ -219,8 +229,10 @@ public class ListPostController {
             formOverlay.setVisible(false);
             formOverlay.setManaged(false);
             formContainer.getChildren().clear();
-            if (rootStackPane != null && rootStackPane.getChildren().size() > 1)
-                rootStackPane.getChildren().get(rootStackPane.getChildren().size() - 2).setEffect(null);
+            // Remove blur from all background children
+            for (Node child : rootStackPane.getChildren()) {
+                if (child != formOverlay) child.setEffect(null);
+            }
             loadPosts();
             loadStats();
         });

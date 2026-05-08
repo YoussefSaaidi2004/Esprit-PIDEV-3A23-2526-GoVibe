@@ -82,6 +82,45 @@ public class VoiceAssistantService {
     private volatile String lastSttDispatchText = null;
     private static final long STT_DEBOUNCE_MS  = 3_000;
 
+    /** True while a user is authenticated (set by notifyUserLoggedIn/Out). */
+    private volatile boolean userIsLoggedIn = false;
+
+    /**
+     * Vosk phonetic repairs for "face id" — applied only on the login screen
+     * where these garbled STT outputs are otherwise meaningless.
+     * Key = exact lowercase Vosk transcript, Value = corrected text.
+     */
+    private static final java.util.Map<String, String> FACE_ID_VOSK_REPAIRS;
+    static {
+        FACE_ID_VOSK_REPAIRS = new java.util.LinkedHashMap<>();
+        // Vosk → "face id"
+        FACE_ID_VOSK_REPAIRS.put("they say d",   "face id");
+        FACE_ID_VOSK_REPAIRS.put("they said d",  "face id");
+        FACE_ID_VOSK_REPAIRS.put("they say",     "face id");  // login-screen only — safe
+        FACE_ID_VOSK_REPAIRS.put("this aid",     "face id");
+        FACE_ID_VOSK_REPAIRS.put("these aid",    "face id");
+        FACE_ID_VOSK_REPAIRS.put("phase id",     "face id");
+        FACE_ID_VOSK_REPAIRS.put("based id",     "face id");
+        FACE_ID_VOSK_REPAIRS.put("space id",     "face id");
+        FACE_ID_VOSK_REPAIRS.put("faced id",     "face id");
+        FACE_ID_VOSK_REPAIRS.put("face it",      "face id");
+        FACE_ID_VOSK_REPAIRS.put("the saint",    "face id");
+        FACE_ID_VOSK_REPAIRS.put("base it",      "face id");
+        FACE_ID_VOSK_REPAIRS.put("faith id",     "face id");
+        FACE_ID_VOSK_REPAIRS.put("face aid",     "face id");
+    }
+
+    /** Apply login-screen-only Vosk phonetic repairs for common face-id mishearings. */
+    private String repairLoginScreenStt(String text) {
+        String lower = text.toLowerCase().trim();
+        String repaired = FACE_ID_VOSK_REPAIRS.get(lower);
+        if (repaired != null) {
+            System.out.println("[VoiceAssistant-STT] Login repair: \"" + text + "\" -> \"" + repaired + "\"");
+            return repaired;
+        }
+        return text;
+    }
+
     // ── Closed-loop Adaptive Noise Orchestrator ───────────────────────────────
     // Replaces the old static calibration block with a dynamic, three-stage
     // pipeline: Detector → Orchestrator → Adaptive Filter → SNR Validator.
@@ -128,12 +167,19 @@ public class VoiceAssistantService {
     private final java.util.concurrent.atomic.AtomicBoolean ttsSpeaking =
             new java.util.concurrent.atomic.AtomicBoolean(false);
     private volatile long ttsFinishedAtMs = 0L;
-    // Reduced from 1500→600 ms: 1500ms was too long and was catching real user
-    // commands spoken right after Jenny finished speaking. However 600ms lets
-    // room-echo bleed through in typical home/office environments. 1500ms is
-    // the right balance — blocks speaker-echo reliably while still allowing
-    // a quick follow-up command after the voice response ends.
-    private static final long TTS_MUTE_WINDOW_MS = 1500L;
+    // 3500 ms: edges out the full room-echo tail of a multi-sentence TTS burst
+    // (edge-tts @ ~140 wpm can take 4-5 s for a greeting; 1500 ms was too short
+    // and Vosk resumed mid-sentence, picking up the reverberant TTS as fake
+    // user commands and triggering an infinite echo loop).
+    private static final long TTS_MUTE_WINDOW_MS = 3500L;
+
+    // ── Post-TTS echo extension gate ──────────────────────────────────────────
+    // When the TTS discard window expires, if the mic RMS is still above this
+    // threshold the window is extended by POST_TTS_ECHO_EXTEND_MS repeatedly
+    // until the room is quiet — preventing false commands from residual echo.
+    // Threshold 500 ≈ 10× typical silence floor (10–40 RMS); TTS echo = 2000–5000.
+    private static final double POST_TTS_RMS_THRESHOLD  = 500.0;
+    private static final long   POST_TTS_ECHO_EXTEND_MS = 1500L;
 
     private static final AudioFormat AUDIO_FORMAT =
             new AudioFormat(16_000f, 16, 1, true, false);
@@ -472,15 +518,10 @@ public class VoiceAssistantService {
                 System.out.println("[VoiceAssistant] Python ML agent ready. Engine: "
                         + pythonAgent.getEngineName());
 
-                // Drain any speak requests that arrived while pythonAgent was null.
-                String pendingText;
-                while ((pendingText = pendingVivianSpeaks.poll()) != null) {
-                    System.out.println("[VoiceAssistant-Vivian] Flushing queued speak: " + pendingText);
-                    pythonAgent.sendSpeakFast(pendingText);
-                }
-
-                // Wire Qwen3-TTS status events so the microphone discard window
-                // is controlled by Python's TTS lifecycle, not by Java timers.
+                // Wire Qwen3-TTS status events FIRST — before flushing pending speaks
+                // so the callback is already registered when Python emits the leading
+                // tts_status=speaking signal.  Without this ordering the callback is
+                // null when speaking=true arrives and the mic stays open during TTS.
                 pythonAgent.setTtsStatusListener(speaking -> {
                     if (speaking) {
                         // Python TTS started — mute the mic feed to Vosk.
@@ -497,6 +538,19 @@ public class VoiceAssistantService {
                         ttsSpeaking.set(false);
                     }
                 });
+
+                // Drain any speak requests that arrived while pythonAgent was null.
+                // Pre-mute synchronously before sending so Vosk is silent while TTS
+                // plays — independent of the async tts_status callback timing.
+                String pendingText;
+                if (pendingVivianSpeaks.peek() != null) {
+                    micDiscardUntilMs = Long.MAX_VALUE;
+                    ttsSpeaking.set(true);
+                }
+                while ((pendingText = pendingVivianSpeaks.poll()) != null) {
+                    System.out.println("[VoiceAssistant-Vivian] Flushing queued speak: " + pendingText);
+                    pythonAgent.sendSpeakFast(pendingText);
+                }
 
                 // Re-arm the wake-word detector after Python's post-logout
                 // personality sequence ends (Python sends resume_wake_word).
@@ -559,6 +613,7 @@ public class VoiceAssistantService {
      * @param firstName the user's first name (may be null if unavailable)
      */
     public void notifyUserLoggedIn(String firstName) {
+        userIsLoggedIn = true;
         PythonVoiceAgent agent = pythonAgent;
         if (agent != null) {
             String name = (firstName != null && !firstName.isBlank()) ? firstName : null;
@@ -580,6 +635,7 @@ public class VoiceAssistantService {
      * app launch — sendUserContext is idempotent).
      */
     public void notifyUserLoggedOut() {
+        userIsLoggedIn = false;
         PythonVoiceAgent agent = pythonAgent;
         if (agent != null) {
             agent.sendUserContext(false, null);
@@ -699,6 +755,13 @@ public class VoiceAssistantService {
         if (text == null || text.isBlank()) return;
         PythonVoiceAgent agent = pythonAgent;
         if (agent != null) {
+            // Pre-mute the mic BEFORE sending to Python so the ~50-100 ms race
+            // window between Python starting TTS audio and Java receiving the
+            // tts_status=speaking callback is closed synchronously here.
+            // The tts_status=done callback (setTtsStatusListener) will release
+            // the mute and set the post-TTS grace window exactly as before.
+            micDiscardUntilMs = Long.MAX_VALUE;
+            ttsSpeaking.set(true);
             agent.sendSpeakFast(text);
         } else {
             pendingVivianSpeaks.add(text);
@@ -868,6 +931,15 @@ public class VoiceAssistantService {
                 // ── Microphone discard window (TTS echo prevention) ───────────────
                 boolean nowDiscarding = System.currentTimeMillis() < micDiscardUntilMs;
                 if (nowDiscarding) {
+                    if (!wasDiscarding) {
+                        // First frame entering the mute window: flush any audio that
+                        // Vosk accumulated BEFORE the mic-discard gate closed (the
+                        // ~50-100 ms race between Python starting TTS playback and
+                        // Java receiving the tts_status=speaking signal and setting
+                        // micDiscardUntilMs). Without this reset the pre-mute audio
+                        // is emitted as a spurious final result when the gate lifts.
+                        recognizer.reset();
+                    }
                     wasDiscarding  = true;
                     voskAccumPos   = 0;
                     srcPos         = 0.0;
@@ -1012,6 +1084,14 @@ public class VoiceAssistantService {
         }
         lastSttDispatchText = text;
         lastSttDispatchTime = now;
+
+        // ── Login-screen Vosk phonetic repair ────────────────────────────────
+        // On the login screen the only real commands are face-id / login / signup.
+        // Vosk commonly mangles "face id" into garbage like "they say d".
+        // Repair those before routing so the Python agent sees clean text.
+        if (!userIsLoggedIn) {
+            text = repairLoginScreenStt(text);
+        }
 
         dispatchText(text);
     }
@@ -1257,6 +1337,9 @@ public class VoiceAssistantService {
             "email", "adresse email", "nom utilisateur", "username",
             "mot de passe", "password",
             "créer un compte", "creer un compte", "sign up", "register", "inscription",
+            // ── Face ID / camera login ──
+            "face id", "face login", "face recognition", "facial recognition",
+            "open camera", "camera", "scan face", "face scan",
             // ── Car rental ──
             "voitures", "louer", "cars", "car rental", "rent a car",
             // ── Activities ──

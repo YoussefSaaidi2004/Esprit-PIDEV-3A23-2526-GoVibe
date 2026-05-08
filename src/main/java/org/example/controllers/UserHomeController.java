@@ -239,6 +239,10 @@ public class UserHomeController {
         loadActivities();
         setupHeroBackground();
         startHeroAnimations();
+        // Register voice proxy whenever this screen loads (covers voice-nav path
+        // where initData is not called by the router).
+        personne sessionUser = org.example.utils.SessionManager.getCurrentUser();
+        initVoiceAssistant(sessionUser);
     }
 
     private void setupHeroBackground() {

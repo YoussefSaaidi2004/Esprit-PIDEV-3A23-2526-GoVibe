@@ -102,9 +102,10 @@ public class MapActivitiesController {
     private Task<CountryData> currentTask;
     
     // API Keys (Centralized) - Fallback system with Gemini support
-    private static final String GEMINI_KEY = "AIzaSyCEml6UPswBHnEZsqP4jbFgYMAp5ftIYRI";
+    private static final String GEMINI_KEY = "AIzaSyCNgI3fpLERtasCdFw2R1qBn1ENIpTKQNc";
     private static final String[] DEEPSEEK_KEYS = {
-        "sk-4490f1e6d27546df86fce308c484cf87", 
+        "sk-868178ef790c4205acc04d02d4792ee2",
+        "sk-4490f1e6d27546df86fce308c484cf87",
         "sk-df61158ebba24dff98c7d1d7df5715ce"
     };
     private static final String GEOAPIFY_KEY = "36873335552a446583d789e921606822"; 

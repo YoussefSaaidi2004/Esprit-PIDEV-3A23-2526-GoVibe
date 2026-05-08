@@ -1,5 +1,7 @@
 package org.example.controllers;
 
+import org.example.utils.StatusMapper;
+
 import org.example.entities.Checkout;
 import org.example.entities.Flight;
 import org.example.services.CheckoutService;
@@ -79,7 +81,7 @@ public class CheckoutDetailController {
         }
 
         String status = selectedCheckout.getStatusReservation();
-        statusBadge.setText(status != null ? status.toUpperCase() : "");
+        statusBadge.setText(StatusMapper.toDisplayLabel(status));
         updateStatusBadgeStyle();
 
         nameField.setText(selectedCheckout.getPassengerName());
@@ -97,7 +99,7 @@ public class CheckoutDetailController {
         totalPrice.setText(selectedCheckout.getTotalPrix() + " DT");
 
         if (payBtn != null) {
-            boolean isPending = "PENDING".equalsIgnoreCase(selectedCheckout.getStatusReservation());
+            boolean isPending = StatusMapper.isPending(selectedCheckout.getStatusReservation());
             payBtn.setVisible(isPending);
             payBtn.setManaged(isPending);
         }
@@ -111,11 +113,14 @@ public class CheckoutDetailController {
             return;
         }
 
-        switch (status.toUpperCase()) {
-            case "PENDING": statusBadge.getStyleClass().add("badge-pending"); break;
-            case "CONFIRMED": statusBadge.getStyleClass().add("badge-confirmed"); break;
-            case "REJECTED": statusBadge.getStyleClass().add("badge-rejected"); break;
-            case "CANCELLED": statusBadge.getStyleClass().add("badge-cancelled"); break;
+        if (StatusMapper.isPending(status)) {
+            statusBadge.getStyleClass().add("badge-pending");
+        } else if (StatusMapper.isConfirmed(status)) {
+            statusBadge.getStyleClass().add("badge-confirmed");
+        } else if (StatusMapper.isRejected(status)) {
+            statusBadge.getStyleClass().add("badge-rejected");
+        } else if (StatusMapper.isCancelled(status)) {
+            statusBadge.getStyleClass().add("badge-cancelled");
         }
     }
 

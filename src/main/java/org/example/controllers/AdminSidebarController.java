@@ -1,15 +1,10 @@
 package org.example.controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import org.example.utils.SceneNavigator;
 import org.example.utils.SessionManager;
-
-import java.io.IOException;
 
 /**
  * Contrôleur pour le menu Admin Sidebar - réutilisable sur toutes les pages admin
@@ -148,33 +143,20 @@ public class AdminSidebarController {
     private void handleLogout() {
         SessionManager.clear();
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/LoginView.fxml"));
-            Parent root = loader.load();
-            Stage stage = getCurrentStage();
+            SceneNavigator.switchTo("/org/example/LoginView.fxml", navDashboard);
+            Stage stage = (Stage) navDashboard.getScene().getWindow();
             stage.setTitle("GoVibe Connexion");
-            stage.setScene(new Scene(root));
-            stage.setMaximized(true);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void navigateTo(String fxmlPath) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-            Stage stage = getCurrentStage();
-            stage.setScene(new Scene(root));
-            stage.setMaximized(true);
-        } catch (IOException e) {
+            SceneNavigator.switchTo(fxmlPath, navDashboard);
+        } catch (Exception e) {
+            System.err.println("[AdminSidebar] Navigation failed for " + fxmlPath + ": " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    private Stage getCurrentStage() {
-        if (navDashboard != null && navDashboard.getScene() != null) {
-            return (Stage) navDashboard.getScene().getWindow();
-        }
-        return null;
     }
 }

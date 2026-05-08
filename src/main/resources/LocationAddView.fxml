@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="30" styleClass="glass-panel" style="-fx-padding: 40; -fx-background-radius: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 40, 0, 0, 20);" stylesheets="@styles/unified-styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.LocationAddController">
+<VBox alignment="CENTER" spacing="30" styleClass="glass-panel" style="-fx-background-color: rgba(10,24,16,0.97); -fx-padding: 40; -fx-background-radius: 24; -fx-border-color: rgba(80,200,120,0.30); -fx-border-width: 1.5; -fx-border-radius: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.65), 40, 0, 0, 20);" stylesheets="@styles/unified-styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.LocationAddController">
     <children>
         <HBox alignment="CENTER_LEFT" spacing="20">
             <StackPane styleClass="icon-circle-emerald" prefWidth="50" prefHeight="50" minWidth="50" minHeight="50">
@@ -46,17 +46,23 @@
 
                 <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
                     <Label text="VÉHICULE" styleClass="tile-label-tiny" />
-                    <ComboBox fx:id="voitureBox" promptText="Sélectionner..." styleClass="combo-glass-premium" maxWidth="Infinity" />
+                    <ComboBox fx:id="voitureBox" promptText="Sélectionner..." styleClass="combo-glass-premium"
+                              style="-fx-background-color: rgba(20,45,28,0.92); -fx-background-radius: 10; -fx-border-color: rgba(80,200,120,0.30); -fx-border-width: 1; -fx-border-radius: 10;"
+                              maxWidth="Infinity" />
                 </VBox>
 
                 <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0">
                     <Label text="DATE DÉBUT" styleClass="tile-label-tiny" />
-                    <DatePicker fx:id="dateDebutPicker" styleClass="combo-glass-premium" maxWidth="Infinity" />
+                    <DatePicker fx:id="dateDebutPicker" styleClass="combo-glass-premium"
+                                style="-fx-background-color: rgba(20,45,28,0.92); -fx-background-radius: 10; -fx-border-color: rgba(80,200,120,0.30); -fx-border-width: 1; -fx-border-radius: 10;"
+                                maxWidth="Infinity" />
                 </VBox>
 
                 <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
                     <Label text="DATE FIN" styleClass="tile-label-tiny" />
-                    <DatePicker fx:id="dateFinPicker" styleClass="combo-glass-premium" maxWidth="Infinity" />
+                    <DatePicker fx:id="dateFinPicker" styleClass="combo-glass-premium"
+                                style="-fx-background-color: rgba(20,45,28,0.92); -fx-background-radius: 10; -fx-border-color: rgba(80,200,120,0.30); -fx-border-width: 1; -fx-border-radius: 10;"
+                                maxWidth="Infinity" />
                 </VBox>
 
                 <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0">
@@ -71,7 +77,9 @@
 
                 <VBox spacing="8" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2">
                     <Label text="STATUT" styleClass="tile-label-tiny" />
-                    <ComboBox fx:id="statutBox" styleClass="combo-glass-premium" maxWidth="Infinity" disable="true" />
+                    <ComboBox fx:id="statutBox" styleClass="combo-glass-premium"
+                              style="-fx-background-color: rgba(20,45,28,0.92); -fx-background-radius: 10; -fx-border-color: rgba(80,200,120,0.20); -fx-border-width: 1; -fx-border-radius: 10; -fx-opacity: 0.65;"
+                              maxWidth="Infinity" disable="true" />
                 </VBox>
             </children>
         </GridPane>

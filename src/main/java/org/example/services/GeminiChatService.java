@@ -12,9 +12,9 @@ import java.util.*;
  */
 public class GeminiChatService {
 
-    private static final String API_KEY = "AIzaSyDvjFVqJ94ysDQZ2EV4hJW2EzIHvr5sKnU";
+    private static final String API_KEY = "AIzaSyDuSs39Hdaxcppve-C9wNHDpSZQWcrH4so";
     private static final String ENDPOINT =
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY;
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
 
     /** System instruction — given as the very first "user" turn with hardcoded context. */
     private static final String SYSTEM_PROMPT =
@@ -35,6 +35,8 @@ public class GeminiChatService {
 
     private final HttpClient httpClient;
     private final Gson gson;
+    // Local RAG fallback — used when Gemini API is unavailable
+    private final VoyaRAGService ragFallback = new VoyaRAGService();
 
     public GeminiChatService() {
         this.httpClient = HttpClient.newBuilder()
@@ -42,6 +44,9 @@ public class GeminiChatService {
                 .build();
         this.gson = new Gson();
     }
+
+    /** Returns the local RAG service (for direct use when Gemini is down). */
+    public VoyaRAGService getFallback() { return ragFallback; }
 
     /**
      * Represents a single chat message.
@@ -101,11 +106,11 @@ public class GeminiChatService {
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() == 429) {
-            System.err.println("[Gemini] Rate limit exceeded HTTP " + response.statusCode() + ": " + response.body());
-            return "⏳ Je suis très sollicité en ce moment (limite de requêtes atteinte). Merci de patienter une petite minute...";
+            System.err.println("[Gemini] Rate limit — falling back to RAG");
+            return "⏳ *[Mode hors-ligne activé]* " + ragFallback.chat(userText);
         } else if (response.statusCode() != 200) {
-            System.err.println("[Gemini] HTTP " + response.statusCode() + ": " + response.body());
-            return "🌐 Désolé, je n'arrive pas à joindre mes sources de voyage en ce moment. Réessayez dans quelques instants!";
+            System.err.println("[Gemini] HTTP " + response.statusCode() + " — falling back to RAG: " + response.body());
+            return ragFallback.chat(userText);
         }
 
         return extractText(response.body());

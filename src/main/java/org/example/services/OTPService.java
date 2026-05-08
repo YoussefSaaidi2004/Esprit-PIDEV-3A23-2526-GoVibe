@@ -12,6 +12,21 @@ import java.util.Random;
  */
 public class OTPService {
 
+    /**
+     * Result of a generateAndSendOTP call.
+     * Contains the plaintext code (for dev-mode fallback) and whether
+     * the email was actually delivered.
+     */
+    public static class OTPResult {
+        public final String code;
+        public final boolean emailSent;
+
+        public OTPResult(String code, boolean emailSent) {
+            this.code = code;
+            this.emailSent = emailSent;
+        }
+    }
+
     private static final int OTP_LENGTH = 6;
     private static final int OTP_VALIDITY_MINUTES = 5;
 
@@ -25,10 +40,20 @@ public class OTPService {
     }
 
     /**
-     * Generates a 6-digit OTP, stores it in the database, and sends it by email.
-     * @return the generated OTP code
+     * Package-private constructor for unit testing — allows injecting mock
+     * Connection and EmailService without needing a real MySQL instance.
      */
-    public String generateAndSendOTP(int userId, String email) {
+    OTPService(Connection connection, EmailService emailService) {
+        this.connection = connection;
+        this.emailService = emailService;
+    }
+
+    /**
+     * Generates a 6-digit OTP, stores it in the database, and sends it by email.
+     * Returns an {@link OTPResult} with the plaintext code and whether the email
+     * was actually delivered (useful for dev-mode fallback display).
+     */
+    public OTPResult generateAndSendOTP(int userId, String email) {
         String code = generateCode();
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(OTP_VALIDITY_MINUTES);
 
@@ -47,10 +72,16 @@ public class OTPService {
             System.err.println("❌ [OTP] Error storing OTP: " + e.getMessage());
         }
 
-        // Send OTP by email
-        sendOTPEmail(email, code);
+        // Guard: if SMTP not configured, skip email and signal failure
+        if (!emailService.isConfigured()) {
+            System.err.println("⚠️ [OTP] SMTP not configured (mail.password is blank).");
+            System.err.println("⚠️ [OTP] DEV-MODE — OTP for user " + userId + " → " + code);
+            return new OTPResult(code, false);
+        }
 
-        return code;
+        // Send OTP by email
+        boolean sent = sendOTPEmail(email, code);
+        return new OTPResult(code, sent);
     }
 
     /**
@@ -150,8 +181,9 @@ public class OTPService {
 
     /**
      * Sends a styled OTP email.
+     * @return true if email was delivered, false on SMTP failure
      */
-    private void sendOTPEmail(String email, String code) {
+    private boolean sendOTPEmail(String email, String code) {
         String subject = "🔐 GoVibe — Code de vérification";
         String htmlBody = "<!DOCTYPE html>"
                 + "<html><head><meta charset='UTF-8'></head>"
@@ -173,6 +205,13 @@ public class OTPService {
                 + "<p style='color:#999;font-size:12px;'>Cet email a été envoyé automatiquement par le système de sécurité GoVibe.</p>"
                 + "</div></div></body></html>";
 
-        emailService.sendHtmlEmail(email, subject, htmlBody);
+        try {
+            emailService.sendHtmlEmailChecked(email, subject, htmlBody);
+            return true;
+        } catch (Exception e) {
+            System.err.println("❌ [OTP] Failed to send email to " + email + ": " + e.getMessage());
+            System.err.println("⚠️ [OTP] DEV-MODE — OTP code: " + code);
+            return false;
+        }
     }
 }

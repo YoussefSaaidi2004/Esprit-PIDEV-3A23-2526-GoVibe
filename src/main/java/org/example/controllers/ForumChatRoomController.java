@@ -94,10 +94,15 @@ public class ForumChatRoomController {
                 });
             } catch (Exception e) {
                 e.printStackTrace();
+                // Gemini unreachable — silently fall back to local RAG
+                String ragResponse = geminiService.getFallback().chat(text);
                 Platform.runLater(() -> {
                     showTyping(false);
-                    addAiBubble("🌐 Oups! La connexion à mon serveur de voyage a échoué. Vérifiez votre connexion internet.");
+                    addAiBubble(ragResponse);
+                    chatHistory.add(new ChatMessage("user", text));
+                    chatHistory.add(new ChatMessage("model", ragResponse));
                     sendButton.setDisable(false);
+                    scrollToBottom();
                 });
             }
         }).start();

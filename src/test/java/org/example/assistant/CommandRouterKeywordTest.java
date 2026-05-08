@@ -23,6 +23,22 @@ class CommandRouterKeywordTest {
     private CommandRouter.ControllerProxy mockProxy;
     private CommandRouter router;
 
+    /**
+     * Start the JavaFX Platform once for the whole test class so that
+     * Platform.runLater() calls (used inside doLogin / doLogout handlers)
+     * do not throw "Toolkit not initialized".  The Platform is kept alive
+     * for the duration of the JVM; catching IllegalStateException handles
+     * the case where another test class already started it.
+     */
+    @BeforeAll
+    static void startJfx() {
+        try {
+            javafx.application.Platform.startup(() -> { /* no-op init */ });
+        } catch (IllegalStateException e) {
+            // Already initialised — nothing to do.
+        }
+    }
+
     @BeforeEach
     void setUp() {
         // Mockito creates proxy instances without calling the real constructors,
@@ -304,7 +320,145 @@ class CommandRouterKeywordTest {
     }
 
     // ──────────────────────────────────────────────────────────────────────────
-    // 6. Help text completeness
+    // 6. LOGIN command — keyword recognition and behaviour
+    // ──────────────────────────────────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("LOGIN command")
+    class LoginCommand {
+
+        @ParameterizedTest(name = "\"{0}\" → tryKeywordMatch returns true")
+        @ValueSource(strings = {"LOGIN", "LOG IN", "SIGN IN", "CONNEXION", "SE CONNECTER"})
+        @DisplayName("all login keyword variants are recognised")
+        void loginKeywordsRecognised(String keyword) {
+            assertTrue(router.tryKeywordMatch(keyword),
+                    "Expected tryKeywordMatch to return true for login keyword: " + keyword);
+        }
+
+        @Test
+        @DisplayName("LOGIN does NOT speak (Python already spoke — no double-speech)")
+        void loginCommandDoesNotSpeak() {
+            // doLogin() intentionally skips TTS so that Python's spoken ack
+            // is not followed by a second announcement from Java.
+            router.onCommand("LOGIN", "login");
+            verify(mockVas, never()).vivianSpeak(anyString());
+        }
+
+        @Test
+        @DisplayName("LOGIN command completes without exception")
+        void loginCommandDoesNotThrow() {
+            assertDoesNotThrow(() -> router.onCommand("LOGIN", "login"));
+        }
+
+        @Test
+        @DisplayName("LOG IN (with space) is an alias for LOGIN")
+        void logInWithSpaceIsAlias() {
+            assertDoesNotThrow(() -> router.onCommand("LOG IN", "log in"));
+            verify(mockVas, never()).vivianSpeak(anyString());
+        }
+
+        @Test
+        @DisplayName("SIGN IN is an alias for LOGIN")
+        void signInIsAlias() {
+            assertDoesNotThrow(() -> router.onCommand("SIGN IN", "sign in"));
+            verify(mockVas, never()).vivianSpeak(anyString());
+        }
+
+        @Test
+        @DisplayName("CONNEXION (French) is an alias for LOGIN")
+        void connexionFrenchAlias() {
+            assertDoesNotThrow(() -> router.onCommand("CONNEXION", "connexion"));
+            verify(mockVas, never()).vivianSpeak(anyString());
+        }
+
+        @Test
+        @DisplayName("LOGIN does not suppress the next command's TTS (flag cleared)")
+        void loginClearsSuppressFlag() {
+            // Fire LOGIN then an unrelated command that should speak.
+            router.onCommand("LOGIN", "login");
+            // Now AIDE should still speak (LOGIN must not leave suppressActionSpeech=true).
+            router.onCommand("AIDE", "aide");
+            verify(mockVas, atLeastOnce()).vivianSpeak(anyString());
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 7. LOGOUT command — keyword recognition and behaviour
+    // ──────────────────────────────────────────────────────────────────────────
+
+    @Nested
+    @DisplayName("LOGOUT command")
+    class LogoutCommand {
+
+        @ParameterizedTest(name = "\"{0}\" → tryKeywordMatch returns true")
+        @ValueSource(strings = {"DECONNEXION", "LOGOUT", "LOG OUT"})
+        @DisplayName("all logout keyword variants are recognised")
+        void logoutKeywordsRecognised(String keyword) {
+            assertTrue(router.tryKeywordMatch(keyword),
+                    "Expected tryKeywordMatch to return true for logout keyword: " + keyword);
+        }
+
+        @ParameterizedTest(name = "\"{0}\" → notifyUserLoggedOut() called before scene switch")
+        @ValueSource(strings = {"DECONNEXION", "LOGOUT", "LOG OUT"})
+        @DisplayName("all logout variants notify VAS synchronously before navigation")
+        void allLogoutVariantsNotifyVas(String keyword) {
+            // notifyUserLoggedOut() must be called first so Python exits
+            // PROCESSING_LOGOUT and can play its farewell sequence.
+            router.tryKeywordMatch(keyword);
+            verify(mockVas).notifyUserLoggedOut();
+        }
+
+        @Test
+        @DisplayName("LOGOUT speaks a farewell message")
+        void logoutSpeaksFarewellMessage() {
+            router.tryKeywordMatch("LOGOUT");
+            verify(mockVas).vivianSpeak(anyString());
+        }
+
+        @Test
+        @DisplayName("LOGOUT farewell message contains expected text")
+        void logoutFarewellContent() {
+            router.tryKeywordMatch("LOGOUT");
+            verify(mockVas).vivianSpeak(argThat(msg ->
+                    msg.toLowerCase().contains("poof") ||
+                    msg.toLowerCase().contains("come back") ||
+                    msg.toLowerCase().contains("goodbye") ||
+                    msg.toLowerCase().contains("see you") ||
+                    msg.toLowerCase().contains("off you go")));
+        }
+
+        @Test
+        @DisplayName("DECONNEXION (French) notifies VAS and speaks")
+        void deconnexionFrenchVariant() {
+            router.tryKeywordMatch("DECONNEXION");
+            verify(mockVas).notifyUserLoggedOut();
+            verify(mockVas).vivianSpeak(anyString());
+        }
+
+        @Test
+        @DisplayName("LOG OUT (with space) notifies VAS and speaks")
+        void logOutWithSpaceVariant() {
+            router.tryKeywordMatch("LOG OUT");
+            verify(mockVas).notifyUserLoggedOut();
+            verify(mockVas).vivianSpeak(anyString());
+        }
+
+        @Test
+        @DisplayName("LOGOUT command completes without exception")
+        void logoutCommandDoesNotThrow() {
+            assertDoesNotThrow(() -> router.onCommand("LOGOUT", "logout"));
+        }
+
+        @Test
+        @DisplayName("notifyUserLoggedOut() is called exactly once per logout command")
+        void notifyUserLoggedOutCalledExactlyOnce() {
+            router.onCommand("LOGOUT", "logout");
+            verify(mockVas, times(1)).notifyUserLoggedOut();
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 8. Help text completeness
     // ──────────────────────────────────────────────────────────────────────────
 
     @Nested

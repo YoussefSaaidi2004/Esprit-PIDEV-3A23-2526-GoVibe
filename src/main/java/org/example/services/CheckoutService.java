@@ -1,5 +1,7 @@
 package org.example.services;
 
+import org.example.utils.StatusMapper;
+
 import org.example.dao.CheckoutDAO;
 import org.example.entities.Checkout;
 
@@ -136,7 +138,7 @@ public class CheckoutService {
         if (checkout == null) {
             throw new IllegalArgumentException("Checkout not found");
         }
-        checkout.setStatusReservation("CONFIRMED");
+        checkout.setStatusReservation(StatusMapper.toDbValue("CONFIRMED"));
         return checkoutDAO.update(checkout);
     }
 
@@ -152,7 +154,7 @@ public class CheckoutService {
         if (checkout == null) {
             throw new IllegalArgumentException("Checkout not found");
         }
-        checkout.setStatusReservation("REJECTED");
+        checkout.setStatusReservation(StatusMapper.toDbValue("REJECTED"));
         return checkoutDAO.update(checkout);
     }
 
@@ -168,7 +170,7 @@ public class CheckoutService {
         if (checkout == null) {
             throw new IllegalArgumentException("Checkout not found");
         }
-        checkout.setStatusReservation("CANCELLED");
+        checkout.setStatusReservation(StatusMapper.toDbValue("CANCELLED"));
         boolean success = checkoutDAO.update(checkout);
         System.out.println("[CheckoutService] Cancel " + (success ? "SUCCESS" : "FAILED"));
         return success;

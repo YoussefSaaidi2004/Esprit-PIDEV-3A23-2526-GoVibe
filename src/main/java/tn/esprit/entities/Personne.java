@@ -12,6 +12,20 @@ public class Personne {
     private Timestamp created_at;
     private String faceEncoding; // Used for Face ID
 
+    // --- Symfony-compatible fields (all nullable/defaulted) ---
+    private String provider = "local";        // OAuth provider: 'local', 'google', etc.
+    private String providerId;                // OAuth provider user ID
+    private String photoUrl;                  // Profile photo URL
+    private boolean isAccountLocked = false;  // Account lockout flag
+    private String preferredMfa = "NONE";     // MFA preference: 'NONE', 'EMAIL', 'FACE'
+    private Timestamp lockoutUntil;           // Lockout expiry timestamp
+    private int absenceCount = 0;             // Number of absences
+    private String customerType = "standard"; // 'standard' or 'premium'
+    private Timestamp subscriptionExpiresAt;  // Premium subscription expiry
+    private int sessionCredits = 0;           // Activity session credits
+    private String preferredCategories;       // JSON array of preferred categories
+    private String residenceCity;             // User's city of residence
+
     public Personne() {
     }
 
@@ -45,6 +59,8 @@ public class Personne {
         this.password = password;
         this.role = role;
     }
+
+    // --- Core getters/setters ---
 
     public int getId() {
         return id;
@@ -108,6 +124,104 @@ public class Personne {
 
     public void setFaceEncoding(String faceEncoding) {
         this.faceEncoding = faceEncoding;
+    }
+
+    // --- Symfony-compatible getters/setters ---
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public boolean isAccountLocked() {
+        return isAccountLocked;
+    }
+
+    public void setAccountLocked(boolean accountLocked) {
+        isAccountLocked = accountLocked;
+    }
+
+    public String getPreferredMfa() {
+        return preferredMfa;
+    }
+
+    public void setPreferredMfa(String preferredMfa) {
+        this.preferredMfa = preferredMfa;
+    }
+
+    public Timestamp getLockoutUntil() {
+        return lockoutUntil;
+    }
+
+    public void setLockoutUntil(Timestamp lockoutUntil) {
+        this.lockoutUntil = lockoutUntil;
+    }
+
+    public int getAbsenceCount() {
+        return absenceCount;
+    }
+
+    public void setAbsenceCount(int absenceCount) {
+        this.absenceCount = absenceCount;
+    }
+
+    public String getCustomerType() {
+        return customerType;
+    }
+
+    public void setCustomerType(String customerType) {
+        this.customerType = customerType;
+    }
+
+    public Timestamp getSubscriptionExpiresAt() {
+        return subscriptionExpiresAt;
+    }
+
+    public void setSubscriptionExpiresAt(Timestamp subscriptionExpiresAt) {
+        this.subscriptionExpiresAt = subscriptionExpiresAt;
+    }
+
+    public int getSessionCredits() {
+        return sessionCredits;
+    }
+
+    public void setSessionCredits(int sessionCredits) {
+        this.sessionCredits = sessionCredits;
+    }
+
+    public String getPreferredCategories() {
+        return preferredCategories;
+    }
+
+    public void setPreferredCategories(String preferredCategories) {
+        this.preferredCategories = preferredCategories;
+    }
+
+    public String getResidenceCity() {
+        return residenceCity;
+    }
+
+    public void setResidenceCity(String residenceCity) {
+        this.residenceCity = residenceCity;
     }
 
     @Override

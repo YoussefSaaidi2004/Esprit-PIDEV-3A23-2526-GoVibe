@@ -115,7 +115,13 @@ public class ServicePersonne implements IService<personne> {
             // Check if stored password is a BCrypt hash (supports $2a/$2b/$2y)
             if (storedPassword != null && storedPassword.startsWith("$2")) {
                 try {
-                    passwordMatch = BCrypt.checkpw(password, storedPassword);
+                    // jBCrypt only supports $2a$ prefix, but PHP/Symfony uses $2y$ (or $2b$).
+                    // They are algorithmically identical, so we convert the prefix for verification.
+                    String hashForVerification = storedPassword;
+                    if (storedPassword.startsWith("$2y$") || storedPassword.startsWith("$2b$")) {
+                        hashForVerification = "$2a$" + storedPassword.substring(4);
+                    }
+                    passwordMatch = BCrypt.checkpw(password, hashForVerification);
                 } catch (IllegalArgumentException e) {
                     passwordMatch = false;
                 }

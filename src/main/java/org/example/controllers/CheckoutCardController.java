@@ -1,5 +1,7 @@
 package org.example.controllers;
 
+import org.example.utils.StatusMapper;
+
 import org.example.entities.Checkout;
 import org.example.dao.FlightDAO;
 import org.example.entities.Flight;
@@ -53,7 +55,7 @@ public class CheckoutCardController {
         priceText.setText(checkout.getTotalPrix() != null ? checkout.getTotalPrix().toPlainString() : "0");
 
         String statusValue = checkout.getStatusReservation();
-        statusText.setText(statusValue != null ? statusValue.toUpperCase() : "");
+        statusText.setText(StatusMapper.toDisplayLabel(statusValue));
         updateStatusStyle();
 
         actionBox.getChildren().clear();
@@ -91,19 +93,19 @@ public class CheckoutCardController {
         String status = checkout.getStatusReservation();
         String baseStyle = "-fx-font-size: 9; -fx-font-weight: 900; -fx-background-radius: 50;"
             + "-fx-border-radius: 50; -fx-border-width: 1; -fx-padding: 3 10 3 10;";
-        if ("PENDING".equalsIgnoreCase(status)) {
+        if (StatusMapper.isPending(status)) {
             statusText.setStyle(baseStyle
                 + "-fx-text-fill: #f0a500; -fx-background-color: rgba(240,165,0,0.15);"
                 + "-fx-border-color: rgba(240,165,0,0.35);");
-        } else if ("CONFIRMED".equalsIgnoreCase(status)) {
+        } else if (StatusMapper.isConfirmed(status)) {
             statusText.setStyle(baseStyle
                 + "-fx-text-fill: #4de88a; -fx-background-color: rgba(78,232,138,0.15);"
                 + "-fx-border-color: rgba(78,232,138,0.35);");
-        } else if ("REJECTED".equalsIgnoreCase(status)) {
+        } else if (StatusMapper.isRejected(status)) {
             statusText.setStyle(baseStyle
                 + "-fx-text-fill: #ef476f; -fx-background-color: rgba(239,71,111,0.15);"
                 + "-fx-border-color: rgba(239,71,111,0.35);");
-        } else if ("CANCELLED".equalsIgnoreCase(status)) {
+        } else if (StatusMapper.isCancelled(status)) {
             statusText.setStyle(baseStyle
                 + "-fx-text-fill: rgba(255,255,255,0.5); -fx-background-color: rgba(255,255,255,0.08);"
                 + "-fx-border-color: rgba(255,255,255,0.2);");
@@ -139,8 +141,8 @@ public class CheckoutCardController {
             
             CityPaymentModalController controller = loader.getController();
             controller.setData(checkout, flight, () -> {
-                checkout.setStatusReservation("CONFIRMED");
-                statusText.setText("CONFIRMED");
+                checkout.setStatusReservation(StatusMapper.toDbValue("CONFIRMED"));
+                statusText.setText(StatusMapper.toDisplayLabel(checkout.getStatusReservation()));
                 updateStatusStyle();
                 refreshUserActions();
                 if (onPaymentSuccess != null) {

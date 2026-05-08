@@ -127,21 +127,61 @@ public class HotelViewController implements Initializable {
         imageView.setSmooth(true);
 
         String url = hotel.getPhotoUrl();
-        Image image;
-        try {
-            if (url != null && !url.isBlank()) {
-                if (url.startsWith("http")) {
-                    image = new Image(url, 320, 180, false, true, true);
-                } else {
-                    image = new Image(url.startsWith("file:") ? url : "file:" + url, 320, 180, false, true, true);
+        // Set a placeholder immediately so the card renders without blocking
+        java.net.URL phRes = getClass().getResource("/images/placeholder.png");
+        Image placeholderImg = phRes != null
+            ? new Image(phRes.toExternalForm(), 320, 180, false, true, true)
+            : new Image("https://placehold.co/320x180/0a1810/50C878?text=Hotel", 320, 180, false, true, true);
+        imageView.setImage(placeholderImg);
+
+        if (url != null && !url.isBlank()) {
+            // Hotel has its own photo — load it asynchronously
+            Image hotelImg = new Image(
+                url.startsWith("http") ? url : (url.startsWith("file:") ? url : "file:" + url),
+                320, 180, false, true, true);
+            hotelImg.progressProperty().addListener((obs, o, n) -> {
+                if (n.doubleValue() >= 1.0 && !hotelImg.isError()) {
+                    javafx.application.Platform.runLater(() -> imageView.setImage(hotelImg));
                 }
-            } else {
-                image = new Image(getClass().getResource("/images/hotel-placeholder.jpg").toExternalForm());
-            }
-        } catch (Exception ex) {
-            image = new Image(getClass().getResource("/images/hotel-placeholder.jpg").toExternalForm());
+            });
+        } else {
+            // No photo stored — fetch a city photo from Tallyfy Denizen API (free, no key)
+            String city = hotel.getVille() != null ? hotel.getVille() : hotel.getNom();
+            Task<String> denizenTask = new Task<>() {
+                @Override protected String call() throws Exception {
+                    String apiUrl = "https://denizen.tallyfy.com?city="
+                        + java.net.URLEncoder.encode(city, java.nio.charset.StandardCharsets.UTF_8)
+                        + "&country=Tunisia";
+                    java.net.HttpURLConnection conn = (java.net.HttpURLConnection)
+                        new java.net.URL(apiUrl).openConnection();
+                    conn.setConnectTimeout(5000);
+                    conn.setReadTimeout(5000);
+                    conn.setRequestProperty("Accept", "application/json");
+                    if (conn.getResponseCode() != 200) return null;
+                    try (java.io.InputStream is = conn.getInputStream()) {
+                        String body = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                        // Parse photo_url from JSON manually (no extra deps)
+                        int idx = body.indexOf("\"photo_url\"");
+                        if (idx < 0) return null;
+                        int q1 = body.indexOf('"', idx + 11) + 1;
+                        int q2 = body.indexOf('"', q1);
+                        return (q1 > 0 && q2 > q1) ? body.substring(q1, q2) : null;
+                    }
+                }
+            };
+            denizenTask.setOnSucceeded(ev -> {
+                String photoUrl = denizenTask.getValue();
+                if (photoUrl != null && !photoUrl.isBlank()) {
+                    Image cityImg = new Image(photoUrl, 320, 180, false, true, true);
+                    cityImg.progressProperty().addListener((obs, o, n) -> {
+                        if (n.doubleValue() >= 1.0 && !cityImg.isError()) {
+                            imageView.setImage(cityImg);
+                        }
+                    });
+                }
+            });
+            new Thread(denizenTask, "denizen-" + hotel.getId()).start();
         }
-        imageView.setImage(image);
 
         // Strong bottom gradient so name is always readable
         Region overlay = new Region();

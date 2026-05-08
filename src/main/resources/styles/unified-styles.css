@@ -503,6 +503,56 @@
   -fx-text-fill: -fx-gv-text-primary;
 }
 
+/* Dark glass combo box used in Location/Voiture forms */
+.combo-glass-premium {
+  -fx-background-color: rgba(20,45,28,0.92);
+  -fx-background-radius: 10;
+  -fx-border-color: rgba(80,200,120,0.30);
+  -fx-border-width: 1;
+  -fx-border-radius: 10;
+  -fx-text-fill: white;
+  -fx-mark-color: rgba(80,200,120,0.85);
+  -fx-padding: 2 4;
+}
+
+.combo-glass-premium .list-cell {
+  -fx-background-color: transparent;
+  -fx-text-fill: white;
+}
+
+.combo-glass-premium:hover {
+  -fx-border-color: rgba(80,200,120,0.65);
+}
+
+/* Dark popup dropdown for ALL combo-boxes rendered on dark scenes */
+.combo-box-popup .list-view {
+  -fx-background-color: rgba(10,24,16,0.97);
+  -fx-background-radius: 10;
+  -fx-border-color: rgba(80,200,120,0.35);
+  -fx-border-width: 1;
+  -fx-border-radius: 10;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 18, 0, 0, 5);
+}
+
+.combo-box-popup .list-cell {
+  -fx-background-color: transparent;
+  -fx-text-fill: white;
+  -fx-padding: 9 14;
+  -fx-font-size: 13px;
+}
+
+.combo-box-popup .list-cell:hover,
+.combo-box-popup .list-cell:focused {
+  -fx-background-color: rgba(80,200,120,0.18);
+  -fx-text-fill: #50C878;
+}
+
+.combo-box-popup .list-cell:selected {
+  -fx-background-color: rgba(80,200,120,0.28);
+  -fx-text-fill: white;
+  -fx-font-weight: 700;
+}
+
 /* ============ THEME SWITCH (TOGGLE) ============ */
 .theme-switch {
   -fx-background-color: #e0e0e0;

@@ -1,5 +1,7 @@
 package org.example.entities;
 
+import org.example.utils.StatusMapper;
+
 
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
@@ -142,10 +144,25 @@ public class Checkout {
     }
 
     public boolean isPending() {
-        return "PENDING".equalsIgnoreCase(this.statusReservation);
+        return StatusMapper.isPending(this.statusReservation);
     }
 
     public boolean isConfirmed() {
-        return "CONFIRMED".equalsIgnoreCase(this.statusReservation);
+        return StatusMapper.isConfirmed(this.statusReservation);
+    }
+
+    public boolean isRejected() {
+        return StatusMapper.isRejected(this.statusReservation);
+    }
+
+    public boolean isCancelled() {
+        return StatusMapper.isCancelled(this.statusReservation);
+    }
+
+    /**
+     * Returns the English display label for the current status.
+     */
+    public String getDisplayStatus() {
+        return StatusMapper.toDisplayLabel(this.statusReservation);
     }
 }

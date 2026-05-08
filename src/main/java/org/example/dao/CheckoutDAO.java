@@ -274,7 +274,7 @@ public class CheckoutDAO {
      */
     public List<Checkout> findPendingCheckouts() {
         List<Checkout> checkouts = new ArrayList<>();
-        String sql = "SELECT * FROM checkout WHERE UPPER(status_reservation) = 'PENDING'";
+        String sql = "SELECT * FROM checkout WHERE UPPER(status_reservation) IN ('PENDING', 'EN_ATTENTE')";
 
         try (Connection conn = UnifiedDatabaseManager.getConnection();
              Statement stmt = conn.createStatement();

@@ -84,6 +84,30 @@ public class EmailService {
     }
 
     /**
+     * Envoie un email en HTML et lève une exception si l'envoi échoue.
+     * Utilisé par OTPService pour détecter les erreurs d'envoi.
+     *
+     * @throws MessagingException si l'envoi échoue (SMTP auth, réseau, etc.)
+     */
+    public void sendHtmlEmailChecked(String toEmail, String subject, String htmlBody) throws MessagingException {
+        MimeMessage message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(fromAddress));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+        message.setSubject(subject);
+        message.setContent(htmlBody, "text/html; charset=UTF-8");
+        Transport.send(message);
+        System.out.println("✅ [Email HTML] Envoyé avec succès à " + toEmail);
+    }
+
+    /**
+     * Returns true if SMTP credentials are configured (non-blank username and password).
+     */
+    public boolean isConfigured() {
+        return username != null && !username.isBlank()
+            && password != null && !password.isBlank();
+    }
+
+    /**
      * Envoie un email de bienvenue pour un nouvel utilisateur Google OAuth2.
      */
     public void sendWelcomeEmail(String toEmail, String userName) {

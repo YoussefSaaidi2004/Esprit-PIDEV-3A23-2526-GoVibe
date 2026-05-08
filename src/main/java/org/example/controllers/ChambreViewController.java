@@ -59,9 +59,18 @@ public class ChambreViewController implements Initializable {
         if (bgImageView != null && rootStack != null) {
             bgImageView.fitWidthProperty().bind(rootStack.widthProperty());
             bgImageView.fitHeightProperty().bind(rootStack.heightProperty());
-            var url = getClass().getResource("/messages/home-hero5.png");
-            if (url != null) {
-                bgImageView.setImage(new Image(url.toExternalForm(), true));
+            // Try the correct resource paths
+            String[] candidates = {
+                "/org/example/images/home-hero5.png",
+                "/images/home-hero.jpg",
+                "/images/home-hero.png"
+            };
+            for (String path : candidates) {
+                var res = getClass().getResource(path);
+                if (res != null) {
+                    bgImageView.setImage(new Image(res.toExternalForm(), true));
+                    break;
+                }
             }
         }
     }
@@ -104,103 +113,184 @@ public class ChambreViewController implements Initializable {
     }
 
     private VBox createChambreCard(Chambre chambre) {
-        VBox card = new VBox(15);
-        card.setPrefWidth(320);
-        card.getStyleClass().add("glass-card");
-        card.setPadding(new Insets(20));
+        // ── CARD SHELL ──────────────────────────────────────────────────────
+        VBox card = new VBox(0);
+        card.setPrefWidth(300);
+        card.setMaxWidth(300);
+        final String cardBase =
+            "-fx-background-color: rgba(8,20,13,0.82);" +
+            "-fx-background-radius: 16;" +
+            "-fx-border-radius: 16;" +
+            "-fx-border-color: rgba(80,200,120,0.22);" +
+            "-fx-border-width: 1;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.50), 18, 0, 0, 6);"
+            + "-fx-cursor: hand;";
+        final String cardHover =
+            "-fx-background-color: rgba(10,28,17,0.92);" +
+            "-fx-background-radius: 16;" +
+            "-fx-border-radius: 16;" +
+            "-fx-border-color: rgba(80,200,120,0.65);" +
+            "-fx-border-width: 1.5;" +
+            "-fx-effect: dropshadow(gaussian, rgba(80,200,120,0.25), 22, 0, 0, 8);" +
+            "-fx-cursor: hand;";
+        card.setStyle(cardBase);
+        card.setOnMouseEntered(e -> card.setStyle(cardHover));
+        card.setOnMouseExited(e -> card.setStyle(cardBase));
 
-        // Header: Type + Capacity
-        HBox header = new HBox(10);
+        // ── CONTENT PADDING ─────────────────────────────────────────────────
+        VBox inner = new VBox(14);
+        inner.setPadding(new Insets(18, 18, 16, 18));
+
+        // ── HEADER: type + capacity icon ──────────────────────────────────
+        HBox header = new HBox(8);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        Label typeLabel = new Label(chambre.getType());
-        typeLabel.getStyleClass().add("card-title");
-        typeLabel.setStyle("-fx-font-size: 18px;");
+        // Type badge
+        Label typePill = new Label("🛏  " + chambre.getType());
+        typePill.setStyle(
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 16px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 4, 0, 0, 1);");
+        HBox.setHgrow(typePill, Priority.ALWAYS);
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Label capBadge = new Label("👥 " + chambre.getCapacite());
+        capBadge.setStyle(
+            "-fx-background-color: rgba(80,200,120,0.16);" +
+            "-fx-text-fill: #50C878;" +
+            "-fx-font-size: 11px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-padding: 3 10;" +
+            "-fx-background-radius: 20;");
 
-        Label capacityLabel = new Label("👥 " + chambre.getCapacite());
-        capacityLabel.setStyle("-fx-text-fill: #50C878; -fx-font-weight: bold; -fx-font-size: 13px;");
+        header.getChildren().addAll(typePill, capBadge);
 
-        header.getChildren().addAll(typeLabel, spacer, capacityLabel);
-
-        // Hotel Badge
+        // ── HOTEL BADGE ──────────────────────────────────────────────────
         String hotelName = getHotelName(chambre.getHotelId());
-        Label hotelLabel = new Label("🏨 " + hotelName);
-        hotelLabel.setStyle("-fx-background-color: rgba(160,224,201,0.1); -fx-text-fill: #A0E0C9; " +
-                           "-fx-padding: 4 10; -fx-background-radius: 10; -fx-font-size: 11px;");
+        Label hotelLabel = new Label("🏨  " + hotelName);
+        hotelLabel.setStyle(
+            "-fx-background-color: rgba(60,150,100,0.12);" +
+            "-fx-text-fill: rgba(140,210,170,0.85);" +
+            "-fx-padding: 4 12;" +
+            "-fx-background-radius: 10;" +
+            "-fx-font-size: 11px;");
 
-        // Equipments
-        Label equipLabel = new Label("✨ " + chambre.getEquipements());
-        equipLabel.getStyleClass().add("card-description");
+        // ── THIN SEPARATOR ────────────────────────────────────────────────
+        Region sep1 = new Region();
+        sep1.setPrefHeight(1);
+        sep1.setStyle("-fx-background-color: rgba(80,200,120,0.10);");
+
+        // ── EQUIPEMENTS ──────────────────────────────────────────────────
+        Label equipLabel = new Label("✦  " + (chambre.getEquipements() != null ? chambre.getEquipements() : ""));
+        equipLabel.setStyle(
+            "-fx-text-fill: rgba(180,220,200,0.72);" +
+            "-fx-font-size: 11px;" +
+            "-fx-line-spacing: 2;");
         equipLabel.setWrapText(true);
-        equipLabel.setMaxHeight(50);
+        equipLabel.setMaxHeight(42);
 
-        // Pricing Grid
-        GridPane priceGrid = new GridPane();
-        priceGrid.setHgap(15);
-        priceGrid.setVgap(8);
-        priceGrid.setPadding(new Insets(5, 0, 5, 0));
+        // ── PRICING BLOCK ────────────────────────────────────────────────
+        VBox priceBlock = new VBox(6);
+        priceBlock.setStyle(
+            "-fx-background-color: rgba(255,255,255,0.04);" +
+            "-fx-background-radius: 10;" +
+            "-fx-padding: 10 14;");
 
-        priceGrid.add(createPriceLabel("Standard", "#A0E0C9"), 0, 0);
-        priceGrid.add(createPriceValue(chambre.getPrixStandard(), "#50C878"), 1, 0);
+        priceBlock.getChildren().addAll(
+            buildPriceRow("Standard",       chambre.getPrixStandard(),      "#50C878"),
+            buildPriceRow("Haute saison",   chambre.getPrixHauteSaison(),   "#FFA040"),
+            buildPriceRow("Basse saison",   chambre.getPrixBasseSaison(),   "rgba(180,220,200,0.75)")
+        );
 
-        priceGrid.add(createPriceLabel("Haute Saison", "#A0E0C9"), 0, 1);
-        priceGrid.add(createPriceValue(chambre.getPrixHauteSaison(), "#FF7F50"), 1, 1);
-
-        priceGrid.add(createPriceLabel("Basse Saison", "#A0E0C9"), 0, 2);
-        priceGrid.add(createPriceValue(chambre.getPrixBasseSaison(), "#D1F2EB"), 1, 2);
-
-        // 🔴 Availability Badge (checked for today → tomorrow)
-        HBox availabilityBox = new HBox(8);
-        availabilityBox.setAlignment(Pos.CENTER_LEFT);
+        // ── AVAILABILITY BADGE ────────────────────────────────────────────
         Label availBadge = new Label();
-        availBadge.setStyle("-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px; -fx-font-weight: bold;");
         try {
             LocalDate today = LocalDate.now();
-            LocalDate tomorrow = today.plusDays(1);
-            boolean dispo = serviceAutoAssign.isChambreDisponible(chambre.getId(), today, tomorrow);
+            boolean dispo = serviceAutoAssign.isChambreDisponible(chambre.getId(), today, today.plusDays(1));
             if (dispo) {
-                availBadge.setText("✅ Disponible");
-                availBadge.setStyle("-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #50C878; " +
-                    "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px; -fx-font-weight: bold;");
+                availBadge.setText("✅  Disponible");
+                availBadge.setStyle(
+                    "-fx-background-color: rgba(80,200,120,0.14);" +
+                    "-fx-text-fill: #50C878;" +
+                    "-fx-padding: 4 14;" +
+                    "-fx-background-radius: 20;" +
+                    "-fx-font-size: 11px;" +
+                    "-fx-font-weight: bold;");
             } else {
-                availBadge.setText("🔴 Occupée");
-                availBadge.setStyle("-fx-background-color: rgba(216,78,54,0.15); -fx-text-fill: #D84E36; " +
-                    "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px; -fx-font-weight: bold;");
+                availBadge.setText("🔴  Occupée");
+                availBadge.setStyle(
+                    "-fx-background-color: rgba(220,70,50,0.14);" +
+                    "-fx-text-fill: rgba(255,130,110,0.90);" +
+                    "-fx-padding: 4 14;" +
+                    "-fx-background-radius: 20;" +
+                    "-fx-font-size: 11px;" +
+                    "-fx-font-weight: bold;");
             }
         } catch (Exception ex) {
-            availBadge.setText("⚪ Statut inconnu");
-            availBadge.setStyle("-fx-background-color: rgba(160,224,201,0.1); -fx-text-fill: #A0E0C9; " +
-                "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px;");
+            availBadge.setText("⚪  Statut inconnu");
+            availBadge.setStyle(
+                "-fx-background-color: rgba(120,160,140,0.10);" +
+                "-fx-text-fill: rgba(160,210,180,0.70);" +
+                "-fx-padding: 4 14;" +
+                "-fx-background-radius: 20;" +
+                "-fx-font-size: 11px;");
         }
-        availabilityBox.getChildren().add(availBadge);
 
-        Separator sep = new Separator();
-        sep.setOpacity(0.1);
+        // ── THIN SEPARATOR ────────────────────────────────────────────────
+        Region sep2 = new Region();
+        sep2.setPrefHeight(1);
+        sep2.setStyle("-fx-background-color: rgba(80,200,120,0.10);");
 
-        // Action buttons
-        HBox footer = new HBox(10);
+        // ── FOOTER: action buttons ────────────────────────────────────────
+        HBox footer = new HBox(8);
         footer.setAlignment(Pos.CENTER_RIGHT);
+        footer.setPadding(new Insets(2, 0, 0, 0));
+
+        String btnEdit =
+            "-fx-background-color: rgba(255,255,255,0.07);" +
+            "-fx-text-fill: #6bcf9a;" +
+            "-fx-font-size: 15px;" +
+            "-fx-padding: 6 12;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;";
+        String btnDel =
+            "-fx-background-color: rgba(255,80,60,0.10);" +
+            "-fx-text-fill: rgba(255,130,110,0.85);" +
+            "-fx-font-size: 15px;" +
+            "-fx-padding: 6 12;" +
+            "-fx-background-radius: 10;" +
+            "-fx-cursor: hand;";
 
         Button editBtn = new Button("✎");
-        editBtn.getStyleClass().add("card-action-btn");
+        editBtn.setStyle(btnEdit);
+        editBtn.setOnMouseEntered(e -> editBtn.setStyle(btnEdit.replace("0.07", "0.15")));
+        editBtn.setOnMouseExited(e -> editBtn.setStyle(btnEdit));
         editBtn.setOnAction(e -> editChambre(chambre));
 
         Button deleteBtn = new Button("🗑");
-        deleteBtn.getStyleClass().add("card-action-btn-danger");
+        deleteBtn.setStyle(btnDel);
+        deleteBtn.setOnMouseEntered(e -> deleteBtn.setStyle(btnDel.replace("0.10", "0.22")));
+        deleteBtn.setOnMouseExited(e -> deleteBtn.setStyle(btnDel));
         deleteBtn.setOnAction(e -> deleteChambre(chambre));
 
         footer.getChildren().addAll(editBtn, deleteBtn);
 
-        card.getChildren().addAll(header, hotelLabel, equipLabel, priceGrid, availabilityBox, sep, footer);
-
-        // Hover Effect
-        card.setOnMouseEntered(e -> card.setStyle("-fx-border-color: #50C878; -fx-border-width: 1; -fx-border-radius: 20;"));
-        card.setOnMouseExited(e -> card.setStyle(""));
-
+        inner.getChildren().addAll(header, hotelLabel, sep1, equipLabel, priceBlock, availBadge, sep2, footer);
+        card.getChildren().add(inner);
         return card;
+    }
+
+    /** Helper — one price row inside the pricing block */
+    private HBox buildPriceRow(String label, double price, String valueColor) {
+        HBox row = new HBox();
+        row.setAlignment(Pos.CENTER_LEFT);
+        Label lbl = new Label(label + " :");
+        lbl.setStyle("-fx-text-fill: rgba(140,200,170,0.65); -fx-font-size: 11px;");
+        HBox.setHgrow(lbl, Priority.ALWAYS);
+        Label val = new Label(String.format("%.0f DT", price));
+        val.setStyle("-fx-text-fill: " + valueColor + "; -fx-font-size: 12px; -fx-font-weight: bold;");
+        row.getChildren().addAll(lbl, val);
+        return row;
     }
 
     private Label createPriceLabel(String text, String color) {
@@ -228,22 +318,31 @@ public class ChambreViewController implements Initializable {
     public void addChambre() {
         Dialog<Chambre> dialog = new Dialog<>();
         dialog.setTitle("Ajouter une Chambre");
-        dialog.setHeaderText("✨ Nouvelle Chambre");
+        dialog.setHeaderText(null);
 
-        // Style the dialog
+        // Dark glassmorphism dialog styling — inline, no CSS dependency
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
-        dialogPane.getStyleClass().add("form-dialog");
+        dialogPane.setStyle(
+            "-fx-background-color: rgba(8,20,13,0.98);" +
+            "-fx-border-color: rgba(80,200,120,0.30);" +
+            "-fx-border-width: 1.5;");
+        java.net.URL cssUrl = getClass().getResource("/styles/unified-styles.css");
+        if (cssUrl != null) dialogPane.getStylesheets().add(cssUrl.toExternalForm());
 
-        ButtonType saveButtonType = new ButtonType("💾 Enregistrer", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, cancelButtonType);
+        ButtonType saveButtonType = new ButtonType("💾  Enregistrer", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("✕  Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialogPane.getButtonTypes().addAll(saveButtonType, cancelButtonType);
 
-        // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.getStyleClass().add("premium-button");
+        saveButton.setStyle(
+            "-fx-background-color: linear-gradient(to right,#1a8f4e,#22b860);" +
+            "-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 22;" +
+            "-fx-background-radius: 12; -fx-cursor: hand;");
         Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-        cancelButton.getStyleClass().add("card-action-btn-danger");
+        cancelButton.setStyle(
+            "-fx-background-color: rgba(200,60,50,0.15);" +
+            "-fx-text-fill: rgba(255,130,110,0.90); -fx-padding: 8 22;" +
+            "-fx-background-radius: 12; -fx-cursor: hand;");
 
         ScrollPane form = createChambreForm(null);
         dialog.getDialogPane().setContent(form);
@@ -277,23 +376,31 @@ public class ChambreViewController implements Initializable {
 
     private void editChambre(Chambre chambre) {
         Dialog<Chambre> dialog = new Dialog<>();
-        dialog.setTitle("Modifier la Chambre");
-        dialog.setHeaderText("✏️ Modifier: " + chambre.getType());
+        dialog.setTitle("Modifier: " + chambre.getType());
+        dialog.setHeaderText(null);
 
-        // Style the dialog
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
-        dialogPane.getStyleClass().add("form-dialog");
+        dialogPane.setStyle(
+            "-fx-background-color: rgba(8,20,13,0.98);" +
+            "-fx-border-color: rgba(80,200,120,0.30);" +
+            "-fx-border-width: 1.5;");
+        java.net.URL cssUrl = getClass().getResource("/styles/unified-styles.css");
+        if (cssUrl != null) dialogPane.getStylesheets().add(cssUrl.toExternalForm());
 
-        ButtonType saveButtonType = new ButtonType("💾 Enregistrer", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelButtonType = new ButtonType("❌ Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, cancelButtonType);
+        ButtonType saveButtonType = new ButtonType("💾  Enregistrer", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("✕  Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialogPane.getButtonTypes().addAll(saveButtonType, cancelButtonType);
 
-        // Style buttons
         Button saveButton = (Button) dialogPane.lookupButton(saveButtonType);
-        saveButton.getStyleClass().add("premium-button");
+        saveButton.setStyle(
+            "-fx-background-color: linear-gradient(to right,#1a8f4e,#22b860);" +
+            "-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 22;" +
+            "-fx-background-radius: 12; -fx-cursor: hand;");
         Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-        cancelButton.getStyleClass().add("card-action-btn-danger");
+        cancelButton.setStyle(
+            "-fx-background-color: rgba(200,60,50,0.15);" +
+            "-fx-text-fill: rgba(255,130,110,0.90); -fx-padding: 8 22;" +
+            "-fx-background-radius: 12; -fx-cursor: hand;");
 
         ScrollPane form = createChambreForm(chambre);
         dialog.getDialogPane().setContent(form);
@@ -347,20 +454,24 @@ public class ChambreViewController implements Initializable {
         VBox container = new VBox(20);
         container.setPadding(new Insets(30));
         container.setPrefWidth(500);
-        container.getStyleClass().add("form-card-glass");
+        container.setStyle(
+            "-fx-background-color: rgba(8,20,13,0.96);" +
+            "-fx-background-radius: 16;" +
+            "-fx-border-color: rgba(80,200,120,0.18);" +
+            "-fx-border-width: 1;" +
+            "-fx-border-radius: 16;");
 
-        Label titleLabel = new Label("✨ Détails de la Chambre");
-        titleLabel.getStyleClass().add("hero-title");
-        titleLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: #0B6E4F;");
+        Label titleLabel = new Label("✦ Détails de la Chambre");
+        titleLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #50C878; -fx-padding: 0 0 6 0;");
 
         // Type
         VBox typeBox = new VBox(5);
         Label typeLabel = new Label("Type de chambre *");
-        typeLabel.getStyleClass().add("form-label");
+        typeLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         TextField typeField = new TextField(chambre != null ? chambre.getType() : "");
         typeField.setPromptText("Ex: Suite, Standard, Deluxe...");
         typeField.setId("typeField");
-        typeField.getStyleClass().add("form-field");
+        typeField.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-size: 13px;");
         Label typeError = org.example.utils.FormValidator.createErrorLabel();
         typeError.setId("typeError");
         typeBox.getChildren().addAll(typeLabel, typeField, typeError);
@@ -368,21 +479,21 @@ public class ChambreViewController implements Initializable {
         // Capacité
         VBox capaciteBox = new VBox(5);
         Label capaciteLabel = new Label("Capacité (personnes) *");
-        capaciteLabel.getStyleClass().add("form-label");
+        capaciteLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         Spinner<Integer> capaciteSpinner = new Spinner<>(1, 10, chambre != null ? chambre.getCapacite() : 2);
         capaciteSpinner.setId("capaciteSpinner");
         capaciteSpinner.setEditable(true);
-        capaciteSpinner.getStyleClass().add("form-field");
+        capaciteSpinner.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8;");
         capaciteBox.getChildren().addAll(capaciteLabel, capaciteSpinner);
 
         // Équipements
         VBox equipBox = new VBox(5);
         Label equipLabel = new Label("Équipements *");
-        equipLabel.getStyleClass().add("form-label");
+        equipLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         TextField equipField = new TextField(chambre != null ? chambre.getEquipements() : "");
         equipField.setPromptText("Ex: WiFi, TV, Climatisation, Balcon");
         equipField.setId("equipField");
-        equipField.getStyleClass().add("form-field");
+        equipField.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-size: 13px;");
         Label equipError = org.example.utils.FormValidator.createErrorLabel();
         equipError.setId("equipError");
         equipBox.getChildren().addAll(equipLabel, equipField, equipError);
@@ -390,7 +501,7 @@ public class ChambreViewController implements Initializable {
         // Hôtel
         VBox hotelBox = new VBox(5);
         Label hotelLabel = new Label("Hôtel *");
-        hotelLabel.getStyleClass().add("form-label");
+        hotelLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         ComboBox<String> hotelCombo = new ComboBox<>();
         hotelCombo.setPromptText("Sélectionnez un hôtel");
         for (Hotel h : hotelList) {
@@ -400,7 +511,7 @@ public class ChambreViewController implements Initializable {
             hotelCombo.setValue(chambre.getHotelId() + " - " + getHotelName(chambre.getHotelId()));
         }
         hotelCombo.setId("hotelCombo");
-        hotelCombo.getStyleClass().add("form-field");
+        hotelCombo.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8;");
         hotelCombo.setPrefWidth(430);
         Label hotelError = org.example.utils.FormValidator.createErrorLabel();
         hotelError.setId("hotelError");
@@ -409,11 +520,11 @@ public class ChambreViewController implements Initializable {
         // Prix Standard
         VBox prixStdBox = new VBox(5);
         Label prixStdLabel = new Label("Prix Standard (DT) *");
-        prixStdLabel.getStyleClass().add("form-label");
+        prixStdLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         TextField prixStdField = new TextField(chambre != null ? String.valueOf(chambre.getPrixStandard()) : "");
         prixStdField.setPromptText("Ex: 150.00");
         prixStdField.setId("prixStdField");
-        prixStdField.getStyleClass().add("form-field");
+        prixStdField.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-size: 13px;");
         Label prixStdError = org.example.utils.FormValidator.createErrorLabel();
         prixStdError.setId("prixStdError");
         prixStdBox.getChildren().addAll(prixStdLabel, prixStdField, prixStdError);
@@ -421,11 +532,11 @@ public class ChambreViewController implements Initializable {
         // Prix Haute Saison
         VBox prixHauteBox = new VBox(5);
         Label prixHauteLabel = new Label("Prix Haute Saison (DT) *");
-        prixHauteLabel.getStyleClass().add("form-label");
+        prixHauteLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         TextField prixHauteField = new TextField(chambre != null ? String.valueOf(chambre.getPrixHauteSaison()) : "");
         prixHauteField.setPromptText("Ex: 200.00");
         prixHauteField.setId("prixHauteField");
-        prixHauteField.getStyleClass().add("form-field");
+        prixHauteField.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-size: 13px;");
         Label prixHauteError = org.example.utils.FormValidator.createErrorLabel();
         prixHauteError.setId("prixHauteError");
         prixHauteBox.getChildren().addAll(prixHauteLabel, prixHauteField, prixHauteError);
@@ -433,21 +544,22 @@ public class ChambreViewController implements Initializable {
         // Prix Basse Saison
         VBox prixBasseBox = new VBox(5);
         Label prixBasseLabel = new Label("Prix Basse Saison (DT) *");
-        prixBasseLabel.getStyleClass().add("form-label");
+        prixBasseLabel.setStyle("-fx-text-fill: rgba(180,220,195,0.82); -fx-font-size: 11.5px; -fx-font-weight: bold;");
         TextField prixBasseField = new TextField(chambre != null ? String.valueOf(chambre.getPrixBasseSaison()) : "");
         prixBasseField.setPromptText("Ex: 120.00");
         prixBasseField.setId("prixBasseField");
-        prixBasseField.getStyleClass().add("form-field");
+        prixBasseField.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: #e8f5ec; -fx-prompt-text-fill: rgba(255,255,255,0.28); -fx-border-color: rgba(80,200,120,0.25); -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-font-size: 13px;");
         Label prixBasseError = org.example.utils.FormValidator.createErrorLabel();
         prixBasseError.setId("prixBasseError");
         prixBasseBox.getChildren().addAll(prixBasseLabel, prixBasseField, prixBasseError);
 
         // Info text
         Label infoLabel = new Label("* Champs obligatoires");
-        infoLabel.getStyleClass().add("form-help");
+        infoLabel.setStyle("-fx-text-fill: rgba(150,200,170,0.55); -fx-font-size: 10.5px;");
 
         GridPane formGrid = new GridPane();
-        formGrid.getStyleClass().add("form-grid");
+        formGrid.setHgap(16);
+        formGrid.setVgap(16);
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
         col1.setHgrow(Priority.ALWAYS);
@@ -601,12 +713,8 @@ public class ChambreViewController implements Initializable {
 
     private void navigateTo(String fxmlPath) {
         try {
-            Stage stage = (Stage) chambreCardsContainer.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-            stage.setScene(new Scene(root));
-            stage.setMaximized(true);
-        } catch (IOException e) {
+            org.example.utils.SceneNavigator.switchTo(fxmlPath, chambreCardsContainer);
+        } catch (Exception e) {
             e.printStackTrace();
             showAlert("Erreur", "Impossible de naviguer: " + e.getMessage(), Alert.AlertType.ERROR);
         }

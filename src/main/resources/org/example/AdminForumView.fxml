@@ -1,19 +1,26 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.example.controllers.ListForumController"
-            stylesheets="@../styles/unified-styles.css, @../styles.css">
+<BorderPane stylesheets="@../styles/unified-styles.css, @../styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ListForumController">
 
     <!-- LEFT SIDEBAR -->
     <left>
-        <fx:include source="AdminSidebar.fxml" fx:id="adminSidebar"/>
+        <fx:include fx:id="adminSidebar" source="AdminSidebar.fxml" />
     </left>
 
     <!-- MAIN CONTENT -->
@@ -21,42 +28,40 @@
         <StackPane fx:id="rootStackPane">
 
             <!-- Hero Background -->
-            <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" styleClass="premium-bg"/>
-            <Pane styleClass="premium-bg-overlay" mouseTransparent="true"/>
+            <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" styleClass="premium-bg" />
+            <Pane mouseTransparent="true" styleClass="premium-bg-overlay" />
 
             <!-- Main scrollable content -->
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;"
-                        hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="630.0" prefWidth="832.0" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="ALWAYS">
                 <content>
-                    <VBox spacing="0" style="-fx-background-color: transparent;">
+                    <VBox spacing="0" style="-fx-background-color: transparent; -fx-padding: 0 0 100 0;">
 
                         <!-- Hero Header -->
-                        <HBox alignment="CENTER_LEFT" spacing="25" styleClass="glass-panel"
-                              style="-fx-padding: 28 36; -fx-background-radius: 20;">
-                            <padding><Insets top="20" right="36" bottom="20" left="36"/></padding>
+                        <HBox alignment="CENTER_LEFT" spacing="25" style="-fx-padding: 28 36; -fx-background-radius: 20;" styleClass="glass-panel">
+                            <padding><Insets bottom="20" left="36" right="36" top="20" /></padding>
                             <StackPane styleClass="icon-circle-emerald">
-                                <Label text="💬" style="-fx-font-size: 32;"/>
+                                <Label style="-fx-font-size: 32;" text="💬" />
                             </StackPane>
                             <VBox spacing="4">
-                                <Label text="Forums Admin"
-                                       style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: white;
-                                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 8, 0, 0, 2);"/>
-                                <Label text="Gerez et moderez les forums de discussion"
-                                       style="-fx-font-size: 14; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                                <Label style="-fx-font-size: 30; -fx-font-weight: 900; -fx-text-fill: white;                                               -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 8, 0, 0, 2);" text="Forums Admin" />
+                                <Label style="-fx-font-size: 14; -fx-text-fill: rgba(255,255,255,0.8);" text="Gerez et moderez les forums de discussion" />
                             </VBox>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <HBox spacing="12" alignment="CENTER">
-                                <VBox alignment="CENTER" spacing="4" styleClass="glass-tile-mini" prefWidth="90">
-                                    <Label fx:id="statForumsLabel" text="0" styleClass="tile-value-emerald" style="-fx-font-size: 20;"/>
-                                    <Label text="FORUMS" styleClass="tile-label-tiny"/>
+                            
+                            <Region prefWidth="20" />
+                            
+                            <Region HBox.hgrow="ALWAYS" />
+                            <HBox alignment="CENTER" spacing="12">
+                                <VBox alignment="CENTER" prefWidth="90" spacing="4" styleClass="glass-tile-mini">
+                                    <Label fx:id="statForumsLabel" style="-fx-font-size: 20;" styleClass="tile-value-emerald" text="0" />
+                                    <Label styleClass="tile-label-tiny" text="FORUMS" />
                                 </VBox>
-                                <VBox alignment="CENTER" spacing="4" styleClass="glass-tile-mini" prefWidth="90">
-                                    <Label fx:id="statMembersLabel" text="0" styleClass="tile-value-emerald" style="-fx-font-size: 20;"/>
-                                    <Label text="MEMBRES" styleClass="tile-label-tiny"/>
+                                <VBox alignment="CENTER" prefWidth="90" spacing="4" styleClass="glass-tile-mini">
+                                    <Label fx:id="statMembersLabel" style="-fx-font-size: 20;" styleClass="tile-value-emerald" text="0" />
+                                    <Label styleClass="tile-label-tiny" text="MEMBRES" />
                                 </VBox>
-                                <VBox alignment="CENTER" spacing="4" styleClass="glass-tile-mini" prefWidth="90">
-                                    <Label fx:id="statPostsLabel" text="0" styleClass="tile-value-emerald" style="-fx-font-size: 20;"/>
-                                    <Label text="PUBS" styleClass="tile-label-tiny"/>
+                                <VBox alignment="CENTER" prefWidth="90" spacing="4" styleClass="glass-tile-mini">
+                                    <Label fx:id="statPostsLabel" style="-fx-font-size: 20;" styleClass="tile-value-emerald" text="0" />
+                                    <Label styleClass="tile-label-tiny" text="PUBS" />
                                 </VBox>
                             </HBox>
                         </HBox>
@@ -64,62 +69,53 @@
                         <!-- Search + Tabs -->
                         <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-padding: 20 40 0 40;">
                             <HBox alignment="CENTER_LEFT" spacing="0" styleClass="search-bar-wrap" HBox.hgrow="ALWAYS">
-                                <StackPane prefWidth="38" prefHeight="38">
-                                    <SVGPath styleClass="search-icon-svg"
-                                             content="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-                                             scaleX="0.85" scaleY="0.85"/>
+                                <StackPane prefHeight="38" prefWidth="38">
+                                    <SVGPath content="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" scaleX="0.85" scaleY="0.85" styleClass="search-icon-svg" />
                                 </StackPane>
-                                <TextField fx:id="searchField" promptText="Rechercher des forums..."
-                                           onKeyReleased="#handleSearch"
-                                           styleClass="search-input" HBox.hgrow="ALWAYS"/>
+                                <TextField fx:id="searchField" onKeyReleased="#handleSearch" promptText="Rechercher des forums..." styleClass="search-input" HBox.hgrow="ALWAYS" />
                             </HBox>
-                            <HBox spacing="8" alignment="CENTER" styleClass="lf-tab-bar">
-                                <ToggleButton fx:id="tabPopular" text="Populaires" selected="true"
-                                             onAction="#handleTabPopular" styleClass="lf-tab lf-tab-active"/>
-                                <ToggleButton fx:id="tabRecent" text="Recents"
-                                             onAction="#handleTabRecent" styleClass="lf-tab"/>
-                                <ToggleButton fx:id="tabMine" text="Mes forums"
-                                             onAction="#handleTabMine" styleClass="lf-tab"/>
+                            <HBox alignment="CENTER" spacing="8" styleClass="lf-tab-bar">
+                                <ToggleButton fx:id="tabPopular" onAction="#handleTabPopular" selected="true" styleClass="lf-tab lf-tab-active" text="Populaires" />
+                                <ToggleButton fx:id="tabRecent" onAction="#handleTabRecent" styleClass="lf-tab" text="Récents" />
+                                <ToggleButton fx:id="tabMine" onAction="#handleTabMine" styleClass="lf-tab" text="Mes forums" />
                             </HBox>
                         </HBox>
 
                         <!-- Action Buttons -->
-                        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 14 40 0 40;">
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 14 40 0 40;">
                             <Button onAction="#handleGoToPosts" styleClass="lf-btn-secondary">
                                 <graphic>
                                     <HBox alignment="CENTER" spacing="8">
-                                        <SVGPath styleClass="lf-btn-svg-dark"
-                                                 content="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
-                                                 scaleX="0.85" scaleY="0.85"/>
-                                        <Label text="Toutes les publications" styleClass="lf-btn-text-dark"/>
+                                        <SVGPath content="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" scaleX="0.85" scaleY="0.85" styleClass="lf-btn-svg-dark" />
+                                        <Label styleClass="lf-btn-text-dark" text="Toutes les publications" />
                                     </HBox>
                                 </graphic>
                             </Button>
                             <Button onAction="#handleExportPdf" styleClass="lf-btn-secondary">
                                 <graphic>
                                     <HBox alignment="CENTER" spacing="8">
-                                        <SVGPath styleClass="lf-btn-svg-dark"
-                                                 content="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"
-                                                 scaleX="0.85" scaleY="0.85"/>
-                                        <Label text="Exporter PDF" styleClass="lf-btn-text-dark"/>
+                                        <SVGPath content="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z" scaleX="0.85" scaleY="0.85" styleClass="lf-btn-svg-dark" />
+                                        <Label styleClass="lf-btn-text-dark" text="Exporter PDF" />
                                     </HBox>
                                 </graphic>
                             </Button>
-                            <Region HBox.hgrow="ALWAYS"/>
+
+                            <!-- Moved Professional Add Button -->
+                            <Button onAction="#handleAjoutForum" style="-fx-background-color: linear-gradient(to right, #50C878, #3DAF62);                                           -fx-background-radius: 20; -fx-padding: 10 24; -fx-cursor: hand;                                           -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.4), 12, 0, 0, 4);">
+                                <graphic>
+                                    <HBox alignment="CENTER" spacing="10">
+                                        <Label style="-fx-font-size: 18; -fx-font-weight: 900; -fx-text-fill: white;" text="+" />
+                                        <Label style="-fx-font-size: 13; -fx-font-weight: 800; -fx-text-fill: white;" text="Créer un Forum" />
+                                    </HBox>
+                                </graphic>
+                            </Button>
+
+                            <Region HBox.hgrow="ALWAYS" />
                             <Button onAction="#handleOpenChat" styleClass="lf-btn-chat">
                                 <graphic>
                                     <HBox alignment="CENTER" spacing="8">
-                                        <Label text="Chat Voyage IA" style="-fx-text-fill: white; -fx-font-weight: 700; -fx-font-size: 13;"/>
-                                    </HBox>
-                                </graphic>
-                            </Button>
-                            <Button onAction="#handleAjoutForum" styleClass="lf-btn-primary">
-                                <graphic>
-                                    <HBox alignment="CENTER" spacing="8">
-                                        <SVGPath styleClass="lf-btn-svg-light"
-                                                 content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
-                                                 scaleX="0.9" scaleY="0.9"/>
-                                        <Label text="Creer forum" styleClass="lf-btn-text-light"/>
+                                        <Label style="-fx-font-size: 16;" text="🌍" />
+                                        <Label style="-fx-text-fill: white; -fx-font-weight: 700; -fx-font-size: 13;" text="Chat Voyage IA" />
                                     </HBox>
                                 </graphic>
                             </Button>
@@ -127,27 +123,23 @@
 
                         <!-- Section Title -->
                         <HBox alignment="CENTER_LEFT" style="-fx-padding: 24 40 12 40;">
-                            <Label text="Tous les forums"
-                                   style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: white;
-                                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0, 0, 1);"/>
+                            <Label style="-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: white;                                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 6, 0, 0, 1);" text="Tous les forums" />
                         </HBox>
 
                         <!-- Forum Cards Grid (populated programmatically) -->
                         <HBox alignment="TOP_CENTER" style="-fx-padding: 0 20 50 20;">
-                            <VBox HBox.hgrow="ALWAYS" spacing="0">
+                            <VBox spacing="0" HBox.hgrow="ALWAYS">
                                 <!-- forumsContainer is a FlowPane built programmatically by controller -->
-                                <VBox fx:id="forumsContainer" spacing="14"
-                                      style="-fx-background-color: transparent; -fx-padding: 0 20 20 20;">
+                                <VBox fx:id="forumsContainer" spacing="14" style="-fx-background-color: transparent; -fx-padding: 0 20 20 20;">
                                 </VBox>
 
                                 <!-- Empty State -->
-                                <VBox fx:id="emptyState" alignment="CENTER" spacing="15"
-                                      styleClass="empty-state" visible="false" managed="false">
-                                    <Label text="Aucun forum trouve" styleClass="empty-state-title"/>
+                                <VBox fx:id="emptyState" alignment="CENTER" managed="false" spacing="15" styleClass="empty-state" visible="false">
+                                    <Label styleClass="empty-state-title" text="Aucun forum trouve" />
                                     <Button onAction="#handleAjoutForum" styleClass="lf-btn-primary">
                                         <graphic>
                                             <HBox alignment="CENTER" spacing="8">
-                                                <Label text="Creer un forum" styleClass="lf-btn-text-light"/>
+                                                <Label styleClass="lf-btn-text-light" text="Creer un forum" />
                                             </HBox>
                                         </graphic>
                                     </Button>
@@ -160,63 +152,39 @@
             </ScrollPane>
 
             <!-- Modal Overlay (form) -->
-            <StackPane fx:id="formOverlay" managed="false" visible="false"
-                       style="-fx-background-color: rgba(0,0,0,0.65);">
-                <VBox fx:id="formContainer" alignment="CENTER" maxHeight="700" maxWidth="800"
-                      style="-fx-background-color: transparent;"/>
+            <StackPane fx:id="formOverlay" managed="false" style="-fx-background-color: rgba(0,0,0,0.65);" visible="false">
+                <VBox fx:id="formContainer" alignment="CENTER" maxHeight="700" maxWidth="800" style="-fx-background-color: transparent;" />
             </StackPane>
 
             <!-- Stats Modal Overlay -->
-            <StackPane fx:id="statsOverlay" managed="false" visible="false"
-                       style="-fx-background-color: rgba(0,0,0,0.72);"
-                       onMouseClicked="#handleCloseStats">
-                <VBox fx:id="statsContainer" alignment="TOP_CENTER" maxWidth="680" maxHeight="540" spacing="0"
-                      style="-fx-background-color: rgba(15,30,20,0.96); -fx-background-radius: 24;
-                             -fx-border-color: rgba(80,200,120,0.35); -fx-border-width: 1.5; -fx-border-radius: 24;
-                             -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.85),40,0,0,12);"
-                      onMouseClicked="#handleStatsContainerClick">
+            <StackPane fx:id="statsOverlay" managed="false" onMouseClicked="#handleCloseStats" style="-fx-background-color: rgba(0,0,0,0.72);" visible="false">
+                <VBox fx:id="statsContainer" alignment="TOP_CENTER" maxHeight="540" maxWidth="680" onMouseClicked="#handleStatsContainerClick" spacing="0" style="-fx-background-color: rgba(15,30,20,0.96); -fx-background-radius: 24;                              -fx-border-color: rgba(80,200,120,0.35); -fx-border-width: 1.5; -fx-border-radius: 24;                              -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.85),40,0,0,12);">
 
                     <!-- Stats header -->
-                    <HBox alignment="CENTER_LEFT" spacing="14"
-                          style="-fx-background-color: rgba(80,200,120,0.10); -fx-background-radius: 24 24 0 0;
-                                 -fx-border-color: rgba(80,200,120,0.20); -fx-border-width: 0 0 1 0; -fx-padding: 22 28;">
-                        <Label text="Statistiques" style="-fx-font-size: 26; -fx-font-weight: 900; -fx-text-fill: white;"/>
-                        <Label fx:id="statsForumTitleLabel" text=""
-                               style="-fx-font-size: 15; -fx-text-fill: rgba(80,200,120,0.85); -fx-font-weight: 700;"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Button onAction="#handleCloseStats" text="✕"
-                                style="-fx-background-color: rgba(255,255,255,0.08); -fx-text-fill: rgba(255,255,255,0.7);
-                                       -fx-font-size: 16; -fx-background-radius: 20;
-                                       -fx-min-width: 36; -fx-min-height: 36; -fx-cursor: hand;
-                                       -fx-border-color: rgba(255,255,255,0.15); -fx-border-width: 1; -fx-border-radius: 20;"/>
+                    <HBox alignment="CENTER_LEFT" spacing="14" style="-fx-background-color: rgba(80,200,120,0.10); -fx-background-radius: 24 24 0 0;                                  -fx-border-color: rgba(80,200,120,0.20); -fx-border-width: 0 0 1 0; -fx-padding: 22 28;">
+                        <Label style="-fx-font-size: 26; -fx-font-weight: 900; -fx-text-fill: white;" text="Statistiques" />
+                        <Label fx:id="statsForumTitleLabel" style="-fx-font-size: 15; -fx-text-fill: rgba(80,200,120,0.85); -fx-font-weight: 700;" text="" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleCloseStats" style="-fx-background-color: rgba(255,255,255,0.08); -fx-text-fill: rgba(255,255,255,0.7);                                        -fx-font-size: 16; -fx-background-radius: 20;                                        -fx-min-width: 36; -fx-min-height: 36; -fx-cursor: hand;                                        -fx-border-color: rgba(255,255,255,0.15); -fx-border-width: 1; -fx-border-radius: 20;" text="✕" />
                     </HBox>
 
                     <!-- Country stats summary row -->
-                    <HBox fx:id="statsummaryRow" spacing="0"
-                          style="-fx-background-color: rgba(0,0,0,0.25); -fx-padding: 14 28;">
-                        <Label text="Pays mentionnes dans ce forum  " style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 13;"/>
-                        <Label fx:id="statsCountriesCountLabel" text="0"
-                               style="-fx-text-fill: #50C878; -fx-font-weight: 800; -fx-font-size: 14;"/>
-                        <Label text="  pays identifies" style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 13;"/>
+                    <HBox fx:id="statsummaryRow" spacing="0" style="-fx-background-color: rgba(0,0,0,0.25); -fx-padding: 14 28;">
+                        <Label style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 13;" text="Pays mentionnes dans ce forum  " />
+                        <Label fx:id="statsCountriesCountLabel" style="-fx-text-fill: #50C878; -fx-font-weight: 800; -fx-font-size: 14;" text="0" />
+                        <Label style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 13;" text="  pays identifies" />
                     </HBox>
 
                     <!-- Scrollable country cards -->
-                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                                style="-fx-background-color: transparent; -fx-background: transparent;"
-                                hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+                    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
                         <content>
-                            <FlowPane fx:id="countryCardsContainer" hgap="14" vgap="14"
-                                      style="-fx-background-color: transparent; -fx-padding: 20 28 20 28;"/>
+                            <FlowPane fx:id="countryCardsContainer" hgap="14" style="-fx-background-color: transparent; -fx-padding: 20 28 20 28;" vgap="14" />
                         </content>
                     </ScrollPane>
 
                     <!-- Close button row -->
                     <HBox alignment="CENTER" style="-fx-padding: 16 28;">
-                        <Button text="Fermer" onAction="#handleCloseStats"
-                                style="-fx-background-color: rgba(80,200,120,0.18); -fx-text-fill: #50C878;
-                                       -fx-font-size: 14; -fx-font-weight: 700; -fx-background-radius: 12;
-                                       -fx-border-color: rgba(80,200,120,0.45); -fx-border-width: 1.5;
-                                       -fx-border-radius: 12; -fx-padding: 10 36; -fx-cursor: hand;"/>
+                        <Button onAction="#handleCloseStats" style="-fx-background-color: rgba(80,200,120,0.18); -fx-text-fill: #50C878;                                        -fx-font-size: 14; -fx-font-weight: 700; -fx-background-radius: 12;                                        -fx-border-color: rgba(80,200,120,0.45); -fx-border-width: 1.5;                                        -fx-border-radius: 12; -fx-padding: 10 36; -fx-cursor: hand;" text="Fermer" />
                     </HBox>
 
                 </VBox>

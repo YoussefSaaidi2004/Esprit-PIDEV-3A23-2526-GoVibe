@@ -47,6 +47,9 @@ public class AjoutForumController {
     @FXML
     public void initialize() {
         syncSidebarRole();
+        // Initial state for privateToggle
+        privateToggle.setSelected(false);
+        updateToggleStyle();
     }
 
     private void syncSidebarRole() {
@@ -57,6 +60,21 @@ public class AjoutForumController {
             } else {
                 roleLabel.setText("Espace client");
             }
+        }
+    }
+
+    @FXML
+    private void handleTogglePrivate() {
+        updateToggleStyle();
+    }
+
+    private void updateToggleStyle() {
+        if (privateToggle.isSelected()) {
+            privateToggle.setText("🔒 Privé");
+            privateToggle.setStyle("-fx-background-color: rgba(80,200,120,0.25); -fx-text-fill: #50C878; -fx-border-color: #50C878; -fx-font-weight: 700; -fx-background-radius: 12; -fx-cursor: hand; -fx-padding: 10 18; -fx-border-radius: 12; -fx-border-width: 1; -fx-font-size: 13;");
+        } else {
+            privateToggle.setText("🔓 Public");
+            privateToggle.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: rgba(255,255,255,0.8); -fx-border-color: rgba(80,200,120,0.22); -fx-font-weight: 700; -fx-background-radius: 12; -fx-cursor: hand; -fx-padding: 10 18; -fx-border-radius: 12; -fx-border-width: 1; -fx-font-size: 13;");
         }
     }
 

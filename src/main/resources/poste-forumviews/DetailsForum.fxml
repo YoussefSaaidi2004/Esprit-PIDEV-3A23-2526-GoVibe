@@ -25,12 +25,19 @@
 
     <BorderPane fx:id="mainBorderPane" style="-fx-background-color: transparent;" prefHeight="900" prefWidth="1400">
 
-        <!-- ==================== TOP HEADER (Commun) ==================== -->
+        <!-- ==================== TOP HEADER (User) ==================== -->
         <top>
-            <StackPane styleClass="header-glass">
+            <StackPane fx:id="userHeaderStack" styleClass="header-glass">
                 <fx:include source="../components/UserHeader.fxml"/>
             </StackPane>
         </top>
+
+        <!-- ==================== LEFT SIDEBAR (Admin) ==================== -->
+        <left>
+            <StackPane fx:id="adminSidebarStack" managed="false" visible="false">
+                <fx:include source="../org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
+            </StackPane>
+        </left>
 
         <!-- Main Content Area -->
         <center>
@@ -76,8 +83,10 @@
                             
                             <Region HBox.hgrow="ALWAYS" />
                             
-                            <HBox alignment="CENTER_RIGHT" spacing="10">
-                                <Button fx:id="leaveButton" onAction="#handleLeaveForum" style="-fx-background-color: transparent; -fx-text-fill: #ff4d4d; -fx-font-weight: bold; -fx-border-color: #ff4d4d; -fx-border-radius: 20; -fx-padding: 5 15; -fx-cursor: hand;" text="Quitter le forum" visible="false" managed="false" />
+                             <HBox alignment="CENTER_RIGHT" spacing="10">
+                                 <Button fx:id="joinButton" managed="false" onAction="#handleJoinRequest" style="-fx-background-color: linear-gradient(to right, #50C878, #3DAF62); -fx-text-fill: white; -fx-font-weight: 800; -fx-border-radius: 20; -fx-padding: 9 22; -fx-background-radius: 20; -fx-cursor: hand;" text="🤝  Rejoindre le forum" visible="false" />
+                                 <Label fx:id="pendingLabel" managed="false" style="-fx-text-fill: #FBC02D; -fx-font-weight: 800; -fx-background-color: rgba(251,192,45,0.15); -fx-padding: 9 22; -fx-background-radius: 20;" text="⏳  Demande en attente" visible="false" />
+                                 <Button fx:id="leaveButton" onAction="#handleLeaveForum" style="-fx-background-color: transparent; -fx-text-fill: #ff4d4d; -fx-font-weight: bold; -fx-border-color: #ff4d4d; -fx-border-radius: 20; -fx-padding: 5 15; -fx-cursor: hand;" text="Quitter le forum" visible="false" managed="false" />
                                 <Button text="📰  Toutes les publications" onAction="#handleGoToPosts"
                                         style="-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #50C878;
                                                -fx-border-color: rgba(80,200,120,0.4); -fx-border-radius: 20;
@@ -139,6 +148,12 @@
                                                   -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 10;
                                                   -fx-padding: 10; -fx-cursor: hand;
                                                   -fx-effect: dropshadow(gaussian,rgba(80,200,120,0.4),10,0,0,3);"/>
+                                </VBox>
+                                
+                                <!-- Join Requests section -->
+                                <VBox fx:id="requestsBox" managed="false" spacing="10" style="-fx-border-color: rgba(251,192,45,0.2); -fx-border-width: 1 0 0 0; -fx-padding: 15 0 0 0;" visible="false">
+                                    <Label style="-fx-font-size: 13; -fx-font-weight: 800; -fx-text-fill: #FBC02D;" text="Demandes d'adhésion" />
+                                    <VBox fx:id="requestsContainer" spacing="8" />
                                 </VBox>
                             </VBox>
                         </HBox>

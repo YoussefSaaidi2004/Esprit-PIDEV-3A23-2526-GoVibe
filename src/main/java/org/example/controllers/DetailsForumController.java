@@ -17,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.animation.FadeTransition;
@@ -72,15 +73,31 @@ public class DetailsForumController {
     @FXML
     private ImageView bgImageView;
 
+    // Join Request UI
+    @FXML
+    private Button joinButton;
+    @FXML
+    private Label pendingLabel;
+    @FXML
+    private VBox requestsBox;
+    @FXML
+    private VBox requestsContainer;
+
     // Overlay Modal properties
     @FXML
     private StackPane formOverlay;
     @FXML
     private VBox formContainer;
-    
-    // To identify the root StackPane we might have to wrap DetailsForum or rely on parent
+
+    // To identify the root StackPane we might have to wrap DetailsForum or rely on
+    // parent
     @FXML
     private StackPane rootStackPane;
+
+    @FXML
+    private StackPane userHeaderStack;
+    @FXML
+    private StackPane adminSidebarStack;
 
     public void initData(Forum forum) {
         syncSidebarRole();
@@ -104,35 +121,51 @@ public class DetailsForumController {
             }
         }
 
-        // Auto-join logic
+        // Membership logic
         if (SessionManager.getCurrentUser() != null) {
             int userId = SessionManager.getCurrentUser().getId();
-            try {
-                if (!serviceMembre.estMembre(forum.getForum_id(), userId)) {
-                    Membre m = new Membre(forum.getForum_id(), userId);
-                    serviceMembre.ajouter(m);
-                    System.out.println("Utilisateur ajouté automatiquement au forum (via Membre entity).");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            // Show creator controls if owner
             boolean isOwner = forum.getCreated_by() == userId;
-            boolean isMember = serviceMembre.estMembre(forum.getForum_id(), userId);
 
-            if (isOwner) {
-                creatorControls.setVisible(true);
-                creatorControls.setManaged(true);
-            } else {
-                creatorControls.setVisible(false);
-                creatorControls.setManaged(false);
+            // Reset buttons visibility
+            joinButton.setVisible(false);
+            joinButton.setManaged(false);
+            pendingLabel.setVisible(false);
+            pendingLabel.setManaged(false);
+            leaveButton.setVisible(false);
+            leaveButton.setManaged(false);
+
+            Membre membership = serviceMembre.getMembre(forum.getForum_id(), userId);
+            boolean isMember = membership != null && "ACCEPTED".equalsIgnoreCase(membership.getStatus());
+            boolean isPending = membership != null && "PENDING".equalsIgnoreCase(membership.getStatus());
+
+            boolean isAdmin = "admin".equalsIgnoreCase(SessionManager.getCurrentUser().getRole());
+            if (!isOwner && !isMember && !isAdmin) {
+                if (isPending) {
+                    pendingLabel.setVisible(true);
+                    pendingLabel.setManaged(true);
+                } else {
+                    joinButton.setVisible(true);
+                    joinButton.setManaged(true);
+                }
             }
 
             // Show Leave button if member and NOT creator
-            boolean showLeave = isMember && !isOwner;
-            leaveButton.setVisible(showLeave);
-            leaveButton.setManaged(showLeave);
+            if (isMember && !isOwner) {
+                leaveButton.setVisible(true);
+                leaveButton.setManaged(true);
+            }
+
+            // Creator controls
+            if (isOwner) {
+                creatorControls.setVisible(true);
+                creatorControls.setManaged(true);
+                loadRequests(); // Load pending requests for the creator
+            } else {
+                creatorControls.setVisible(false);
+                creatorControls.setManaged(false);
+                requestsBox.setVisible(false);
+                requestsBox.setManaged(false);
+            }
 
         } else {
             creatorControls.setVisible(false);
@@ -145,12 +178,26 @@ public class DetailsForumController {
     }
 
     private void syncSidebarRole() {
-        if (roleLabel != null && SessionManager.getCurrentUser() != null) {
+        if (SessionManager.getCurrentUser() != null) {
             String role = SessionManager.getCurrentUser().getRole();
-            if ("admin".equalsIgnoreCase(role)) {
-                roleLabel.setText("Espace admin");
-            } else {
-                roleLabel.setText("Espace client");
+            boolean isAdmin = "admin".equalsIgnoreCase(role);
+
+            // Toggle Header/Sidebar based on role
+            if (userHeaderStack != null) {
+                userHeaderStack.setVisible(!isAdmin);
+                userHeaderStack.setManaged(!isAdmin);
+            }
+            if (adminSidebarStack != null) {
+                adminSidebarStack.setVisible(isAdmin);
+                adminSidebarStack.setManaged(isAdmin);
+            }
+
+            if (roleLabel != null) {
+                if (isAdmin) {
+                    roleLabel.setText("Espace admin");
+                } else {
+                    roleLabel.setText("Espace client");
+                }
             }
         }
     }
@@ -160,7 +207,8 @@ public class DetailsForumController {
             bgImageView.fitWidthProperty().bind(rootStackPane.widthProperty());
             bgImageView.fitHeightProperty().bind(rootStackPane.heightProperty());
             var url = getClass().getResource("/messages/home-hero5.png");
-            if (url != null) bgImageView.setImage(new Image(url.toExternalForm(), true));
+            if (url != null)
+                bgImageView.setImage(new Image(url.toExternalForm(), true));
         }
     }
 
@@ -174,11 +222,12 @@ public class DetailsForumController {
     public void showFormOverlay(Parent formRoot) {
         formContainer.getChildren().clear();
         formContainer.getChildren().add(formRoot);
-        
+
         formOverlay.setVisible(true);
         formOverlay.setManaged(true);
-        
-        // Blur background (assumes rootStackPane exists and main content is at index 0 or similar)
+
+        // Blur background (assumes rootStackPane exists and main content is at index 0
+        // or similar)
         BoxBlur blur = new BoxBlur(10, 10, 3);
         if (rootStackPane != null && rootStackPane.getChildren().size() > 1) {
             rootStackPane.getChildren().get(rootStackPane.getChildren().size() - 2).setEffect(blur);
@@ -202,7 +251,7 @@ public class DetailsForumController {
         FadeTransition fadeOut = new FadeTransition(Duration.millis(250), formOverlay);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);
-        
+
         TranslateTransition slideDown = new TranslateTransition(Duration.millis(250), formContainer);
         slideDown.setFromY(0);
         slideDown.setToY(50);
@@ -222,6 +271,31 @@ public class DetailsForumController {
 
     public void loadForumPosts() {
         postsContainer.getChildren().clear();
+
+        // Security check for private forums
+        if (currentForum.isIs_private() && SessionManager.getCurrentUser() != null) {
+            int userId = SessionManager.getCurrentUser().getId();
+            boolean isAdmin = "admin".equalsIgnoreCase(SessionManager.getCurrentUser().getRole());
+            if (!isAdmin && currentForum.getCreated_by() != userId
+                    && !serviceMembre.estMembre(currentForum.getForum_id(), userId)) {
+                VBox lockedBox = new VBox(15);
+                lockedBox.setAlignment(Pos.CENTER);
+                lockedBox
+                        .setStyle("-fx-padding: 60; -fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 20;");
+
+                Label icon = new Label("🔒");
+                icon.setStyle("-fx-font-size: 40;");
+                Label msg = new Label("Ce forum est privé");
+                msg.setStyle("-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: bold;");
+                Label sub = new Label("Rejoignez la communauté pour voir les publications.");
+                sub.setStyle("-fx-text-fill: rgba(255,255,255,0.6); -fx-font-size: 14;");
+
+                lockedBox.getChildren().addAll(icon, msg, sub);
+                postsContainer.getChildren().add(lockedBox);
+                return;
+            }
+        }
+
         try {
             List<Poste> list = servicePoste.afficherParForum(currentForum.getForum_id());
             for (Poste p : list) {
@@ -309,6 +383,83 @@ public class DetailsForumController {
         }
     }
 
+    @FXML
+    private void handleJoinRequest(ActionEvent event) {
+        if (currentForum == null || SessionManager.getCurrentUser() == null)
+            return;
+        try {
+            String status = currentForum.isIs_private() ? "PENDING" : "ACCEPTED";
+            Membre m = new Membre(currentForum.getForum_id(), SessionManager.getCurrentUser().getId(), status);
+            serviceMembre.ajouter(m);
+
+            if ("PENDING".equals(status)) {
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Votre demande d'adhésion a été envoyée !");
+            } else {
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Vous avez rejoint le forum !");
+            }
+            initData(currentForum);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de rejoindre le forum.");
+        }
+    }
+
+    private void loadRequests() {
+        requestsContainer.getChildren().clear();
+        try {
+            List<Membre> demandes = serviceMembre.afficherDemandesParForum(currentForum.getForum_id());
+            requestsBox.setVisible(!demandes.isEmpty());
+            requestsBox.setManaged(!demandes.isEmpty());
+
+            for (Membre d : demandes) {
+                personne p = servicePersonne.getOneById(d.getUser_id());
+                if (p != null) {
+                    HBox card = new HBox(10);
+                    card.setAlignment(Pos.CENTER_LEFT);
+                    card.setStyle(
+                            "-fx-background-color: rgba(251,192,45,0.08); -fx-padding: 8; -fx-background-radius: 10; -fx-border-color: rgba(251,192,45,0.2); -fx-border-width: 1;");
+
+                    VBox info = new VBox(2);
+                    Label name = new Label(p.getPrenom() + " " + p.getNom());
+                    name.setStyle("-fx-text-fill: white; -fx-font-size: 12; -fx-font-weight: bold;");
+                    info.getChildren().add(name);
+
+                    Region spacer = new Region();
+                    HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+
+                    Button btnAcc = new Button("✓");
+                    btnAcc.setStyle(
+                            "-fx-background-color: #50C878; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;");
+                    btnAcc.setOnAction(e -> {
+                        try {
+                            serviceMembre.accepterMembre(d.getForum_id(), d.getUser_id());
+                            initData(currentForum);
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+
+                    Button btnRef = new Button("✕");
+                    btnRef.setStyle(
+                            "-fx-background-color: #ff4d4d; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;");
+                    btnRef.setOnAction(e -> {
+                        try {
+                            serviceMembre.supprimer(d.getForum_id(), d.getUser_id());
+                            initData(currentForum);
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+
+                    card.getChildren().addAll(info, spacer, btnAcc, btnRef);
+                    requestsContainer.getChildren().add(card);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -325,7 +476,7 @@ public class DetailsForumController {
             AjoutPostController controller = loader.getController();
             controller.setOverlayController(this); // Tell the form how to close itself
             controller.setForum(currentForum); // Pass the forum context
-            
+
             showFormOverlay(root);
         } catch (IOException e) {
             e.printStackTrace();

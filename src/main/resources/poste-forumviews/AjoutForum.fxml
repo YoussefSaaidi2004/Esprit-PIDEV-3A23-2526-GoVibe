@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
@@ -68,7 +68,7 @@
                 <VBox spacing="6" HBox.hgrow="ALWAYS">
                     <Label text="VISIBILITÉ"
                            style="-fx-font-size: 10; -fx-font-weight: 900; -fx-text-fill: #50C878; -fx-letter-spacing: 2;"/>
-                    <ToggleButton fx:id="privateToggle" text="🔒  Rendre Privé" maxWidth="Infinity"
+                    <ToggleButton fx:id="privateToggle" onAction="#handleTogglePrivate" text="🔒  Rendre Privé" maxWidth="Infinity"
                                   style="-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: rgba(255,255,255,0.8);
                                          -fx-font-weight: 700; -fx-background-radius: 12; -fx-cursor: hand;
                                          -fx-padding: 10 18; -fx-border-color: rgba(80,200,120,0.22);

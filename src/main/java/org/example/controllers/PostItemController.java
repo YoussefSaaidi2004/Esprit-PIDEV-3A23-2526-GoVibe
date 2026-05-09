@@ -567,10 +567,14 @@ public class PostItemController {
                     onRefresh.run();
                 } else {
                     // Fallback: reload entire scene
-                    Parent root = FXMLLoader.load(getClass().getResource("/poste-forumviews/ListPost.fxml"));
-                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    stage.setScene(new Scene(root));
-                    stage.show();
+                    boolean isAdmin = SessionManager.getCurrentUser() != null 
+                            && "admin".equalsIgnoreCase(SessionManager.getCurrentUser().getRole());
+                    
+                    if (isAdmin) {
+                        org.example.mains.MainApp.switchScene("/org/example/AdminPostView.fxml", "Publications Admin");
+                    } else {
+                        org.example.mains.MainApp.switchScene("/poste-forumviews/ListPost.fxml", "GoVibe - Publications");
+                    }
                 }
 
             } catch (SQLException e) {
@@ -580,8 +584,6 @@ public class PostItemController {
                 errorAlert.setHeaderText("Action impossible");
                 errorAlert.setContentText("Une erreur est survenue lors de la suppression.");
                 errorAlert.showAndWait();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }

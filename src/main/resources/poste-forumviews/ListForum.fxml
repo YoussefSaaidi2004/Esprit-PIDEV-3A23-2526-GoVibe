@@ -25,9 +25,9 @@
         <!-- CENTRAL CONTENT -->
         <center>
             <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;"
-                        VBox.vgrow="ALWAYS" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+                        VBox.vgrow="ALWAYS" hbarPolicy="NEVER" vbarPolicy="ALWAYS">
                 <content>
-                    <VBox spacing="0" style="-fx-background-color: transparent;">
+                    <VBox spacing="0" style="-fx-background-color: transparent; -fx-padding: 0 0 100 0;">
 
                         <!-- ── Hero Header ── -->
                         <HBox alignment="CENTER_LEFT" spacing="25" styleClass="glass-panel"

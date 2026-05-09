@@ -6,8 +6,16 @@ public class Membre {
     private int forum_id;
     private int user_id;
     private Timestamp date_adhesion;
+    private String status = "PENDING";
 
     public Membre() {
+    }
+
+    public Membre(int forum_id, int user_id, Timestamp date_adhesion, String status) {
+        this.forum_id = forum_id;
+        this.user_id = user_id;
+        this.date_adhesion = date_adhesion;
+        this.status = status;
     }
 
     public Membre(int forum_id, int user_id, Timestamp date_adhesion) {
@@ -17,6 +25,12 @@ public class Membre {
     }
 
     // Constructor without date (for insertion)
+    public Membre(int forum_id, int user_id, String status) {
+        this.forum_id = forum_id;
+        this.user_id = user_id;
+        this.status = status;
+    }
+
     public Membre(int forum_id, int user_id) {
         this.forum_id = forum_id;
         this.user_id = user_id;
@@ -46,12 +60,21 @@ public class Membre {
         this.date_adhesion = date_adhesion;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Membre{" +
                 "forum_id=" + forum_id +
                 ", user_id=" + user_id +
                 ", date_adhesion=" + date_adhesion +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

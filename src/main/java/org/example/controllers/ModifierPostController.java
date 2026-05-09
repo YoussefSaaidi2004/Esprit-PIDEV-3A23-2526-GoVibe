@@ -198,7 +198,15 @@ public class ModifierPostController {
             parentController.hideFormOverlay();
             return;
         }
-        org.example.mains.MainApp.switchScene("/poste-forumviews/ListPost.fxml", "GoVibe - Publications");
+        
+        boolean isAdmin = SessionManager.getCurrentUser() != null 
+                && "admin".equalsIgnoreCase(SessionManager.getCurrentUser().getRole());
+        
+        if (isAdmin) {
+            org.example.mains.MainApp.switchScene("/org/example/AdminPostView.fxml", "Publications Admin");
+        } else {
+            org.example.mains.MainApp.switchScene("/poste-forumviews/ListPost.fxml", "GoVibe - Publications");
+        }
     }
 
     private void showAlert(Alert.AlertType type, String title, String content) {

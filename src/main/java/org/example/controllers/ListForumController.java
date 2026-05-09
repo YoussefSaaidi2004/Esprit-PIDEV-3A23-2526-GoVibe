@@ -23,6 +23,8 @@ import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.animation.ParallelTransition;
 import javafx.scene.control.Button;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import org.example.entities.Forum;
 import org.example.entities.Poste;
@@ -136,76 +138,110 @@ public class ListForumController {
     private VBox buildAdminForumCard(Forum f) {
         // Title row
         Label nameLabel = new Label(f.getName() != null ? f.getName() : "Forum sans nom");
-        nameLabel.setStyle("-fx-font-size: 17px; -fx-font-weight: 900; -fx-text-fill: white; -fx-wrap-text: true;");
+        nameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: white; -fx-wrap-text: true;");
         nameLabel.setMaxWidth(280);
 
         // Description
         Label descLabel = new Label(f.getDescription() != null && !f.getDescription().isBlank()
                 ? f.getDescription() : "Pas de description");
-        descLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: rgba(200,230,215,0.65); -fx-wrap-text: true;");
+        descLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.6); -fx-wrap-text: true;");
         descLabel.setMaxWidth(280);
+        descLabel.setMinHeight(40);
 
         // Stats row
-        HBox statsRow = new HBox(16);
+        HBox statsRow = new HBox(12);
         statsRow.setAlignment(Pos.CENTER_LEFT);
         statsRow.getChildren().addAll(
-            makeStatChip("Membres", String.valueOf(f.getNbr_members())),
-            makeStatChip("Posts", String.valueOf(f.getPost_count()))
+            makeStatChip("👥", String.valueOf(f.getNbr_members())),
+            makeStatChip("💬", String.valueOf(f.getPost_count()))
         );
 
         // Date
         String dateStr = f.getDate_creation() != null
-                ? f.getDate_creation().toString().substring(0, 10) : "";
-        Label dateLabel = new Label("Cree le " + dateStr);
-        dateLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: rgba(180,220,200,0.50);");
+                ? f.getDate_creation().toString().substring(0, 10) : "N/A";
+        Label dateLabel = new Label("📅 Créé le " + dateStr);
+        dateLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.4); -fx-font-weight: 600;");
 
         // Separator
         Region sep = new Region();
         sep.setPrefHeight(1);
-        sep.setStyle("-fx-background-color: rgba(80,200,120,0.18);");
+        sep.setStyle("-fx-background-color: rgba(80,200,120,0.15);");
 
         // Action buttons
-        Button btnStats = new Button("Statistiques");
-        btnStats.setStyle("-fx-background-color: rgba(80,200,120,0.22); -fx-text-fill: #50C878;"
-                + "-fx-font-size: 12px; -fx-font-weight: 700; -fx-background-radius: 9;"
-                + "-fx-border-color: rgba(80,200,120,0.45); -fx-border-width: 1; -fx-border-radius: 9;"
-                + "-fx-padding: 7 16; -fx-cursor: hand;");
+        Button btnView = new Button("Voir");
+        btnView.setStyle("-fx-background-color: rgba(255,255,255,0.08); -fx-text-fill: white;"
+                + "-fx-font-size: 12px; -fx-font-weight: 700; -fx-background-radius: 10;"
+                + "-fx-border-color: rgba(255,255,255,0.15); -fx-border-width: 1; -fx-border-radius: 10;"
+                + "-fx-padding: 8 16; -fx-cursor: hand;");
+        btnView.setOnAction(e -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/DetailsForum.fxml"));
+                Parent root = loader.load();
+                DetailsForumController controller = loader.getController();
+                controller.initData(f);
+                Scene scene = btnView.getScene();
+                if (scene != null) scene.setRoot(root);
+            } catch (IOException ex) { ex.printStackTrace(); }
+        });
+
+        Button btnEdit = new Button("Modifier");
+        btnEdit.setStyle("-fx-background-color: rgba(80,200,120,0.12); -fx-text-fill: #50C878;"
+                + "-fx-font-size: 12px; -fx-font-weight: 700; -fx-background-radius: 10;"
+                + "-fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1; -fx-border-radius: 10;"
+                + "-fx-padding: 8 16; -fx-cursor: hand;");
+        btnEdit.setOnAction(e -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/poste-forumviews/ModifierForum.fxml"));
+                Parent root = loader.load();
+                ModifierForumController controller = loader.getController();
+                controller.setOverlayController(this);
+                controller.initData(f);
+                showFormOverlay(root);
+            } catch (IOException ex) { ex.printStackTrace(); }
+        });
+
+        Button btnStats = new Button("Stats");
+        btnStats.setStyle("-fx-background-color: rgba(255,255,255,0.05); -fx-text-fill: rgba(255,255,255,0.8);"
+                + "-fx-font-size: 12px; -fx-font-weight: 700; -fx-background-radius: 10;"
+                + "-fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 1; -fx-border-radius: 10;"
+                + "-fx-padding: 8 16; -fx-cursor: hand;");
         btnStats.setOnAction(e -> showForumStats(f));
 
-        Button btnView = new Button("Voir");
-        btnView.setStyle("-fx-background-color: rgba(255,255,255,0.08); -fx-text-fill: rgba(220,240,230,0.85);"
-                + "-fx-font-size: 12px; -fx-font-weight: 600; -fx-background-radius: 9;"
-                + "-fx-border-color: rgba(255,255,255,0.18); -fx-border-width: 1; -fx-border-radius: 9;"
-                + "-fx-padding: 7 14; -fx-cursor: hand;");
-        btnView.setOnAction(e -> {
-            AdminListPostController.setForumFilter(f.getForum_id(), f.getName());
-            org.example.mains.MainApp.switchScene("/org/example/AdminPostView.fxml",
-                    "Publications – " + (f.getName() != null ? f.getName() : "Forum"));
-        });
-
         Button btnDelete = new Button("Supprimer");
-        btnDelete.setStyle("-fx-background-color: rgba(220,60,60,0.15); -fx-text-fill: #ff6b6b;"
-                + "-fx-font-size: 12px; -fx-font-weight: 600; -fx-background-radius: 9;"
-                + "-fx-border-color: rgba(220,60,60,0.35); -fx-border-width: 1; -fx-border-radius: 9;"
-                + "-fx-padding: 7 14; -fx-cursor: hand;");
+        btnDelete.setStyle("-fx-background-color: rgba(231,76,60,0.12); -fx-text-fill: #ff7675;"
+                + "-fx-font-size: 12px; -fx-font-weight: 700; -fx-background-radius: 10;"
+                + "-fx-border-color: rgba(231,76,60,0.3); -fx-border-width: 1; -fx-border-radius: 10;"
+                + "-fx-padding: 8 16; -fx-cursor: hand;");
         btnDelete.setOnAction(e -> {
-            try {
-                serviceForum.supprimer(f.getForum_id());
-                loadForums();
-            } catch (SQLException ex) { ex.printStackTrace(); }
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation");
+            alert.setHeaderText("Supprimer le forum ?");
+            alert.setContentText("Voulez-vous vraiment supprimer " + f.getName() + " ?");
+            if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
+                try {
+                    serviceForum.supprimer(f.getForum_id());
+                    loadForums();
+                } catch (SQLException ex) { ex.printStackTrace(); }
+            }
         });
 
-        HBox actionsRow = new HBox(8, btnView, btnStats, btnDelete);
+        HBox actionsRow = new HBox(10, btnView, btnEdit, btnStats, btnDelete);
         actionsRow.setAlignment(Pos.CENTER_LEFT);
 
-        VBox card = new VBox(10, nameLabel, descLabel, statsRow, dateLabel, sep, actionsRow);
-        card.setPrefWidth(310);
-        card.setMaxWidth(310);
+        VBox card = new VBox(15, nameLabel, descLabel, statsRow, dateLabel, sep, actionsRow);
+        card.setPrefWidth(330);
+        card.setMaxWidth(330);
+        card.setPadding(new Insets(24));
         card.setAlignment(Pos.TOP_LEFT);
-        card.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
+        card.setStyle("-fx-background-color: rgba(255,255,255,0.06);"
                 + "-fx-border-color: rgba(80,200,120,0.22); -fx-border-width: 1.5;"
-                + "-fx-border-radius: 18; -fx-background-radius: 18;"
-                + "-fx-padding: 22; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.42),18,0,0,6);");
+                + "-fx-border-radius: 20; -fx-background-radius: 20;"
+                + "-fx-effect: dropshadow(gaussian,rgba(0,0,0,0.4),20,0,0,8);");
+        
+        // Hover effect
+        card.setOnMouseEntered(e -> card.setStyle(card.getStyle() + "-fx-background-color: rgba(255,255,255,0.1); -fx-border-color: rgba(80,200,120,0.4);"));
+        card.setOnMouseExited(e -> card.setStyle(card.getStyle().replace("-fx-background-color: rgba(255,255,255,0.1); -fx-border-color: rgba(80,200,120,0.4);", "")));
+        
         return card;
     }
 

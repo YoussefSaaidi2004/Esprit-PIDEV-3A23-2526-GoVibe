@@ -1154,4 +1154,8 @@ public class RoomBookingController implements Initializable {
             }
         }
     }
+    @FXML
+    private void goToMyReservations() {
+        org.example.mains.MainApp.switchScene("/views/my-reservations.fxml", "Mes Réservations");
+    }
 }

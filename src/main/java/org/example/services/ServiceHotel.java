@@ -88,4 +88,26 @@ public class ServiceHotel {
         return hotels;
     }
 
+    // 🔹 Find By ID
+    public Hotel findById(int id) throws SQLException {
+        String sql = "SELECT * FROM hotel WHERE id=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Hotel(
+                            rs.getInt("id"),
+                            rs.getString("nom"),
+                            rs.getString("adresse"),
+                            rs.getString("ville"),
+                            rs.getInt("nombre_etoiles"),
+                            rs.getString("description"),
+                            rs.getString("photo_url"),
+                            rs.getDouble("budget")
+                    );
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -29,7 +29,7 @@ public class ServiceLocation implements IService<Location> {
 
     @Override
     public void add(Location location) {
-        String sql = "INSERT INTO location (reference, date_debut, date_fin, nb_jours, montant_total, contrat_pdf, qr_code, statut, voiture_id, user_id) " +
+        String sql = "INSERT INTO location (reference, date_debut, date_fin, nb_jours, montant_total, contrat_pdf, qr_code, statut, id_voiture, user_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, location.getReference());
@@ -55,7 +55,7 @@ public class ServiceLocation implements IService<Location> {
 
     @Override
     public void update(Location location) {
-        String sql = "UPDATE location SET reference=?, date_debut=?, date_fin=?, nb_jours=?, montant_total=?, contrat_pdf=?, qr_code=?, statut=?, voiture_id=?, user_id=? " +
+        String sql = "UPDATE location SET reference=?, date_debut=?, date_fin=?, nb_jours=?, montant_total=?, contrat_pdf=?, qr_code=?, statut=?, id_voiture=?, user_id=? " +
                 "WHERE id_location=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, location.getReference());
@@ -103,12 +103,12 @@ public class ServiceLocation implements IService<Location> {
     private List<Location> loadLocations(Integer personneId) {
         List<Location> locations = new ArrayList<>();
         String sql = "SELECT l.id_location, l.reference, l.date_debut, l.date_fin, l.nb_jours, l.montant_total, l.contrat_pdf, " +
-            "l.qr_code, l.statut, l.date_creation, l.voiture_id as l_voiture_id, l.user_id, " +
+            "l.qr_code, l.statut, l.date_creation, l.id_voiture as l_voiture_id, l.user_id, " +
             "v.id_voiture AS v_id, v.matricule, v.marque, v.modele, v.annee, v.type_carburant, v.prix_jour, " +
             "v.statut AS v_statut, v.adresse_agence, v.latitude, v.longitude, v.description, v.image_url, v.date_creation AS v_date_creation, " +
             "p.id AS p_id, p.nom AS p_nom, p.prenom AS p_prenom, p.email AS p_email, p.password AS p_password, p.role AS p_role " +
             "FROM location l " +
-            "JOIN voiture v ON v.id_voiture = l.voiture_id " +
+            "JOIN voiture v ON v.id_voiture = l.id_voiture " +
             "LEFT JOIN personne p ON p.id = l.user_id " +
             (personneId != null ? "WHERE l.user_id = ? " : "") +
             "ORDER BY l.id_location DESC";

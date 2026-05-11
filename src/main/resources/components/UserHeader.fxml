@@ -108,6 +108,7 @@
                 <MenuItem text="Mon Profil" onAction="#handleProfile"/>
                 <MenuItem text="Mes Locations" onAction="#handleMyLocations"/>
                 <MenuItem text="Mes Vols" onAction="#handleMyFlights"/>
+                <MenuItem text="Mes Réservations Hôtels" onAction="#handleMyHotelReservations"/>
                 <SeparatorMenuItem/>
                 <MenuItem text="Paramètres" onAction="#handleSettings"/>
                 <MenuItem text="Centre d'aide" onAction="#handleHelp"/>

@@ -123,6 +123,12 @@ public class UserHeaderController {
     }
 
     @FXML
+    private void handleMyHotelReservations() {
+        System.out.println("[Nav] My Hotel Reservations clicked");
+        org.example.mains.MainApp.switchScene("/views/my-reservations.fxml", "Mes Réservations Hôtels");
+    }
+
+    @FXML
     private void handleSettings() {
         System.out.println("[Nav] Settings clicked");
     }

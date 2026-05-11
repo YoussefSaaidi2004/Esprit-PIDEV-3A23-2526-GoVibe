@@ -108,6 +108,25 @@ public class ServiceReservation {
         return reservation;
     }
 
+    public List<Reservation> findByUserId(int userId) throws SQLException {
+        List<Reservation> list = new ArrayList<>();
+        String sql = "SELECT r.*, p.nom, p.prenom, p.email " +
+                     "FROM reservation r " +
+                     "LEFT JOIN personne p ON p.id = r.user_id " +
+                     "WHERE r.user_id = ? " +
+                     "ORDER BY r.id DESC";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToReservation(rs));
+                }
+            }
+        }
+        return list;
+    }
+
     private String getOptionalString(ResultSet rs, String columnName) {
         try {
             return rs.getString(columnName);

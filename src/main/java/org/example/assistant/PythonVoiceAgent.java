@@ -264,9 +264,17 @@ public class PythonVoiceAgent {
 
         // Shutdown hook — cleanly kill Python process on JVM exit.
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (pythonProcess != null && pythonProcess.isAlive())
-                pythonProcess.destroyForcibly();
-        }));
+            if (pythonProcess != null && pythonProcess.isAlive()) {
+                pythonProcess.descendants().forEach(ProcessHandle::destroy);
+                pythonProcess.destroy();
+                try {
+                    if (!pythonProcess.waitFor(3, TimeUnit.SECONDS))
+                        pythonProcess.destroyForcibly();
+                } catch (InterruptedException e) {
+                    pythonProcess.destroyForcibly();
+                }
+            }
+        }, "voice-shutdown-hook"));
     }
 
     // ── Public API ────────────────────────────────────────────────────────────

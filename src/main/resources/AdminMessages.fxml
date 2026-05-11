@@ -5,17 +5,14 @@
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controllers.AdminMessagesController"
-            style="-fx-background-color: #f8f9fa;">
+<HBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controllers.AdminMessagesController"
+      style="-fx-background-color: #f8f9fa;">
 
     <!-- Sidebar Admin -->
-    <left>
-        <fx:include source="org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
-    </left>
+    <fx:include source="org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
 
     <!-- Main Content -->
-    <center>
-        <VBox spacing="15" style="-fx-padding: 25;">
+    <VBox spacing="15" style="-fx-padding: 25;" HBox.hgrow="ALWAYS" minWidth="0">
 
             <!-- Header -->
             <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #013220, #0B4F35); -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);">
@@ -73,6 +70,5 @@
                        text="✅ Fermer"/>
             </HBox>
 
-        </VBox>
-    </center>
-</BorderPane>
+    </VBox>
+</HBox>

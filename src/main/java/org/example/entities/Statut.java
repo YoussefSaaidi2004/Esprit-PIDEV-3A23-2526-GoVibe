@@ -6,7 +6,8 @@ import java.util.Locale;
 public enum Statut {
     DISPONIBLE("DISPONIBLE", "Disponible"),
     LOUEE("LOUEE", "Louee"),
-    MAINTENANCE("MAINTENANCE", "Maintenance");
+    MAINTENANCE("MAINTENANCE", "Maintenance"),
+    ACCIDENTE("ACCIDENTE", "Accidenté");
 
     private final String dbValue;
     private final String label;
@@ -26,6 +27,9 @@ public enum Statut {
     }
 
     public static Statut fromDbValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return MAINTENANCE;
+        }
         String normalized = normalizeKey(value);
         switch (normalized) {
             case "disponible":
@@ -34,15 +38,21 @@ public enum Statut {
             case "louee":
                 return LOUEE;
             case "maintenance":
+            case "en_maintenance":
+            case "en maintenance":
                 return MAINTENANCE;
+            case "accidente":
+            case "accidenté":
+                return ACCIDENTE;
             default:
-                throw new RuntimeException("Statut invalide. Valeurs possibles: DISPONIBLE, LOUEE, MAINTENANCE.");
+                System.err.println("⚠️ [Statut] Valeur non reconnue depuis la BD: '" + value + "'. Remplacement par MAINTENANCE par défaut.");
+                return MAINTENANCE;
         }
     }
 
     private static String normalizeKey(String input) {
         if (input == null || input.trim().isEmpty()) {
-            throw new RuntimeException("Champ requis manquant.");
+            return "";
         }
         String trimmed = input.trim();
         String noAccents = Normalizer.normalize(trimmed, Normalizer.Form.NFD)

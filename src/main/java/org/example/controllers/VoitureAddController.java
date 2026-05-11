@@ -61,12 +61,23 @@ public class VoitureAddController {
             return;
         }
         Voiture voiture = buildVoitureFromFields();
-        try {
-            voitureService.add(voiture);
+        addButton.setDisable(true);
+        
+        javafx.concurrent.Task<Void> task = new javafx.concurrent.Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                voitureService.add(voiture);
+                return null;
+            }
+        };
+        task.setOnSucceeded(e -> {
             SceneNavigator.switchTo("/VoitureListView.fxml", addButton);
-        } catch (RuntimeException ex) {
-            showAlert("Erreur", ex.getMessage());
-        }
+        });
+        task.setOnFailed(e -> {
+            addButton.setDisable(false);
+            showAlert("Erreur", task.getException().getMessage());
+        });
+        new Thread(task).start();
     }
 
     @FXML

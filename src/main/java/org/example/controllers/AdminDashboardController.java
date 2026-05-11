@@ -55,6 +55,7 @@ public class AdminDashboardController {
     @FXML
     public void initialize() {
         setupHeroBackground();
+        System.out.println("[Fix] AdminDashboard layout compacted");
     }
 
     private void setupHeroBackground() {

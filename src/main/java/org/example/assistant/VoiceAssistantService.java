@@ -306,24 +306,25 @@ public class VoiceAssistantService {
     }
 
     private VoiceAssistantService() {
-        // Start heavy component initialization in a background daemon thread
-        // to prevent the JavaFX Application Thread from ever blocking on Vosk
-        // model loading or SAPI detection.
-        Thread initThread = new Thread(() -> {
-            try {
-                System.out.println("[VoiceAssistant] Initializing internal core (background)...");
-                initVosk();
-                detectSapi();
-                warmupTts();
-                initNoiseOrchestrator();
-                System.out.println("[VoiceAssistant] Core initialization complete.");
-            } catch (Throwable t) {
-                System.err.println("[VoiceAssistant] Core initialization failed: " + t.getMessage());
-                t.printStackTrace();
-            }
-        }, "VoiceAssistant-CoreInit");
-        initThread.setDaemon(true);
-        initThread.start();
+        // Delay heavy component initialization until JavaFX has rendered its first scene
+        // to prevent the JavaFX Application Thread from racing with Vosk's native JNI loader.
+        javafx.application.Platform.runLater(() -> {
+            Thread initThread = new Thread(() -> {
+                try {
+                    System.out.println("[VoiceAssistant] Initializing internal core (background)...");
+                    initVosk();
+                    detectSapi();
+                    warmupTts();
+                    initNoiseOrchestrator();
+                    System.out.println("[VoiceAssistant] Core initialization complete.");
+                } catch (Throwable t) {
+                    System.err.println("[VoiceAssistant] Core initialization failed: " + t.getMessage());
+                    t.printStackTrace();
+                }
+            }, "vosk-model-loader");
+            initThread.setDaemon(true);
+            initThread.start();
+        });
 
         // Already non-blocking (has its own thread)
         initPythonAgent();

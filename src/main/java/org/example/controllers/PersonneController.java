@@ -170,12 +170,12 @@ public class PersonneController implements Initializable {
                 + (p.getNom() != null && !p.getNom().isEmpty() ? p.getNom().substring(0, 1) : "?")).toUpperCase();
 
         StackPane avatarPane = new StackPane();
-        avatarPane.setMinSize(56, 56);
-        avatarPane.setMaxSize(56, 56);
+        avatarPane.setMinSize(44, 44);
+        avatarPane.setMaxSize(44, 44);
         avatarPane.setStyle("-fx-background-color: " + (isAdmin ? "rgba(80,200,120,0.28)" : "rgba(255,255,255,0.12)") +
-                "; -fx-background-radius: 28;");
+                "; -fx-background-radius: 22;");
         Label initialsLabel = new Label(initials);
-        initialsLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: 900; -fx-text-fill: " + (isAdmin ? "#50C878" : "rgba(255,255,255,0.85)") + ";");
+        initialsLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: 900; -fx-text-fill: " + (isAdmin ? "#50C878" : "rgba(255,255,255,0.85)") + ";");;
         avatarPane.getChildren().add(initialsLabel);
 
         // Role badge
@@ -191,19 +191,19 @@ public class PersonneController implements Initializable {
 
         // Name
         Label nameLabel = new Label(p.getPrenom() + " " + p.getNom());
-        nameLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: 800; -fx-text-fill: white; -fx-wrap-text: true;");
-        nameLabel.setMaxWidth(220);
+        nameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: 800; -fx-text-fill: white; -fx-wrap-text: true;");
+        nameLabel.setMaxWidth(170);
 
         // Email
         Label emailLabel = new Label(p.getEmail());
-        emailLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: rgba(180,220,200,0.65); -fx-wrap-text: true;");
-        emailLabel.setMaxWidth(220);
+        emailLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: rgba(180,220,200,0.65); -fx-wrap-text: true;");
+        emailLabel.setMaxWidth(170);
 
         // Action buttons
         Button btnEdit = new Button("Modifier");
-        btnEdit.setStyle("-fx-background-color: rgba(80,200,120,0.18); -fx-text-fill: #50C878; -fx-font-size: 12px;"
+        btnEdit.setStyle("-fx-background-color: rgba(80,200,120,0.18); -fx-text-fill: #50C878; -fx-font-size: 11px;"
                 + "-fx-font-weight: 700; -fx-background-radius: 8; -fx-border-color: rgba(80,200,120,0.40);"
-                + "-fx-border-width: 1; -fx-border-radius: 8; -fx-padding: 7 16; -fx-cursor: hand;");
+                + "-fx-border-width: 1; -fx-border-radius: 8; -fx-padding: 5 12; -fx-cursor: hand;");
         btnEdit.setOnAction(e -> {
             tfNom.setText(p.getNom());
             tfPrenom.setText(p.getPrenom());
@@ -214,9 +214,9 @@ public class PersonneController implements Initializable {
         });
 
         Button btnDelete = new Button("Supprimer");
-        btnDelete.setStyle("-fx-background-color: rgba(220,60,60,0.18); -fx-text-fill: #ff6b6b; -fx-font-size: 12px;"
+        btnDelete.setStyle("-fx-background-color: rgba(220,60,60,0.18); -fx-text-fill: #ff6b6b; -fx-font-size: 11px;"
                 + "-fx-font-weight: 700; -fx-background-radius: 8; -fx-border-color: rgba(220,60,60,0.40);"
-                + "-fx-border-width: 1; -fx-border-radius: 8; -fx-padding: 7 16; -fx-cursor: hand;");
+                + "-fx-border-width: 1; -fx-border-radius: 8; -fx-padding: 5 12; -fx-cursor: hand;");
         btnDelete.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation");
@@ -248,14 +248,14 @@ public class PersonneController implements Initializable {
         sep.setPrefHeight(1);
         sep.setStyle("-fx-background-color: rgba(255,255,255,0.10);");
 
-        VBox card = new VBox(12);
+        VBox card = new VBox(10);
         card.setAlignment(Pos.TOP_CENTER);
-        card.setPrefWidth(240);
-        card.setMaxWidth(240);
+        card.setPrefWidth(190);
+        card.setMaxWidth(190);
         card.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
                 + "-fx-border-color: " + (isAdmin ? "rgba(80,200,120,0.30)" : "rgba(255,255,255,0.12)") + ";"
-                + "-fx-border-width: 1.5; -fx-border-radius: 18; -fx-background-radius: 18;"
-                + "-fx-padding: 22; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.38),18,0,0,6);");
+                + "-fx-border-width: 1.5; -fx-border-radius: 16; -fx-background-radius: 16;"
+                + "-fx-padding: 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.38),18,0,0,6);");
         card.getChildren().addAll(avatarPane, nameLabel, emailLabel, badgeRow, sep, actionsRow);
         return card;
     }

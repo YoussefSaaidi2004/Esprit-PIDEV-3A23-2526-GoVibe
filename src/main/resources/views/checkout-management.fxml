@@ -6,26 +6,27 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.example.controllers.CheckoutManagementController"
-            stylesheets="@../styles/unified-styles.css"
-            styleClass="main-bg">
+<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controllers.CheckoutManagementController"
+      stylesheets="@../styles/unified-styles.css"
+      styleClass="main-bg">
     
-    <left>
-        <fx:include source="../org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
-    </left>
+    <!-- Sidebar -->
+    <fx:include source="../org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
 
-    <center>
-        <StackPane fx:id="rootStackPane">
+    <!-- Main Content -->
+    <StackPane fx:id="rootStackPane" HBox.hgrow="ALWAYS" minWidth="0">
             <!-- Background Hero Image -->
             <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" />
             <Region style="-fx-background-color: rgba(245, 243, 231, 0.7);" />
             
-            <VBox spacing="30" style="-fx-padding: 40;">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+                <content>
+                    <VBox spacing="20" style="-fx-padding: 24;">
                 <HBox alignment="CENTER_LEFT">
                     <VBox spacing="5" HBox.hgrow="ALWAYS">
-                        <Text text="Reservations Tracking" styleClass="title" style="-fx-fill: #013220;"/>
-                        <Text text="Monitor and moderate all passenger bookings" styleClass="subtitle" style="-fx-fill: #5a7d6e;"/>
+                        <Text text="Reservations Tracking" styleClass="title" style="-fx-fill: #013220; -fx-font-size: 22px;"/>
+                        <Text text="Monitor and moderate all passenger bookings" styleClass="subtitle" style="-fx-fill: #5a7d6e; -fx-font-size: 13px;"/>
                     </VBox>
                     <HBox spacing="10" alignment="CENTER">
                          <Button onAction="#handleRefresh" styleClass="icon-btn" style="-fx-background-color: rgba(80, 200, 120, 0.1); -fx-background-radius: 50;">
@@ -34,10 +35,10 @@
                     </HBox>
                 </HBox>
 
-                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;">
-                    <FlowPane fx:id="checkoutGrid" hgap="30" vgap="30" alignment="TOP_LEFT" style="-fx-padding: 10 0;"/>
-                </ScrollPane>
-            </VBox>
-        </StackPane>
-    </center>
-</BorderPane>
+                <FlowPane fx:id="checkoutGrid" hgap="20" vgap="20" alignment="TOP_LEFT" style="-fx-padding: 10 0;"/>
+
+                    </VBox>
+                </content>
+            </ScrollPane>
+    </StackPane>
+</HBox>

@@ -198,6 +198,8 @@
                         <option>--add-opens=java.base/sun.nio.ch=ALL-UNNAMED</option>
                         <!-- FIX: Prevent native heap corruption crashes (-805306369) from JNI drivers -->
                         <option>--add-opens=java.desktop/sun.awt=ALL-UNNAMED</option>
+                        <!-- Generate crash diagnostics file -->
+                        <option>-XX:ErrorFile=./hs_err_pid%p.log</option>
                     </options>
                 </configuration>
             </plugin>

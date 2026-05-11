@@ -85,21 +85,33 @@ public class VoitureController {
             return;
         }
         Voiture voiture = buildVoitureFromFields();
-        try {
-            voitureService.add(voiture);
+        addButton.setDisable(true);
+        
+        javafx.concurrent.Task<Void> task = new javafx.concurrent.Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                voitureService.add(voiture);
+                return null;
+            }
+        };
+        task.setOnSucceeded(e -> {
             refreshTable();
             clearFields();
             setAddMode();
-        } catch (RuntimeException ex) {
-            showAlert("Erreur", ex.getMessage());
-        }
+            showAlert("Succès", "Voiture ajoutée avec succès.");
+        });
+        task.setOnFailed(e -> {
+            setAddMode();
+            showAlert("Erreur", task.getException().getMessage());
+        });
+        new Thread(task).start();
     }
 
     @FXML
     private void handleModifier(ActionEvent event) {
         Voiture selected = voitureList.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("Selection requise", "Veuillez selectionner une voiture a modifier.");
+            showAlert("Sélection requise", "Veuillez sélectionner une voiture à modifier.");
             return;
         }
         if (!validateFields()) {
@@ -107,32 +119,77 @@ public class VoitureController {
         }
         Voiture updated = buildVoitureFromFields();
         updated.setIdVoiture(selected.getIdVoiture());
-        try {
-            voitureService.update(updated);
+        updateButton.setDisable(true);
+
+        javafx.concurrent.Task<Void> task = new javafx.concurrent.Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                voitureService.update(updated);
+                return null;
+            }
+        };
+        task.setOnSucceeded(e -> {
             refreshTable();
             clearFields();
             setAddMode();
-        } catch (RuntimeException ex) {
-            showAlert("Erreur", ex.getMessage());
-        }
+            showAlert("Succès", "Voiture modifiée avec succès.");
+        });
+        task.setOnFailed(e -> {
+            setEditMode();
+            showAlert("Erreur", task.getException().getMessage());
+        });
+        new Thread(task).start();
     }
 
     @FXML
     private void handleSupprimer(ActionEvent event) {
         Voiture selected = voitureList.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("Selection requise", "Veuillez selectionner une voiture a supprimer.");
+            showAlert("Sélection requise", "Veuillez sélectionner une voiture à supprimer.");
             return;
         }
-        voitureService.delete(selected.getIdVoiture());
-        refreshTable();
-        clearFields();
-        setAddMode();
+        
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmation de suppression");
+        confirm.setHeaderText(null);
+        confirm.setContentText("Êtes-vous sûr de vouloir supprimer la voiture " + selected.getMatricule() + " ?");
+        
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == javafx.scene.control.ButtonType.OK) {
+                javafx.concurrent.Task<Void> task = new javafx.concurrent.Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        voitureService.delete(selected.getIdVoiture());
+                        return null;
+                    }
+                };
+                task.setOnSucceeded(e -> {
+                    refreshTable();
+                    clearFields();
+                    setAddMode();
+                });
+                task.setOnFailed(e -> {
+                    showAlert("Erreur", task.getException().getMessage());
+                });
+                new Thread(task).start();
+            }
+        });
     }
 
     public void refreshTable() {
-        List<Voiture> voitures = voitureService.getAll();
-        voitureItems.setAll(voitures);
+        javafx.concurrent.Task<List<Voiture>> task = new javafx.concurrent.Task<List<Voiture>>() {
+            @Override
+            protected List<Voiture> call() throws Exception {
+                return voitureService.getAll();
+            }
+        };
+        task.setOnSucceeded(e -> {
+            voitureItems.setAll(task.getValue());
+        });
+        task.setOnFailed(e -> {
+            showAlert("Erreur", "Impossible de charger les voitures: " + task.getException().getMessage());
+        });
+        new Thread(task).start();
     }
 
     private Voiture buildVoitureFromFields() {

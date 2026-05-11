@@ -92,7 +92,7 @@ public class LocationEditController {
     @FXML
     private void handleModifier() {
         if (selected == null) {
-            showAlert("Selection requise", "Veuillez choisir une location a modifier.");
+            showAlert("Sélection requise", "Veuillez choisir une location à modifier.");
             return;
         }
         if (!validateFields()) {
@@ -100,17 +100,31 @@ public class LocationEditController {
         }
         Location updated = buildLocationFromFields();
         updated.setIdLocation(selected.getIdLocation());
-        try {
-            locationService.update(updated);
+        updateButton.setDisable(true);
+
+        javafx.concurrent.Task<Void> task = new javafx.concurrent.Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                locationService.update(updated);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(e -> {
             LocationSelection.clear();
             if (parentController != null) {
                 parentController.closeModal();
             } else {
                 SceneNavigator.switchTo("/LocationListView.fxml", updateButton);
             }
-        } catch (RuntimeException ex) {
-            showAlert("Erreur", ex.getMessage());
-        }
+        });
+
+        task.setOnFailed(e -> {
+            updateButton.setDisable(false);
+            showAlert("Erreur", task.getException().getMessage());
+        });
+
+        new Thread(task).start();
     }
 
     @FXML

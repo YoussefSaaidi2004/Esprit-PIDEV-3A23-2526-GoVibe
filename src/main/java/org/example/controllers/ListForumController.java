@@ -77,6 +77,7 @@ public class ListForumController {
 
     @FXML
     public void initialize() {
+        System.out.println("[Fix] AdminForumView layout compacted");
         loadForums();
         setupHeroBackground();
     }

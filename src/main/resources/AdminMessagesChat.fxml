@@ -6,17 +6,14 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.geometry.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controllers.AdminMessagesController"
-            style="-fx-background-color: #F5F3E7;" prefWidth="1400" prefHeight="900">
+<HBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.controllers.AdminMessagesController"
+      style="-fx-background-color: #F5F3E7;" prefWidth="1400" prefHeight="900">
 
     <!-- Sidebar Admin -->
-    <left>
-        <fx:include source="org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
-    </left>
+    <fx:include source="org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
 
     <!-- CENTER: Interface conversationnelle -->
-    <center>
-        <SplitPane dividerPositions="0.30" style="-fx-background-color: #F5F3E7;">
+    <SplitPane dividerPositions="0.30" style="-fx-background-color: #F5F3E7;" HBox.hgrow="ALWAYS" minWidth="0">
             
             <!-- LEFT: Liste des clients/conversations -->
             <VBox style="-fx-background-color: #F5F3E7;">
@@ -79,6 +76,5 @@
                            text="📤 Envoyer"/>
                 </HBox>
             </VBox>
-        </SplitPane>
-    </center>
-</BorderPane>
+    </SplitPane>
+</HBox>

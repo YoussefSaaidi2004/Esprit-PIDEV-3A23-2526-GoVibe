@@ -15,18 +15,17 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<BorderPane xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
-            fx:id="root"
-            fx:controller="org.example.controllers.AdminLocationListController"
-            stylesheets="@voiture.css"
-            styleClass="app-root">
+<HBox xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
+      fx:id="root"
+      fx:controller="org.example.controllers.AdminLocationListController"
+      stylesheets="@voiture.css"
+      styleClass="app-root">
 
-    <left>
-        <fx:include source="org/example/AdminSidebar.fxml"/>
-    </left>
+    <!-- Sidebar -->
+    <fx:include source="org/example/AdminSidebar.fxml"/>
 
-    <center>
-        <VBox spacing="18.0">
+    <!-- Main Content -->
+    <VBox spacing="18.0" HBox.hgrow="ALWAYS" minWidth="0">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
             <children>
                 <Label text="Admin - Gestion des Locations" styleClass="page-title"/>
@@ -92,7 +91,6 @@
                     </children>
                 </VBox>
             </children>
-        </VBox>
-    </center>
+    </VBox>
 
-</BorderPane>
+</HBox>

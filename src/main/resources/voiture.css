@@ -301,13 +301,19 @@
 }
 
 .voiture-cell {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 14;
-    -fx-border-radius: 14;
-    -fx-border-color: rgba(1,50,32,0.12);
+    -fx-background-color: rgba(8,20,13,0.82);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: rgba(80,200,120,0.22);
     -fx-border-width: 1;
-    -fx-padding: 10 12;
-    -fx-effect: dropshadow(gaussian, rgba(1,50,32,0.08), 10, 0.2, 0, 2);
+    -fx-padding: 14 18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.50), 18, 0, 0, 6);
+}
+
+.voiture-cell:hover {
+    -fx-background-color: rgba(10,28,17,0.92);
+    -fx-border-color: rgba(80,200,120,0.65);
+    -fx-border-width: 1.5;
 }
 
 .voiture-thumb {
@@ -332,35 +338,46 @@
 }
 
 .voiture-title {
-    -fx-text-fill: #013220;
+    -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 13px;
+    -fx-font-size: 16px;
 }
 
 .voiture-subtitle {
-    -fx-text-fill: #013220;
+    -fx-text-fill: rgba(180,220,200,0.72);
     -fx-font-size: 12px;
 }
 
 .voiture-meta {
-    -fx-text-fill: #013220;
+    -fx-text-fill: rgba(140,210,170,0.85);
     -fx-font-size: 11px;
-    -fx-opacity: 0.8;
 }
 
 .voiture-price {
-    -fx-text-fill: #013220;
+    -fx-text-fill: #50C878;
     -fx-font-weight: bold;
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;
 }
 
 .voiture-status {
     -fx-text-fill: white;
-    -fx-background-color: #50C878;
+    -fx-background-color: rgba(80,200,120,0.2);
+    -fx-border-color: #50C878;
+    -fx-border-width: 1;
     -fx-background-radius: 10;
+    -fx-border-radius: 10;
     -fx-padding: 3 8;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 6 20;
+}
+
+.list-cell:empty {
+    -fx-background-color: transparent;
 }
 
 .row-actions {
@@ -436,4 +453,38 @@
 
 .theme-dark .button:hover {
     -fx-background-color: #2F8E57;
+}
+
+/* ── Transparent ScrollPane for dark backgrounds ── */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+.scroll-pane > .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+.scroll-pane > .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+.scroll-pane > .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(160,224,201,0.25);
+    -fx-background-radius: 4;
+}
+.scroll-pane > .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(160,224,201,0.45);
+}
+.scroll-pane > .scroll-bar:vertical .increment-button,
+.scroll-pane > .scroll-bar:vertical .decrement-button {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+}
+.scroll-pane > .scroll-bar:vertical .increment-arrow,
+.scroll-pane > .scroll-bar:vertical .decrement-arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
 }

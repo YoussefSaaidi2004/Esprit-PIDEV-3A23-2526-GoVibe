@@ -38,6 +38,7 @@ public class FlightManagementController {
 
     @FXML
     public void initialize() {
+        System.out.println("[Fix] FlightManagement layout compacted");
         // Initialize sort options
         sortCombo.getItems().addAll(
             "Destination (A-Z)",

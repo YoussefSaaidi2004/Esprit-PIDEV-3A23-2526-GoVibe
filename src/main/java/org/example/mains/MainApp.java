@@ -37,21 +37,76 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/LoginView.fxml"));
-        Parent root = loader.load();
-
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
-
-        primaryStage.setTitle("GoVibe - Connexion");
-        primaryStage.setScene(scene);
-        primaryStage.setMaximized(true);
-        primaryStage.setResizable(true);
-        primaryStage.show();
-
+        
+        // Force JDBC driver to load sequentially to prevent DriverManager deadlocks
+        // when both db-init-thread and VoiceAssistant-DBContext hit it simultaneously.
+        try { Class.forName("com.mysql.cj.jdbc.Driver"); } catch (Exception ignored) {}
+        
         // Initialise the offline voice assistant once — it stays alive for the
         // entire application lifetime, across all scene switches.
         initGlobalVoiceAssistant();
+
+        // Warm up the database connection asynchronously before showing the UI
+        tn.esprit.utils.MyDataBase.getInstance().initAsync(
+            () -> {
+                System.out.println("✅ [MyDataBase] Instance initialized (Lazy Connection)");
+                loadMainScene(primaryStage);
+            },
+            (errorMessage) -> {
+                javafx.scene.control.Alert alert = 
+                    new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.ERROR
+                    );
+                alert.setTitle("Database Error");
+                alert.setHeaderText("Cannot connect to govibe_project");
+                alert.setContentText(
+                    "Error: " + errorMessage + "\n\n" +
+                    "Fix checklist:\n" +
+                    "1. Open XAMPP → click Start next to MySQL\n" +
+                    "2. Make sure database 'govibe_project' exists\n" +
+                    "3. Username: root | Password: (empty)"
+                );
+                alert.showAndWait();
+                javafx.application.Platform.exit();
+            }
+        );
+    }
+
+    private void loadMainScene(Stage primaryStage) {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/org/example/LoginView.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/unified-styles.css").toExternalForm());
+
+            primaryStage.setTitle("GoVibe - Connexion");
+            primaryStage.setScene(scene);
+            primaryStage.setMaximized(true);
+            primaryStage.setResizable(true);
+            primaryStage.show();
+
+            primaryStage.setOnCloseRequest(event -> {
+                System.out.println("[MainApp] Closing application...");
+                try {
+                    if (voiceAssistant != null) {
+                        voiceAssistant.shutdown();
+                    }
+                } catch (Throwable t) {
+                    System.err.println("[MainApp] VoiceAssistant shutdown error: " + t.getMessage());
+                }
+                try {
+                    org.example.assistant.PythonVoiceAgent.getInstance().stop();
+                } catch (Throwable t) {
+                    System.err.println("[MainApp] PythonVoiceAgent shutdown error: " + t.getMessage());
+                } finally {
+                    javafx.application.Platform.exit();
+                    System.exit(0);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void initGlobalVoiceAssistant() {

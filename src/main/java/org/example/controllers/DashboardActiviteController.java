@@ -135,7 +135,17 @@ public class DashboardActiviteController {
             if (childController instanceof ActiviteAjoutController) {
                 ((ActiviteAjoutController) childController).setParentController(this);
             } else if (childController instanceof ActiviteModifierController) {
-                ((ActiviteModifierController) childController).setParentController(this);
+                ActiviteModifierController amc = (ActiviteModifierController) childController;
+                amc.setParentController(this);
+                if (selectedActivite != null) {
+                    amc.initData(selectedActivite);
+                }
+            } else if (childController instanceof ActiviteSuppressionController) {
+                ActiviteSuppressionController asc = (ActiviteSuppressionController) childController;
+                asc.setParentController(this);
+                if (selectedActivite != null) {
+                    asc.initData(selectedActivite);
+                }
             }
 
             modalContent.getChildren().setAll(modalNode);
@@ -308,7 +318,13 @@ public class DashboardActiviteController {
 
     @FXML
     private void openSuppression() {
-        SceneNavigator.switchTo("ActiviteSuppression.fxml", mainStack);
+        Activite selected = (selectedActivite != null) ? selectedActivite :
+                (tableActivite != null ? tableActivite.getSelectionModel().getSelectedItem() : null);
+        if (selected == null) {
+            showAlert("Attention", "Veuillez sélectionner une activité à supprimer.");
+            return;
+        }
+        showModal("/ActiviteSuppression.fxml");
     }
 
     @FXML

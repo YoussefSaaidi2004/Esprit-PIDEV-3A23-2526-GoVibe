@@ -28,6 +28,8 @@ public class AdminSidebarController {
     private Button navForums;
     @FXML
     private Button navReclamations;
+    @FXML
+    private Button navCheckouts;
 
     private String currentPage = "";
 
@@ -37,6 +39,7 @@ public class AdminSidebarController {
     public void setActivePage(String page) {
         this.currentPage = page;
         updateActiveButton();
+        System.out.println("[Fix] Sidebar resized to 220px, 13px font");
     }
 
     private void updateActiveButton() {
@@ -49,6 +52,7 @@ public class AdminSidebarController {
         resetButtonStyle(navActivites);
         resetButtonStyle(navForums);
         resetButtonStyle(navReclamations);
+        resetButtonStyle(navCheckouts);
 
         // Set active button
         switch (currentPage) {
@@ -76,18 +80,21 @@ public class AdminSidebarController {
             case "reclamations":
                 setActiveButtonStyle(navReclamations);
                 break;
+            case "checkouts":
+                setActiveButtonStyle(navCheckouts);
+                break;
         }
     }
 
     private void resetButtonStyle(Button button) {
         if (button != null) {
-            button.setStyle("-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 10; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-graphic-text-gap: 12;");
+            button.setStyle("-fx-background-color: transparent; -fx-text-fill: #A0E0C9; -fx-font-size: 13px; -fx-padding: 10 14; -fx-background-radius: 10; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-graphic-text-gap: 12;");
         }
     }
 
     private void setActiveButtonStyle(Button button) {
         if (button != null) {
-            button.setStyle("-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #D1F2EB; -fx-font-size: 14px; -fx-padding: 12 16; -fx-background-radius: 10; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-graphic-text-gap: 12;");
+            button.setStyle("-fx-background-color: rgba(80,200,120,0.15); -fx-text-fill: #D1F2EB; -fx-font-size: 13px; -fx-padding: 10 14; -fx-background-radius: 10; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-graphic-text-gap: 12;");
         }
     }
 
@@ -137,6 +144,12 @@ public class AdminSidebarController {
     private void handleGoReclamations() {
         if ("reclamations".equals(currentPage)) return;
         navigateTo("/org/example/AdminReclamationView.fxml");
+    }
+
+    @FXML
+    private void handleGoCheckouts() {
+        if ("checkouts".equals(currentPage)) return;
+        navigateTo("/views/checkout-management.fxml");
     }
 
     @FXML

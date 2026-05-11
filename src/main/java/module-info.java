@@ -21,6 +21,8 @@ module org.example {
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.annotation;
+
+    // org.example packages
     opens org.example.controllers to javafx.fxml, jdk.jsobject;
     opens org.example.entities to javafx.base, com.google.gson;
     opens org.example.mains to javafx.graphics;
@@ -36,4 +38,15 @@ module org.example {
     exports org.example.dao;
     exports org.example.config;
     exports org.example.assistant;
+
+    // tn.esprit packages (Forum / Poste / Membre management)
+    opens tn.esprit.controllers to javafx.fxml;
+    opens tn.esprit.entities to javafx.base, com.google.gson;
+    opens tn.esprit.mains to javafx.graphics;
+
+    exports tn.esprit.controllers;
+    exports tn.esprit.entities;
+    exports tn.esprit.services;
+    exports tn.esprit.utils;
+    exports tn.esprit.mains;
 }

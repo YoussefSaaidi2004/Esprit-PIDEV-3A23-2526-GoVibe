@@ -7,18 +7,15 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.example.controllers.AdminListPostController"
-            stylesheets="@../styles/unified-styles.css, @../styles.css">
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.AdminListPostController"
+      stylesheets="@../styles/unified-styles.css, @../styles.css">
 
     <!-- LEFT SIDEBAR -->
-    <left>
-        <fx:include source="AdminSidebar.fxml" fx:id="adminSidebar"/>
-    </left>
+    <fx:include source="AdminSidebar.fxml" fx:id="adminSidebar"/>
 
     <!-- MAIN CONTENT -->
-    <center>
-        <StackPane fx:id="rootStackPane">
+    <StackPane fx:id="rootStackPane" HBox.hgrow="ALWAYS" minWidth="0">
 
             <!-- Hero Background -->
             <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false" styleClass="premium-bg"/>
@@ -149,7 +146,6 @@
                       style="-fx-background-color: transparent;"/>
             </StackPane>
 
-        </StackPane>
-    </center>
+    </StackPane>
 
-</BorderPane>
+</HBox>

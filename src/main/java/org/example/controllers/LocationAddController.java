@@ -95,27 +95,36 @@ public class LocationAddController {
             return;
         }
         Location location = buildLocationFromFields();
-        try {
-            String reference = location.getReference();
-            Path baseDir = ensureGeneratedDir();
-            Path contractPath = generateContractPdf(baseDir, reference, location);
-            Path qrPath = generateQrCode(baseDir, reference);
-            location.setContratPdf(contractPath.toString());
-            location.setQrCode(qrPath.toString());
-        } catch (IOException ex) {
-            showAlert("Erreur", "Erreur lors de la generation du contrat ou QR code.");
-            return;
-        }
-        try {
-            locationService.add(location);
+        addButton.setDisable(true);
+        
+        javafx.concurrent.Task<Void> task = new javafx.concurrent.Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                String reference = location.getReference();
+                Path baseDir = ensureGeneratedDir();
+                Path contractPath = generateContractPdf(baseDir, reference, location);
+                Path qrPath = generateQrCode(baseDir, reference);
+                location.setContratPdf(contractPath.toString());
+                location.setQrCode(qrPath.toString());
+                
+                locationService.add(location);
+                return null;
+            }
+        };
+        
+        task.setOnSucceeded(e -> {
             if (parentController != null) {
                 parentController.closeModal();
             } else {
                 SceneNavigator.switchTo("/LocationListView.fxml", addButton);
             }
-        } catch (RuntimeException ex) {
-            showAlert("Erreur", ex.getMessage());
-        }
+        });
+        task.setOnFailed(e -> {
+            addButton.setDisable(false);
+            showAlert("Erreur", task.getException().getMessage());
+        });
+        
+        new Thread(task).start();
     }
 
     @FXML

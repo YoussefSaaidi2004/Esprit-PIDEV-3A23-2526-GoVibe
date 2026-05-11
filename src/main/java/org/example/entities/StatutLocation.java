@@ -26,23 +26,29 @@ public enum StatutLocation {
     }
 
     public static StatutLocation fromDbValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return EN_ATTENTE;
+        }
         String normalized = normalizeKey(value);
         switch (normalized) {
             case "en_attente":
             case "en attente":
                 return EN_ATTENTE;
             case "confirmee":
+            case "confirme":
                 return CONFIRMEE;
             case "annulee":
+            case "annule":
                 return ANNULEE;
             default:
-                throw new RuntimeException("Statut location invalide. Valeurs possibles: EN_ATTENTE, CONFIRMEE, ANNULEE.");
+                System.err.println("⚠️ [StatutLocation] Valeur non reconnue depuis la BD: '" + value + "'. Remplacement par EN_ATTENTE par défaut.");
+                return EN_ATTENTE;
         }
     }
 
     private static String normalizeKey(String input) {
         if (input == null || input.trim().isEmpty()) {
-            throw new RuntimeException("Champ requis manquant.");
+            return "";
         }
         String trimmed = input.trim();
         String noAccents = Normalizer.normalize(trimmed, Normalizer.Form.NFD)

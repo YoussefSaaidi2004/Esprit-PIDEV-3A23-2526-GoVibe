@@ -10,11 +10,25 @@ import java.nio.file.Paths;
 public class FaceRecognitionService {
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private String pythonCommand = null;
+    private java.util.concurrent.CompletableFuture<String> pythonCommandFuture;
+
+    public FaceRecognitionService() {
+        // Start discovering Python asynchronously in the background immediately
+        pythonCommandFuture = java.util.concurrent.CompletableFuture.supplyAsync(this::discoverPythonCommand);
+    }
 
     private String getPythonCommand() {
-        if (pythonCommand != null) return pythonCommand;
+        try {
+            // This will return immediately if already discovered, or block ONLY when
+            // Face ID is actively requested (not during application startup).
+            return pythonCommandFuture.get();
+        } catch (Exception e) {
+            System.err.println("❌ Failed to get Python command: " + e.getMessage());
+            return "py -3.11";
+        }
+    }
 
+    private String discoverPythonCommand() {
         // Prefer py -3.11 since face scripts need opencv + mediapipe (installed under 3.11)
         // face_recognition / dlib do NOT build on Python 3.14
         String[][] candidates = {
@@ -45,22 +59,21 @@ public class FaceRecognitionService {
                     Process chk = new ProcessBuilder(checkArgs).start();
                     if (chk.waitFor() == 0) {
                         // Build a single command string: "py -3.11" or "python3.11"
-                        pythonCommand = String.join(" ", args.subList(0, args.size() - 1));
-                        System.out.println("✅ Face ID Python: " + pythonCommand + " (cv2 + mediapipe OK)");
-                        return pythonCommand;
+                        String found = String.join(" ", args.subList(0, args.size() - 1));
+                        System.out.println("✅ Face ID Python: " + found + " (cv2 + mediapipe OK)");
+                        return found;
                     }
                 }
             } catch (Exception ignored) {}
         }
         System.err.println("❌ No suitable Python with cv2+mediapipe found. Face ID will not work.");
-        pythonCommand = "py -3.11";
-        return pythonCommand;
+        return "py -3.11";
     }
 
     private ProcessBuilder buildProcess(String scriptPath, String... extraArgs) {
         // Split "py -3.11" into ["py", "-3.11"] for ProcessBuilder
         java.util.List<String> cmd = new java.util.ArrayList<>();
-        for (String part : pythonCommand.split(" ")) cmd.add(part);
+        for (String part : getPythonCommand().split(" ")) cmd.add(part);
         cmd.add(scriptPath);
         for (String a : extraArgs) cmd.add(a);
         return new ProcessBuilder(cmd);

@@ -7,19 +7,16 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.example.controllers.AdminDashboardController"
-            stylesheets="@../styles/unified-styles.css, @../styles.css"
-            style="-fx-background-color: #010d08;">
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.AdminDashboardController"
+      stylesheets="@../../styles/unified-styles.css, @../../styles.css"
+      style="-fx-background-color: #010d08;">
 
-    <!-- ==================== LEFT SIDEBAR ==================== -->
-    <left>
-        <fx:include source="AdminSidebar.fxml" fx:id="adminSidebar"/>
-    </left>
+    <!-- ==================== LEFT SIDEBAR (fixed 220px) ==================== -->
+    <fx:include source="AdminSidebar.fxml" fx:id="adminSidebar"/>
 
-    <!-- ==================== MAIN CONTENT ==================== -->
-    <center>
-        <StackPane fx:id="rootStack">
+    <!-- ==================== MAIN CONTENT (fills remaining space) ==================== -->
+    <StackPane fx:id="rootStack" HBox.hgrow="ALWAYS" minWidth="0">
 
             <!-- Hero Background -->
             <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false"/>
@@ -33,8 +30,8 @@
                         style="-fx-background-color: transparent; -fx-background: transparent;"
                         hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
                 <content>
-                    <VBox spacing="24">
-                        <padding><Insets top="24" right="30" bottom="30" left="30"/></padding>
+                    <VBox spacing="18">
+                        <padding><Insets top="20" right="24" bottom="24" left="24"/></padding>
 
                         <!-- PAGE HEADER -->
                         <HBox alignment="CENTER_LEFT" spacing="20"
@@ -78,13 +75,13 @@
                         <!-- STAT CARDS ROW -->
                         <HBox spacing="18">
                             <!-- Users -->
-                            <VBox HBox.hgrow="ALWAYS" spacing="14" alignment="TOP_LEFT"
+                            <VBox HBox.hgrow="ALWAYS" spacing="14" alignment="TOP_LEFT" minWidth="0"
                                   style="-fx-background-color: rgba(255,255,255,0.07);
                                          -fx-border-color: rgba(255,255,255,0.12); -fx-border-width: 1;
-                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 22;">
+                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 16;">
                                 <HBox alignment="CENTER_LEFT" spacing="14">
                                     <StackPane style="-fx-background-color: rgba(80,200,120,0.18);
-                                                      -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                                                      -fx-background-radius: 12; -fx-min-width: 40; -fx-min-height: 40;">
                                         <SVGPath content="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"
                                                  style="-fx-fill: #50C878;" scaleX="0.9" scaleY="0.9"/>
                                     </StackPane>
@@ -92,7 +89,7 @@
                                         <Label text="Utilisateurs"
                                                style="-fx-text-fill: rgba(255,255,255,0.65); -fx-font-size: 13px;"/>
                                         <Label fx:id="usersCountLabel" text="---"
-                                               style="-fx-text-fill: white; -fx-font-size: 26px; -fx-font-weight: 800;"/>
+                                               style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: 800;"/>
                                     </VBox>
                                 </HBox>
                                 <HBox spacing="6" alignment="CENTER_LEFT">
@@ -101,13 +98,13 @@
                                 </HBox>
                             </VBox>
                             <!-- Locations -->
-                            <VBox HBox.hgrow="ALWAYS" spacing="14" alignment="TOP_LEFT"
+                            <VBox HBox.hgrow="ALWAYS" spacing="14" alignment="TOP_LEFT" minWidth="0"
                                   style="-fx-background-color: rgba(255,255,255,0.07);
                                          -fx-border-color: rgba(255,255,255,0.12); -fx-border-width: 1;
-                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 22;">
+                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 16;">
                                 <HBox alignment="CENTER_LEFT" spacing="14">
                                     <StackPane style="-fx-background-color: rgba(11,100,239,0.2);
-                                                      -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                                                      -fx-background-radius: 12; -fx-min-width: 40; -fx-min-height: 40;">
                                         <SVGPath content="M18.92 5.01C18.72 4.42 18.16 4 17.5 4h-11c-.66 0-1.21.42-1.42 1.01L3 11v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 15c-.83 0-1.5-.67-1.5-1.5S5.67 12 6.5 12s1.5.67 1.5 1.5S7.33 15 6.5 15zm11 0c-.83 0-1.5-.67-1.5-1.5S16.67 12 17.5 12s1.5.67 1.5 1.5S18.33 15 17.5 15zM5 10l1.5-4.5h11L19 10H5z"
                                                  style="-fx-fill: #5B9DF4;" scaleX="0.9" scaleY="0.9"/>
                                     </StackPane>
@@ -115,7 +112,7 @@
                                         <Label text="Locations"
                                                style="-fx-text-fill: rgba(255,255,255,0.65); -fx-font-size: 13px;"/>
                                         <Label fx:id="locationsCountLabel" text="---"
-                                               style="-fx-text-fill: white; -fx-font-size: 26px; -fx-font-weight: 800;"/>
+                                               style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: 800;"/>
                                     </VBox>
                                 </HBox>
                                 <HBox spacing="6" alignment="CENTER_LEFT">
@@ -124,39 +121,39 @@
                                 </HBox>
                             </VBox>
                             <!-- Hotels -->
-                            <VBox HBox.hgrow="ALWAYS" spacing="14" alignment="TOP_LEFT"
+                            <VBox HBox.hgrow="ALWAYS" spacing="14" alignment="TOP_LEFT" minWidth="0"
                                   style="-fx-background-color: rgba(255,255,255,0.07);
                                          -fx-border-color: rgba(255,255,255,0.12); -fx-border-width: 1;
-                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 22;">
+                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 16;">
                                 <HBox alignment="CENTER_LEFT" spacing="14">
                                     <StackPane style="-fx-background-color: rgba(231,126,34,0.2);
-                                                      -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                                                      -fx-background-radius: 12; -fx-min-width: 40; -fx-min-height: 40;">
                                         <SVGPath content="M7 13.5c.83 0 1.5-.67 1.5-1.5 0-.83-.67-1.5-1.5-1.5S5.5 11.17 5.5 12c0 .83.67 1.5 1.5 1.5zm0 3.5c.83 0 1.5-.67 1.5-1.5S7.83 14 7 14s-1.5.67-1.5 1.5S6.17 17 7 17zm0 3.5c.83 0 1.5-.67 1.5-1.5S7.83 17.5 7 17.5s-1.5.67-1.5 1.5S6.17 20.5 7 20.5zM19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"
                                                  style="-fx-fill: #E8954A;" scaleX="0.9" scaleY="0.9"/>
                                     </StackPane>
                                     <VBox spacing="3">
                                         <Label text="Hotels" style="-fx-text-fill: rgba(255,255,255,0.65); -fx-font-size: 13px;"/>
                                         <Label fx:id="hotelsCountLabel" text="---"
-                                               style="-fx-text-fill: white; -fx-font-size: 26px; -fx-font-weight: 800;"/>
+                                               style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: 800;"/>
                                     </VBox>
                                 </HBox>
                                 <Label text="Stable" style="-fx-text-fill: rgba(255,255,255,0.45); -fx-font-size: 12px;"/>
                             </VBox>
                             <!-- Revenue -->
-                            <VBox HBox.hgrow="ALWAYS" spacing="14" alignment="TOP_LEFT"
+                            <VBox HBox.hgrow="ALWAYS" spacing="14" alignment="TOP_LEFT" minWidth="0"
                                   style="-fx-background-color: rgba(255,255,255,0.07);
                                          -fx-border-color: rgba(80,200,120,0.3); -fx-border-width: 1;
-                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 22;">
+                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 16;">
                                 <HBox alignment="CENTER_LEFT" spacing="14">
                                     <StackPane style="-fx-background-color: rgba(80,200,120,0.25);
-                                                      -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                                                      -fx-background-radius: 12; -fx-min-width: 40; -fx-min-height: 40;">
                                         <SVGPath content="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"
                                                  style="-fx-fill: #50C878;" scaleX="0.9" scaleY="0.9"/>
                                     </StackPane>
                                     <VBox spacing="3">
                                         <Label text="Revenus" style="-fx-text-fill: rgba(255,255,255,0.65); -fx-font-size: 13px;"/>
                                         <Label fx:id="revenueLabel" text="---"
-                                               style="-fx-text-fill: #50C878; -fx-font-size: 26px; -fx-font-weight: 800;"/>
+                                               style="-fx-text-fill: #50C878; -fx-font-size: 22px; -fx-font-weight: 800;"/>
                                     </VBox>
                                 </HBox>
                                 <HBox spacing="6" alignment="CENTER_LEFT">
@@ -170,9 +167,9 @@
                         <VBox spacing="16"
                               style="-fx-background-color: rgba(255,255,255,0.07);
                                      -fx-border-color: rgba(255,255,255,0.12); -fx-border-width: 1;
-                                     -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 24;">
+                                     -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 18;">
                             <Label text="Actions rapides"
-                                   style="-fx-text-fill: white; -fx-font-size: 17px; -fx-font-weight: 700;"/>
+                                   style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: 700;"/>
                             <FlowPane hgap="12" vgap="12">
                                 <Button text="+ Nouvelle personne" onAction="#handlePersonnes"
                                         style="-fx-background-color: #013220; -fx-text-fill: white; -fx-font-size: 13px;
@@ -204,12 +201,12 @@
                         <!-- BOTTOM ROW -->
                         <HBox spacing="18">
                             <!-- Recent Activity -->
-                            <VBox HBox.hgrow="ALWAYS" spacing="16"
+                            <VBox HBox.hgrow="ALWAYS" spacing="16" minWidth="0"
                                   style="-fx-background-color: rgba(255,255,255,0.07);
                                          -fx-border-color: rgba(255,255,255,0.12); -fx-border-width: 1;
-                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 24;">
+                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 18;">
                                 <Label text="Activite recente"
-                                       style="-fx-text-fill: white; -fx-font-size: 17px; -fx-font-weight: 700;"/>
+                                       style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: 700;"/>
                                 <VBox spacing="14">
                                     <HBox spacing="14" alignment="CENTER_LEFT">
                                         <StackPane style="-fx-background-color: rgba(80,200,120,0.18); -fx-background-radius: 10;
@@ -253,12 +250,12 @@
                                 </VBox>
                             </VBox>
                             <!-- System Status -->
-                            <VBox prefWidth="280" spacing="16"
+                            <VBox prefWidth="280" minWidth="200" spacing="16"
                                   style="-fx-background-color: rgba(255,255,255,0.07);
                                          -fx-border-color: rgba(255,255,255,0.12); -fx-border-width: 1;
-                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 24;">
+                                         -fx-background-radius: 16; -fx-border-radius: 16; -fx-padding: 18;">
                                 <Label text="Etat du systeme"
-                                       style="-fx-text-fill: white; -fx-font-size: 17px; -fx-font-weight: 700;"/>
+                                       style="-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: 700;"/>
                                 <VBox spacing="12">
                                     <HBox spacing="10" alignment="CENTER_LEFT">
                                         <Region prefWidth="9" prefHeight="9" style="-fx-background-color: #50C878; -fx-background-radius: 5;"/>
@@ -286,7 +283,6 @@
                 </content>
             </ScrollPane>
 
-        </StackPane>
-    </center>
+    </StackPane>
 
-</BorderPane>
+</HBox>

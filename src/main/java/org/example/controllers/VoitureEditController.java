@@ -68,7 +68,7 @@ public class VoitureEditController {
     @FXML
     private void handleModifier() {
         if (selected == null) {
-            showAlert("Selection requise", "Veuillez choisir une voiture a modifier.");
+            showAlert("Sélection requise", "Veuillez choisir une voiture à modifier.");
             return;
         }
         if (!validateFields()) {
@@ -76,13 +76,24 @@ public class VoitureEditController {
         }
         Voiture updated = buildVoitureFromFields();
         updated.setIdVoiture(selected.getIdVoiture());
-        try {
-            voitureService.update(updated);
+        updateButton.setDisable(true);
+
+        javafx.concurrent.Task<Void> task = new javafx.concurrent.Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                voitureService.update(updated);
+                return null;
+            }
+        };
+        task.setOnSucceeded(e -> {
             VoitureSelection.clear();
             SceneNavigator.switchTo("/VoitureListView.fxml", updateButton);
-        } catch (RuntimeException ex) {
-            showAlert("Erreur", ex.getMessage());
-        }
+        });
+        task.setOnFailed(e -> {
+            updateButton.setDisable(false);
+            showAlert("Erreur", task.getException().getMessage());
+        });
+        new Thread(task).start();
     }
 
     @FXML

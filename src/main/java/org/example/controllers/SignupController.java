@@ -29,12 +29,34 @@ public class SignupController {
     @FXML private RadioButton rbAdmin;
     @FXML private ToggleGroup roleGroup;
 
-    private final ServicePersonne servicePersonne = new ServicePersonne();
-    private final FaceRecognitionService faceService = new FaceRecognitionService();
+    private ServicePersonne servicePersonne;
+    private FaceRecognitionService faceService;
     private String configuredFaceEncoding = null;
 
     @FXML
+    public void initialize() {
+        // Lazy-init services to avoid blocking the FX thread on DB connections
+        // during FXML load — the connection is only created when first needed.
+        /*
+        try {
+            servicePersonne = new ServicePersonne();
+        } catch (Exception e) {
+            System.err.println("[Signup] ServicePersonne init deferred: " + e.getMessage());
+        }
+        */
+        try {
+            faceService = new FaceRecognitionService();
+        } catch (Exception e) {
+            System.err.println("[Signup] FaceRecognitionService init failed (Face ID disabled): " + e.getMessage());
+        }
+    }
+
+    @FXML
     private void handleSignup() {
+        // ── Capture ALL UI state on the FX thread FIRST ──────────────────────
+        // Reading JavaFX controls from a background thread causes native heap
+        // corruption (exit code 0xC0000005) because the JavaFX render pipeline
+        // owns those memory regions.
         String nom = tfNom.getText().trim();
         String prenom = tfPrenom.getText().trim();
         String email = tfEmail.getText().trim();
@@ -64,26 +86,42 @@ public class SignupController {
             return;
         }
 
+        // ── Capture role on FX thread (CRITICAL — was crashing before) ───────
+        final String role = (rbAdmin != null && rbAdmin.isSelected()) ? "admin" : "user";
+        final String faceEncoding = configuredFaceEncoding;
+
         btnSignup.setDisable(true);
         showError("Traitement en cours...", false);
 
         Task<Void> signupTask = new Task<>() {
             @Override
             protected Void call() throws Exception {
+                // Ensure ServicePersonne is initialized on the background thread
+                // to prevent native COM STA crashes caused by java.sql.DriverManager
+                if (servicePersonne == null) {
+                    try {
+                        servicePersonne = new ServicePersonne();
+                    } catch (Exception e) {
+                        throw new RuntimeException("Base de données indisponible: " + e.getMessage());
+                    }
+                }
+                
+                final ServicePersonne svc = servicePersonne;
+
+                // All values used here are final locals captured on the FX thread.
+                // No JavaFX UI controls are touched from this background thread.
+
                 // Validation: Email uniqueness
-                if (servicePersonne.emailExists(email)) {
+                if (svc.emailExists(email)) {
                     throw new RuntimeException("Cet email est deja utilise.");
                 }
 
-                // Get selected role
-                String role = rbAdmin.isSelected() ? "admin" : "user";
-                
-                // Create new user
+                // Create new user (role was captured on FX thread)
                 personne newUser = new personne(nom, prenom, email, password, role);
-                if (configuredFaceEncoding != null) {
-                    newUser.setFaceEncoding(configuredFaceEncoding);
+                if (faceEncoding != null) {
+                    newUser.setFaceEncoding(faceEncoding);
                 }
-                servicePersonne.ajouter(newUser);
+                svc.ajouter(newUser);
                 return null;
             }
         };
@@ -108,14 +146,20 @@ public class SignupController {
             Throwable ex = signupTask.getException();
             String msg = (ex instanceof RuntimeException) ? ex.getMessage() : "Erreur lors de la creation du compte.";
             showError(msg, true);
-            ex.printStackTrace();
+            if (ex != null) ex.printStackTrace();
         });
 
-        new Thread(signupTask).start();
+        Thread t = new Thread(signupTask, "Signup-Task");
+        t.setDaemon(true);
+        t.start();
     }
 
     @FXML
     private void handleConfigureFaceID() {
+        if (faceService == null) {
+            showError("Face ID non disponible sur cette machine.", true);
+            return;
+        }
         showError("La caméra va s'ouvrir. Regardez l'objectif.", false);
         btnFaceID.setDisable(true);
 
@@ -142,7 +186,9 @@ public class SignupController {
             showError("Erreur lors de l'accès à la caméra.", true);
         });
 
-        new Thread(faceTask).start();
+        Thread t = new Thread(faceTask, "FaceID-Task");
+        t.setDaemon(true);
+        t.start();
     }
 
     @FXML
@@ -171,4 +217,5 @@ public class SignupController {
         });
     }
 }
+
 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -6,29 +6,30 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.example.controllers.PersonneController"
-            stylesheets="@../../styles/unified-styles.css, @../../styles.css">
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.controllers.PersonneController"
+      stylesheets="@../../styles/unified-styles.css, @../../styles.css">
 
-    <left>
-        <fx:include source="AdminSidebar.fxml"/>
-    </left>
+    <!-- Sidebar -->
+    <fx:include source="AdminSidebar.fxml"/>
 
-    <center>
-        <StackPane fx:id="rootStack">
+    <!-- Main Content -->
+    <StackPane fx:id="rootStack" HBox.hgrow="ALWAYS" minWidth="0">
             <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false"/>
             <Region style="-fx-background-color: linear-gradient(to bottom right, rgba(0,8,4,0.58) 0%, rgba(1,20,11,0.52) 40%, rgba(1,30,16,0.60) 100%);"/>
 
-            <VBox spacing="28" style="-fx-padding: 40;">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+                <content>
+                    <VBox spacing="18" style="-fx-padding: 24;">
 
                 <!-- Header -->
                 <HBox alignment="CENTER_LEFT" spacing="20">
-                    <StackPane style="-fx-background-color: rgba(80,200,120,0.18); -fx-background-radius: 16; -fx-padding: 14; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.45), 20, 0, 0, 0);">
-                        <Text text="👥" style="-fx-font-size: 28px;"/>
+                    <StackPane style="-fx-background-color: rgba(80,200,120,0.18); -fx-background-radius: 12; -fx-padding: 10; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.45), 15, 0, 0, 0);">
+                        <Text text="👥" style="-fx-font-size: 22px;"/>
                     </StackPane>
-                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
                         <Text text="Gestion des Personnes"
-                              style="-fx-font-size: 30px; -fx-font-weight: 900; -fx-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 12, 0, 0, 2);"/>
+                              style="-fx-font-size: 22px; -fx-font-weight: 800; -fx-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.55), 10, 0, 0, 1);"/>
                         <HBox spacing="12" alignment="CENTER_LEFT">
                             <Label fx:id="countLabel" text="0 utilisateurs"
                                   style="-fx-font-size: 14px; -fx-text-fill: rgba(180,230,210,0.72); -fx-background-color: transparent;"/>
@@ -36,58 +37,58 @@
                                   style="-fx-font-size: 13px; -fx-text-fill: #50C878; -fx-background-color: transparent;"/>
                         </HBox>
                     </VBox>
-                    <Button onAction="#handleRefresh" prefHeight="44"
-                            style="-fx-background-color: rgba(255,255,255,0.08); -fx-background-radius: 12; -fx-border-color: rgba(255,255,255,0.2); -fx-border-width: 1.5; -fx-border-radius: 12; -fx-padding: 10 18; -fx-cursor: hand;">
-                        <graphic><Text text="↻  Rafraîchir" style="-fx-fill: rgba(220,250,235,0.88); -fx-font-weight: 700; -fx-font-size: 13;"/></graphic>
+                    <Button onAction="#handleRefresh" prefHeight="32"
+                            style="-fx-background-color: rgba(255,255,255,0.08); -fx-background-radius: 10; -fx-border-color: rgba(255,255,255,0.2); -fx-border-width: 1.2; -fx-border-radius: 10; -fx-padding: 6 12; -fx-cursor: hand;">
+                        <graphic><Text text="↻  Rafraîchir" style="-fx-fill: rgba(220,250,235,0.88); -fx-font-weight: 700; -fx-font-size: 12;"/></graphic>
                     </Button>
                 </HBox>
 
                 <!-- Glass Form Card -->
-                <VBox spacing="16"
-                      style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 20; -fx-border-color: rgba(80,200,120,0.28); -fx-border-width: 1.5; -fx-border-radius: 20; -fx-padding: 28 32; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 24, 0, 0, 8);">
+                <VBox spacing="14"
+                      style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 16; -fx-border-color: rgba(80,200,120,0.28); -fx-border-width: 1.2; -fx-border-radius: 16; -fx-padding: 20 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.40), 20, 0, 0, 6);">
 
                     <Text text="Ajouter / Modifier un utilisateur"
-                          style="-fx-font-size: 16px; -fx-font-weight: 800; -fx-fill: rgba(180,250,210,0.88);"/>
+                          style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-fill: rgba(180,250,210,0.88);"/>
 
-                    <HBox spacing="16">
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Text text="Nom" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 12; -fx-font-weight: 700;"/>
+                    <HBox spacing="12">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Text text="Nom" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 11; -fx-font-weight: 700;"/>
                             <TextField fx:id="tfNom" promptText="Nom de famille"
-                                       style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 10; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.5; -fx-border-radius: 10; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-padding: 12 14; -fx-font-size: 14;"/>
+                                       style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 8; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.2; -fx-border-radius: 8; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-padding: 8 10; -fx-font-size: 12;"/>
                         </VBox>
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Text text="Prénom" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 12; -fx-font-weight: 700;"/>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Text text="Prénom" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 11; -fx-font-weight: 700;"/>
                             <TextField fx:id="tfPrenom" promptText="Prénom"
-                                       style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 10; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.5; -fx-border-radius: 10; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-padding: 12 14; -fx-font-size: 14;"/>
+                                       style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 8; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.2; -fx-border-radius: 8; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-padding: 8 10; -fx-font-size: 12;"/>
+                        </VBox>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Text text="Rôle" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 11; -fx-font-weight: 700;"/>
+                            <ComboBox fx:id="cbRole" maxWidth="Infinity"
+                                      style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 8; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.2; -fx-border-radius: 8; -fx-padding: 5 8; -fx-font-size: 12;"/>
                         </VBox>
                     </HBox>
 
-                    <HBox spacing="16">
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Text text="Email" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 12; -fx-font-weight: 700;"/>
+                    <HBox spacing="12">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Text text="Email" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 11; -fx-font-weight: 700;"/>
                             <TextField fx:id="tfEmail" promptText="adresse@email.com"
-                                       style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 10; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.5; -fx-border-radius: 10; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-padding: 12 14; -fx-font-size: 14;"/>
+                                       style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 8; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.2; -fx-border-radius: 8; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-padding: 8 10; -fx-font-size: 12;"/>
                         </VBox>
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Text text="Mot de passe" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 12; -fx-font-weight: 700;"/>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Text text="Mot de passe" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 11; -fx-font-weight: 700;"/>
                             <PasswordField fx:id="tfPassword" promptText="••••••••"
-                                           style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 10; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.5; -fx-border-radius: 10; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-padding: 12 14; -fx-font-size: 14;"/>
-                        </VBox>
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Text text="Rôle" style="-fx-fill: rgba(200,240,220,0.70); -fx-font-size: 12; -fx-font-weight: 700;"/>
-                            <ComboBox fx:id="cbRole" maxWidth="Infinity"
-                                      style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 10; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.5; -fx-border-radius: 10; -fx-padding: 8 12; -fx-font-size: 14;"/>
+                                           style="-fx-background-color: rgba(255,255,255,0.06); -fx-background-radius: 8; -fx-border-color: rgba(80,200,120,0.32); -fx-border-width: 1.2; -fx-border-radius: 8; -fx-text-fill: white; -fx-prompt-text-fill: rgba(180,220,200,0.38); -fx-padding: 8 10; -fx-font-size: 12;"/>
                         </VBox>
                     </HBox>
 
                     <HBox spacing="12" alignment="CENTER_LEFT">
-                        <Button onAction="#handleAjouter" prefHeight="42"
-                                style="-fx-background-color: linear-gradient(to bottom right, #50C878, #2e9952); -fx-background-radius: 11; -fx-border-width: 0; -fx-padding: 10 28; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.65), 18, 0, 0, 4);">
-                            <graphic><Text text="＋  Enregistrer" style="-fx-fill: white; -fx-font-weight: 900; -fx-font-size: 13;"/></graphic>
+                        <Button onAction="#handleAjouter" prefHeight="38"
+                                style="-fx-background-color: linear-gradient(to bottom right, #50C878, #2e9952); -fx-background-radius: 10; -fx-border-width: 0; -fx-padding: 8 24; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(80,200,120,0.65), 15, 0, 0, 3);">
+                            <graphic><Text text="＋  Enregistrer" style="-fx-fill: white; -fx-font-weight: 900; -fx-font-size: 12;"/></graphic>
                         </Button>
-                        <Button onAction="#handleReset" prefHeight="42"
-                                style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 11; -fx-border-color: rgba(255,255,255,0.22); -fx-border-width: 1.5; -fx-border-radius: 11; -fx-padding: 10 24; -fx-cursor: hand;">
-                            <graphic><Text text="↺  Réinitialiser" style="-fx-fill: rgba(220,250,235,0.85); -fx-font-weight: 700; -fx-font-size: 13;"/></graphic>
+                        <Button onAction="#handleReset" prefHeight="38"
+                                style="-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 10; -fx-border-color: rgba(255,255,255,0.22); -fx-border-width: 1.2; -fx-border-radius: 10; -fx-padding: 8 20; -fx-cursor: hand;">
+                            <graphic><Text text="↺  Réinitialiser" style="-fx-fill: rgba(220,250,235,0.85); -fx-font-weight: 700; -fx-font-size: 12;"/></graphic>
                         </Button>
                         <Region HBox.hgrow="ALWAYS"/>
                         <Label fx:id="notificationLabel" text=""
@@ -105,13 +106,11 @@
                 </HBox>
 
                 <!-- Glass Cards Grid -->
-                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                            style="-fx-background-color: transparent; -fx-background: transparent;" hbarPolicy="NEVER">
-                    <FlowPane fx:id="personnesContainer" hgap="16" vgap="16"
-                              style="-fx-background-color: transparent; -fx-padding: 4 0 20 0;"/>
-                </ScrollPane>
+                <FlowPane fx:id="personnesContainer" hgap="12" vgap="12"
+                          style="-fx-background-color: transparent; -fx-padding: 4 0 20 0;"/>
 
-            </VBox>
-        </StackPane>
-    </center>
-</BorderPane>
+                    </VBox>
+                </content>
+            </ScrollPane>
+    </StackPane>
+</HBox>

@@ -112,6 +112,11 @@ public final class SceneNavigator {
                 fadeIn.play();
             }
 
+            // Always enforce minimum window constraints
+            stage.setMinWidth(1024);
+            stage.setMinHeight(700);
+            System.out.println("[Fix] Stage min constraints set 1024x700");
+
             // Always ensure maximized
             stage.setMaximized(true);
 

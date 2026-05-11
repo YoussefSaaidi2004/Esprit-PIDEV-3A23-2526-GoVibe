@@ -25,6 +25,9 @@ public enum TypeCarburant {
     }
 
     public static TypeCarburant fromDbValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return ESSENCE;
+        }
         String normalized = normalizeKey(value);
         switch (normalized) {
             case "essence":
@@ -36,13 +39,14 @@ public enum TypeCarburant {
             case "electrique":
                 return ELECTRIQUE;
             default:
-                throw new RuntimeException("Type carburant invalide. Valeurs possibles: Essence, Diesel, Hybride, Electrique.");
+                System.err.println("⚠️ [TypeCarburant] Valeur non reconnue depuis la BD: '" + value + "'. Remplacement par ESSENCE par défaut.");
+                return ESSENCE;
         }
     }
 
     private static String normalizeKey(String input) {
         if (input == null || input.trim().isEmpty()) {
-            throw new RuntimeException("Champ requis manquant.");
+            return "";
         }
         String trimmed = input.trim();
         String noAccents = Normalizer.normalize(trimmed, Normalizer.Form.NFD)

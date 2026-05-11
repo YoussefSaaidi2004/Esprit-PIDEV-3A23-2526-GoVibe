@@ -10,7 +10,7 @@ public class ServiceForum implements iForum<Forum> {
 
     @Override
     public void ajouter(Forum f) throws SQLException {
-        String sql = "INSERT INTO forum (name, image, created_by, post_count, nbr_members, description, date_creation, is_private) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO forum (name, image, created_by_id, post_count, nbr_members, description, date_creation, is_private) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         Connection cnx = UnifiedDatabaseManager.getConnection();
         PreparedStatement ps = cnx.prepareStatement(sql);
         ps.setString(1, f.getName());
@@ -26,7 +26,7 @@ public class ServiceForum implements iForum<Forum> {
 
     @Override
     public void modifier(Forum f) throws SQLException {
-        String sql = "UPDATE forum SET name=?, image=?, created_by=?, post_count=?, nbr_members=?, description=?, date_creation=?, is_private=? WHERE forum_id=?";
+        String sql = "UPDATE forum SET name=?, image=?, created_by_id=?, post_count=?, nbr_members=?, description=?, date_creation=?, is_private=? WHERE forum_id=?";
         Connection cnx = UnifiedDatabaseManager.getConnection();
         PreparedStatement ps = cnx.prepareStatement(sql);
         ps.setString(1, f.getName());
@@ -62,7 +62,7 @@ public class ServiceForum implements iForum<Forum> {
             f.setForum_id(rs.getInt("forum_id"));
             f.setName(rs.getString("name"));
             f.setImage(rs.getString("image"));
-            f.setCreated_by(rs.getInt("created_by"));
+            f.setCreated_by(rs.getInt("created_by_id"));
             f.setPost_count(rs.getInt("post_count"));
             f.setNbr_members(rs.getInt("nbr_members"));
             f.setDescription(rs.getString("description"));

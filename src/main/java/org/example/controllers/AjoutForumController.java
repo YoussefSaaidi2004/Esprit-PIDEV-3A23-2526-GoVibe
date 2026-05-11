@@ -158,6 +158,11 @@ public class AjoutForumController {
             handleCancel(event);
         } catch (SQLException e) {
             e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur de création");
+            alert.setHeaderText("Impossible de créer le forum");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
         }
     }
 

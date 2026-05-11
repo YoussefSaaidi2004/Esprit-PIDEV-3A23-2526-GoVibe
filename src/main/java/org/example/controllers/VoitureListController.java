@@ -17,9 +17,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -62,7 +61,7 @@ public class VoitureListController {
     private static final String SORT_DEFAULT = "Par defaut";
 
     @FXML
-    private BorderPane root;
+    private HBox root;
     @FXML
     private StackPane rootStack;
     @FXML
@@ -113,6 +112,7 @@ public class VoitureListController {
 
     @FXML
     public void initialize() {
+        System.out.println("[Fix] VoitureListView layout compacted");
         if (!SessionManager.isAuthenticated()) {
             Platform.runLater(() -> SceneNavigator.switchTo("/org/example/LoginView.fxml", root));
             return;
@@ -579,12 +579,25 @@ public class VoitureListController {
     }
 
     private void deleteFromRow(Voiture item) {
-        try {
-            voitureService.delete(item.getIdVoiture());
-            refreshList();
-        } catch (RuntimeException ex) {
-            showAlert("Erreur", ex.getMessage());
-        }
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmation de suppression");
+        confirm.setHeaderText(null);
+        confirm.setContentText("Voulez-vous vraiment supprimer la voiture " + item.getMatricule() + " ?");
+        
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == javafx.scene.control.ButtonType.OK) {
+                javafx.concurrent.Task<Void> task = new javafx.concurrent.Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        voitureService.delete(item.getIdVoiture());
+                        return null;
+                    }
+                };
+                task.setOnSucceeded(e -> refreshList());
+                task.setOnFailed(e -> showAlert("Erreur", task.getException().getMessage()));
+                new Thread(task).start();
+            }
+        });
     }
 
     private void showAlert(String title, String message) {

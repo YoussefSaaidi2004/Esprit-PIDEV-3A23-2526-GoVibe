@@ -24,6 +24,16 @@ public class ActiviteModifierController {
         this.parentController = parentController;
     }
 
+    public void initData(Activite a) {
+        if (a == null) return;
+        tfId.setText(String.valueOf(a.getId()));
+        tfName.setText(a.getName());
+        tfDescription.setText(a.getDescription());
+        tfType.setText(a.getType());
+        tfLocalisation.setText(a.getLocalisation());
+        tfPrix.setText(a.getPrix() != null ? a.getPrix().toString() : "");
+    }
+
     @FXML
     private void charger() {
         try {

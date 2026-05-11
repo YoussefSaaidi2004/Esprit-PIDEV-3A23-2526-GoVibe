@@ -260,33 +260,40 @@ def _load_tts():
             return _tts_model
 
         # -- Attempt 1: Qwen3-TTS (cached weights + sox required) ----------
-        try:
-            from qwen_tts import Qwen3TTSModel  # type: ignore[import]
-            device = "cuda:0" if _has_cuda() else "cpu"
-            _log(f"[TTS] Trying Qwen3-TTS-0.6B-CustomVoice from cache on {device}...")
-            m = Qwen3TTSModel.from_pretrained(
-                "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
-                device_map=device,
-                local_files_only=True,
-            )
+        import platform
+        skip_qwen = False
+        if platform.system() == "Windows":
+            _log("[TTS] Skipping Qwen3-TTS on Windows due to WinError 50 (named pipe restriction).")
+            skip_qwen = True
+
+        if not skip_qwen:
             try:
-                orig = getattr(m.model, "tts_model_size", "?")
-                m.model.tts_model_size = "custom"  # bypass '0b6' instruct-strip guard
-                _log(f"[TTS] Patched tts_model_size: {orig!r} -> 'custom' (instruct enabled)")
-            except Exception as pe:
-                _log(f"[TTS] Patch skipped ({pe})  -  instruct may be ignored.")
-            _tts_model = m
-            _tts_type  = "qwen"
-            _log("[TTS] Qwen3-TTS 0.6B-CustomVoice ready.  Vivian + HOT_VOICE_INSTRUCTION active.")
-            return _tts_model
-        except Exception as exc:
-            exc_msg = str(exc)
-            if "'NoneType' object has no attribute 'endswith'" in exc_msg:
-                _log("[TTS] Qwen3-TTS: model weights not downloaded (only config files in cache).")
-                _log("[TTS]   Fix: run the weight downloader or set local_files_only=False once.")
-            else:
-                _log(f"[TTS] Qwen3-TTS not available ({type(exc).__name__}: {exc_msg[:200]}).")
-            _log("[TTS] Trying edge-tts (Microsoft neural voices, online)...")
+                from qwen_tts import Qwen3TTSModel  # type: ignore[import]
+                device = "cuda:0" if _has_cuda() else "cpu"
+                _log(f"[TTS] Trying Qwen3-TTS-0.6B-CustomVoice from cache on {device}...")
+                m = Qwen3TTSModel.from_pretrained(
+                    "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+                    device_map=device,
+                    local_files_only=True,
+                )
+                try:
+                    orig = getattr(m.model, "tts_model_size", "?")
+                    m.model.tts_model_size = "custom"  # bypass '0b6' instruct-strip guard
+                    _log(f"[TTS] Patched tts_model_size: {orig!r} -> 'custom' (instruct enabled)")
+                except Exception as pe:
+                    _log(f"[TTS] Patch skipped ({pe})  -  instruct may be ignored.")
+                _tts_model = m
+                _tts_type  = "qwen"
+                _log("[TTS] Qwen3-TTS 0.6B-CustomVoice ready.  Vivian + HOT_VOICE_INSTRUCTION active.")
+                return _tts_model
+            except Exception as exc:
+                exc_msg = str(exc)
+                if "'NoneType' object has no attribute 'endswith'" in exc_msg:
+                    _log("[TTS] Qwen3-TTS: model weights not downloaded (only config files in cache).")
+                    _log("[TTS]   Fix: run the weight downloader or set local_files_only=False once.")
+                else:
+                    _log(f"[TTS] Qwen3-TTS not available ({type(exc).__name__}: {exc_msg[:200]}).")
+                _log("[TTS] Trying edge-tts (Microsoft neural voices, online)...")
 
         # -- Attempt 2: edge-tts (neural voices, internet required) --------
         if _edge_tts_available:

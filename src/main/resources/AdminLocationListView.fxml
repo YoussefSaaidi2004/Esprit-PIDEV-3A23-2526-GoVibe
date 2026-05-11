@@ -25,7 +25,9 @@
     <fx:include source="org/example/AdminSidebar.fxml"/>
 
     <!-- Main Content -->
-    <VBox spacing="18.0" HBox.hgrow="ALWAYS" minWidth="0">
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" HBox.hgrow="ALWAYS" minWidth="0" style="-fx-background-color: transparent; -fx-background: transparent;">
+        <content>
+        <VBox spacing="18.0">
             <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
             <children>
                 <Label text="Admin - Gestion des Locations" styleClass="page-title"/>
@@ -92,5 +94,7 @@
                 </VBox>
             </children>
     </VBox>
+        </content>
+    </ScrollPane>
 
 </HBox>

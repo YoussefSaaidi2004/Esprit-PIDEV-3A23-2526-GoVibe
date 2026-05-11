@@ -18,7 +18,7 @@
             <ImageView fx:id="bgImageView" pickOnBounds="true" preserveRatio="false"/>
             <Region style="-fx-background-color: linear-gradient(to bottom right, rgba(0,8,4,0.58) 0%, rgba(1,20,11,0.52) 40%, rgba(1,30,16,0.60) 100%);"/>
 
-            <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
                         style="-fx-background-color: transparent; -fx-background: transparent;">
                 <content>
                     <VBox spacing="18" maxWidth="Infinity" style="-fx-padding: 24;">

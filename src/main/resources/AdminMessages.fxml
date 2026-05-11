@@ -12,7 +12,9 @@
     <fx:include source="org/example/AdminSidebar.fxml" fx:id="adminSidebar"/>
 
     <!-- Main Content -->
-    <VBox spacing="15" style="-fx-padding: 25;" HBox.hgrow="ALWAYS" minWidth="0">
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" HBox.hgrow="ALWAYS" minWidth="0" style="-fx-background-color: transparent; -fx-background: transparent;">
+        <content>
+        <VBox spacing="15" style="-fx-padding: 25;">
 
             <!-- Header -->
             <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #013220, #0B4F35); -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 5);">
@@ -71,4 +73,6 @@
             </HBox>
 
     </VBox>
+        </content>
+    </ScrollPane>
 </HBox>
